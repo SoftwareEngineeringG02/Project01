@@ -42,7 +42,8 @@
         android:layout_marginTop="0dp"
         app:layout_constraintTop_toBottomOf="@+id/longLabel"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/mapsFrag" />
+        app:layout_constraintBottom_toTopOf="@+id/mapsFrag"
+        app:layout_constraintVertical_bias="0.135" />
 
     <!--<Button-->
         <!--android:id="@+id/button4"-->
