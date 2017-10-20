@@ -20,5 +20,3 @@
 ## Semantic Versioning
 
 [http://semver.org/](http://semver.org/)
-
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b445a009ba5f46088965096782fe3fad)](https://www.codacy.com/app/SoftwareEngineeringG02/Project01?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SoftwareEngineeringG02/Project01&amp;utm_campaign=Badge_Grade)
