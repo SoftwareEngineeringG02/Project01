@@ -18,3 +18,5 @@ module.exports.startServer = function(port) {
     });
     return server;
 }
+
+module.exports.startServer(PORT);
