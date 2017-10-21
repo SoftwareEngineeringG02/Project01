@@ -1,5 +1,7 @@
 # Android GPS App
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b445a009ba5f46088965096782fe3fad)](https://www.codacy.com/app/SoftwareEngineeringG02/Project01?utm_source=github.com&utm_medium=referral&utm_content=SoftwareEngineeringG02/Project01&utm_campaign=badger)
+
 ## GitHub Merge Workflow
 
 ![GitHub workflow for the project](/docs/img/github-workflow.png)
