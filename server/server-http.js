@@ -1,18 +1,33 @@
 'use strict';
 
-const http = require('http');
+const http   = require('http');
+const log    = require('./server-log');
+var   server = undefined;
+
+function requestHandler(request, response) {
+    log.info('Request <address=' + request.connection.remoteAddress + ', url=' + request.url + '>');
+    response.end('Success!');
+}
+
+function errorHandler(error) {
+    return log.error(error);
+}
 
 module.exports.startServer = function(config) {
-    const requestHandler = function(request, response) {
-        console.log('Request <address=' + request.connection.remoteAddress + ', url=' + request.url + '>');
-        response.end('Success!');
-    }
-    const server = http.createServer(requestHandler);
-    server.listen(config['port'], function(err) {
-        if (err) {
-            return console.log('Error: ' + err);
+    log.info('====================[ Starting Server ]====================');
+    server = http.createServer(requestHandler);
+    server.on('error', errorHandler);
+    server.listen(config['port'], config['address'], function(error) {
+        if (error) {
+            return log.error(error);
         }
-        console.log('Listening on ' + config['address'] + ':' + config['port']);
+        log.info('Listening on ' + config['address'] + ':' + config['port']);
     });
     return server;
+}
+
+module.exports.stopServer = function() {
+    if (server != undefined) {
+        server.close();
+    }
 }
