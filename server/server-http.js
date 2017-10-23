@@ -1,8 +1,8 @@
 'use strict';
 
-const http   = require('http');
-const log    = require('./server-log');
-var   server = undefined;
+var http   = require('http');
+var log    = require('./server-log');
+var server = undefined;
 
 function requestHandler(request, response) {
     log.info('Request <address=' + request.connection.remoteAddress + ', url=' + request.url + '>');
@@ -17,7 +17,7 @@ module.exports.startServer = function(config) {
     log.info('====================[ Starting Server ]====================');
     server = http.createServer(requestHandler);
     server.on('error', errorHandler);
-    server.listen(config['port'], config['address'], function(error) {
+    server.listen(config['port'], function(error) {
         if (error) {
             return log.error(error);
         }
