@@ -1,6 +1,6 @@
 'use strict';
 
-const LogLevel = {
+var LogLevel = {
     DEBUG: 0,
     INFO:  1,
     WARN:  2,
