@@ -1,6 +1,6 @@
 'use strict';
 
-const http   = require('./server-http');
-const config = require('./server-config');
+const config    = require('./config');
+const server    = require('./server');
 
-http.startServer(config.defaults);
+server.start(config.defaults);

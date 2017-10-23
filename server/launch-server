@@ -8,8 +8,8 @@ set -e
 
 function is_windows {
     case $(uname -s) in
-        CYGWIN*|MINGW*) return true  ;;
-        *)              return false ;;
+        CYGWIN*|MINGW*) return 0 ;;
+        *)              return 1 ;;
     esac
 }
 
@@ -20,7 +20,7 @@ function is_root {
 server_dir=$(pwd)/$(dirname "$0")
 server_log="${server_dir}/server.log"
 
-if [[ is_windows ]]; then
+if is_windows; then
     server_dir=$(cygpath -w "${server_dir}")
     server_log=$(cygpath -w "${server_log}")
 fi
