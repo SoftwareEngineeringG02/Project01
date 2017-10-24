@@ -2,20 +2,19 @@
   "name": "server",
   "version": "0.1.0",
   "description": "RESTful Node server for ASE app",
-  "main": "index.js",
+  "main": "server.js",
   "directories": {
     "doc": "docs"
   },
   "dependencies": {
-    "express": "^4.16.2",
-    "nodemon": "^1.12.1"
+    "mongoose": "^4.12.4"
   },
   "devDependencies": {
     "nodemon": "^1.12.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",

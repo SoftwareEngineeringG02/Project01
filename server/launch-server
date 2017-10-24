@@ -37,7 +37,7 @@ function start_daemon {
     umask 0
     cd /
     # Run server detatched from shell, appending its output to $server_log.
-    setsid "$(which node)" "${server_dir}/index.js" </dev/null 2>&1 >>"${server_log}" &
+    setsid "$(which node)" "${server_dir}/server.js" </dev/null 2>&1 >>"${server_log}" &
     # Echo the PID on stdout so user/script can send signals to the server.
     echo $!
 }
