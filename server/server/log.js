@@ -1,6 +1,13 @@
+/**
+ * Server logging system. Writes formatted messages to
+ * @module server/log
+ */
 'use strict';
 
-const LogLevel = {
+/**
+ * Log level.
+ */
+module.exports.LogLevel = {
     DEBUG: 0,
     INFO:  1,
     WARN:  2,
@@ -13,18 +20,23 @@ const LogLevel = {
     }
 };
 
-var logLevel = LogLevel.DEBUG;
-
-function getTimeStamp() {
-    var d = new Date();
-    return d.toISOString().replace('T', ' ').substr(0, 19);
+/**
+ * Change the minimum log level.
+ * @param level The new minimum log level. Any messages sent to the log with a level below this will
+ * be suppressed.
+ */
+module.exports.setLogLevel = function(level) {
+    logLevel = level;
 }
 
-function formatMessage(level, msg) {
-    return getTimeStamp() + ' ' + LogLevel.name[level] + ': ' + msg;
-}
-
-function print(level, msg, args) {
+/**
+ * Print a timestamped message to the log.
+ * @param level The message's log level. Does nothing if this is lower than the current minimum log
+ * level: @see LogLevel @see setLogLevel
+ * @param msg A message string.
+ * @param args An array of other arguments which are appended to the output.
+ */
+module.exports.print = function(level, msg, args) {
     if (level >= logLevel) {
         if (typeof args === 'undefined') {
             return console.log(formatMessage(level, msg));
@@ -34,9 +46,60 @@ function print(level, msg, args) {
     }
 }
 
-module.exports.LogLevel = LogLevel;
-module.exports.print = print;
-module.exports.debug = function(msg, args) { return print(LogLevel.DEBUG, msg, args); }
-module.exports.info  = function(msg, args) { return print(LogLevel.INFO,  msg, args); }
-module.exports.warn  = function(msg, args) { return print(LogLevel.WARN,  msg, args); }
-module.exports.error = function(msg, args) { return print(LogLevel.ERROR, msg, args); }
+/**
+ * Write a timestamped, debug-level message to the log. Does nothing if this is below the server's
+ * current minimum log-level: @see LogLevel @see setLogLevel
+ * @param msg A message string.
+ * @param args An array of other arguments which are appended to the output.
+ */
+module.exports.debug = function(msg, args) {
+    return print(LogLevel.DEBUG, msg, args);
+}
+
+/**
+ * Write a timestamped, info-level message to the log. Does nothing if this is below the server's
+ * current minimum log-level: @see LogLevel @see setLogLevel
+ * @param msg A message string.
+ * @param args An array of other arguments which are appended to the output.
+ */
+module.exports.info = function(msg, args) {
+    return print(LogLevel.INFO,  msg, args);
+}
+
+/**
+ * Write a timestamped, warning-level message to the log. Does nothing if this is below the server's
+ * current minimum log-level: @see LogLevel @see setLogLevel
+ * @param msg A message string.
+ * @param args An array of other arguments which are appended to the output.
+ */
+module.exports.warn = function(msg, args) {
+    return print(LogLevel.WARN,  msg, args);
+}
+
+/**
+ * Write a timestamped, error-level message to the log. Does nothing if this is below the server's
+ * current minimum log-level: @see LogLevel @see setLogLevel
+ * @param msg A message string.
+ * @param args An array of other arguments which are appended to the output.
+ */
+module.exports.error = function(msg, args) {
+    return print(LogLevel.ERROR, msg, args);
+}
+
+// Alias out of `module.exports` object.
+const LogLevel = module.exports.LogLevel;
+const print = module.exports.print;
+
+// Current minimum log-level.
+var logLevel = LogLevel.DEBUG;
+
+// Get the current UTC time as an ISO-formatted string.
+function getTimeStamp() {
+    var d = new Date();
+    return d.toISOString().replace('T', ' ').substr(0, 19);
+}
+
+// Format a message with the timestamp and log level marker.
+function formatMessage(level, msg) {
+    return getTimeStamp() + ' ' + LogLevel.name[level] + ': ' + msg;
+}

@@ -1,3 +1,8 @@
+/**
+ * Server entry point.
+ * @module server
+ * @author Chris Swinchatt <c.swinchatt@sussex.ac.uk>
+ */
 'use strict';
 
 const config     = require('./server/config').defaults;
