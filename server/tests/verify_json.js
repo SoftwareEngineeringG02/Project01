@@ -3,8 +3,6 @@
  * type and value.
  * @module verify_json
  */
-'use strict';
-
 if (process.argv.length < 6) {
     console.error(`Usage: ${process.argv[1]} <JSON data> <property name> <expected type> <expected value>`);
 }
