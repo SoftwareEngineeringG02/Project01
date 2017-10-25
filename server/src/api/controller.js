@@ -36,19 +36,19 @@ module.exports.handleRequest = function(request, response) {
     // Call the handler for the endpoint if it exists.
     for (var i = 0; i < links.length; ++i) {
         const endpoint = links[i];
-        if (endpoint .href == url) {
+        if (endpoint.href == url && method == endpoint.method) {
             return endpoint.handler.call(endpoint, request, response);
         }
     }
-    // If we get here, there was no handler defined for the endpoint.
+    // If we get here, there was no handler defined for the endpoint and method.
     return badRequest(request, response);
 }
 
 // Endpoint links with handlers. (Handlers are stripped by JSON.stringify).
 const links = [
-    { rel: 'index',        href: '/',                methods: ['GET'],  handler: index       },
-    { rel: 'get-location', href: '/location',        methods: ['POST'], handler: getLocation },
-    { rel: 'set-location', href: '/location/update', methods: ['POST'], handler: setLocation }
+    { rel: 'index',        href: '/',                method: 'GET',  handler: index       },
+    { rel: 'get-location', href: '/location',        method: 'POST', handler: getLocation },
+    { rel: 'set-location', href: '/location/update', method: 'POST', handler: setLocation }
 ];
 
 // Handle the 'index' endpoint.

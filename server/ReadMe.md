@@ -37,9 +37,9 @@ Every response from the server will include a JSON object with at least the foll
     error:   0 (success) or 1 (failure),
     message: an error or other relevant message,
     links:   an array of objects which describe the endpoints available. For example:
-            [{ rel:     the name of the endpoint,
-               href:    the url of the endpoint,
-               methods: an array of valid methods for the endpoint (GET, PUT, POST, DELETE)
+            [{ rel:    the name of the endpoint,
+               href:   the url of the endpoint,
+               method: the HTTP method
             }]
 }
 ```
