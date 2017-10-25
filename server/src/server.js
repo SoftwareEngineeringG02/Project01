@@ -10,6 +10,10 @@ const controller = require('./api/controller');
 const http       = require('http');
 const log        = require('./server/log');
 
+log.setLogLevel(config.LOGLEVEL);
+
+controller.init(config);
+
 log.info('====================[ Starting Server ]====================');
 log.info('Server process ID: ' + process.pid);
 
@@ -17,17 +21,19 @@ process.on('exit', handleExit);
 
 var server = http.createServer(controller.handleRequest);
 server.on('error', handleError);
-server.listen(config['port'], (error) => {
+server.listen(config.PORT, (error) => {
     if (error) {
         handleError(error);
     }
-    log.info('Listening on ' + config['address'] + ':' + config['port']);
+    return log.info('Listening on ' + config.ADDRESS + ':' + config.PORT);
 });
 
+// Called on 'exit' event.
 function handleExit() {
-    log.info('Server exiting');
+    return log.info('Server exiting');
 }
 
+// Log error and exit.
 function handleError(error) {
     log.error(error);
     process.exit(1);
