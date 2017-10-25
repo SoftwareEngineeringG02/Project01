@@ -4,6 +4,8 @@
  */
 'use strict';
 
+const util = require('../util');
+
 /**
  * Log level.
  */
@@ -24,9 +26,12 @@ module.exports.LogLevel = {
  * Change the minimum log level.
  * @param level The new minimum log level. Any messages sent to the log with a level below this will
  * be suppressed.
+ * @return The previous log-level is returned.
  */
 module.exports.setLogLevel = function(level) {
+    const tmp = logLevel;
     logLevel = level;
+    return tmp;
 }
 
 /**
@@ -38,7 +43,7 @@ module.exports.setLogLevel = function(level) {
  */
 module.exports.print = function(level, msg, args) {
     if (level >= logLevel) {
-        if (typeof args === 'undefined') {
+        if (util.isNullOrUndefined(args)) {
             return console.log(formatMessage(level, msg));
         } else {
             return console.log(formatMessage(level, msg), args);
@@ -54,6 +59,15 @@ module.exports.print = function(level, msg, args) {
  */
 module.exports.debug = function(msg, args) {
     return print(LogLevel.DEBUG, msg, args);
+}
+
+/**
+ * Write a timestamped, debug-level message to the log containing the name and module of a function.
+ * Does nothing if this is below the server's current minimum log-level: @see LogLevel
+ * @see setLogLevel
+ */
+module.exports.trace = function(mod, fun) {
+    return print(LogLevel.DEBUG, util.getFunctionName(mod, fun));
 }
 
 /**
