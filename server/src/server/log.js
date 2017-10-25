@@ -2,8 +2,6 @@
  * Server logging system. Writes formatted messages to
  * @module server/log
  */
-'use strict';
-
 const util = require('../util');
 
 /**

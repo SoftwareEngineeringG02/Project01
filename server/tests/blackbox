@@ -30,16 +30,19 @@ function die {
 [[ -f "${script_path}" ]] || die "Could not find ${script_path}"
 
 # Check for address
+address=${ADDRESS}
 if [[ "x${address}" = "x" ]]; then
     address="127.0.0.1"
-    say "Using default address ${address}"
 fi
 
 # Check for port
+port=${PORT}
 if [[ "x${port}" = "x" ]]; then
     port="80"
-    say "Using default port ${port}"
 fi
+
+say "Using address ${address}"
+say "Using port ${port}"
 
 tests_passed=0
 tests_failed=0
@@ -58,8 +61,10 @@ function test_get {
     say "Testing GET ${url}"
     local json=$(curl -s "${address}:${port}${url}")
     if node ${script_path} "${json}" "${property}" "${type}" "${value}"; then
+        say "Passed"
         tests_passed=$[tests_passed + 1]
     else
+        say "Failed"
         tests_failed=$[tests_failed + 1]
     fi
 }
@@ -81,8 +86,10 @@ function test_post {
     say "Testing POST ${url} with body=${body}"
     local json=$(curl -s -X POST "${address}:${port}${url}" --data "${body}")
     if node ${script_path} "${json}" "${property}" "${type}" "${value}"; then
+        say "Passed"
         tests_passed=$[tests_passed + 1]
     else
+        say "Failed"
         tests_failed=$[tests_failed + 1]
     fi
 }

@@ -3,8 +3,6 @@
  * @module server
  * @author Chris Swinchatt <c.swinchatt@sussex.ac.uk>
  */
-'use strict';
-
 const config     = require('./server/config').defaults;
 const controller = require('./api/controller');
 const http       = require('http');

@@ -2,8 +2,6 @@
  * Configuration of the server.
  * @module server/config
  */
-'use strict';
-
 const log = require('./log');
 
 /**

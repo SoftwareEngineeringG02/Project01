@@ -2,8 +2,6 @@
  * Various utility functions.
  * @module util
  */
-'use strict';
-
 var path = require('path');
 
 /**
