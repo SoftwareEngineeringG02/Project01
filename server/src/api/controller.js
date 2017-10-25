@@ -23,8 +23,8 @@ module.exports.init = function(config) {
  * @param request The client's request.
  * @param response The server's response.
  */
-module.exports.handleRequest = function(request, response) {
-    log.trace(module, module.exports.handleRequest);
+function handleRequest(request, response) {
+    log.trace(module, handleRequest);
     request.on('error', (error) => {
         badRequest(request, response, error);
     });
@@ -44,7 +44,9 @@ module.exports.handleRequest = function(request, response) {
     return badRequest(request, response);
 }
 
-// Endpoint links with handlers. (Handlers are stripped by JSON.stringify).
+module.exports.handleRequest = handleRequest;
+
+// Endpoint links with handlers (handlers are stripped by JSON.stringify).
 const links = [
     { rel: 'index',        href: '/',                method: 'GET',  handler: index       },
     { rel: 'get-location', href: '/location',        method: 'POST', handler: getLocation },
@@ -64,27 +66,27 @@ function index(request, response) {
 // Handle the 'get-location' endpoint.
 function getLocation(request, response) {
     log.trace(module, getLocation);
-    // Try to extract `id` and `time` JSON properties.
-    const elems = {
-        id:        'string',
-        time:      'number'
-    };
-    var result = getJsonElements(request, response, elems);
-    if (util.isNullOrUndefined(result)) {
-        return badRequest(request, response, 'Incomplete request body');
-    }
-    result = model.getLocation(result.id);
-    if (util.isNullOrUndefined(result)) {
-        return badRequest(request, response, 'No location associated with ID');
-    }
-    const { longitude, latitude } = result;
-    // Send response.
-    return doResponse(response, {
-        error:     0,
-        message:   'Success',
-        longitude: longitude,
-        latitude:  latitude,
-        links:     links
+    // Try to extract `id` JSON property.
+    getJsonElements(request, {'id': 'string'}, (result) => {
+        if (typeof result !== 'object') {
+            return badRequest(request, response, result);
+        }
+        if (util.isNullOrUndefined(result.id)) {
+            return badRequest(request, response, 'Incomplete request');
+        }
+        result = model.getLocation(result.id);
+        if (util.isNullOrUndefined(result)) {
+            return badRequest(request, response, 'No location associated with ID');
+        }
+        const { longitude, latitude } = result;
+        // Send response.
+        doResponse(response, {
+            error:     0,
+            message:   'Success',
+            longitude: longitude,
+            latitude:  latitude,
+            links:     links
+        });
     });
 }
 
@@ -98,17 +100,24 @@ function setLocation(request, response) {
         longitude: 'number',
         latitude:  'number'
     };
-    var result = getJsonElements(request, response, elems);
-    if (util.isNullOrUndefined(result)) {
-        return badRequest(request, response, 'Incomplete request body');
-    }
-    const { id, time, longitude, latitude } = result;
-    // Persist the values to the model.
-    model.setLocation(id, time);
-    return doResponse(response, {
-        error:   0,
-        message: 'Success',
-        links:   links
+    getJsonElements(request, elems, (result) => {
+        if (typeof result !== 'object' || result == null) {
+            return badRequest(request, response, result);
+        }
+        const { id, time, longitude, latitude } = result;
+        if (util.isNullOrUndefined(id)
+         || util.isNullOrUndefined(time)
+         || util.isNullOrUndefined(longitude)
+         || util.isNullOrUndefined(latitude)) {
+            return badRequest(request, response, 'Incomplete request');
+        }
+        // Persist the values to the model.
+        model.setLocation(id, time, longitude, latitude);
+        doResponse(response, {
+            error:   0,
+            message: 'Success',
+            links:   links
+        });
     });
 }
 
@@ -128,21 +137,44 @@ function badRequest(request, response, message) {
 }
 
 // Extract JSON data from request with rudimentary type-checking.
-function getJsonElements(request,  response, elems) {
+function getJsonElements(request, elems, callback) {
     log.trace(module, getJsonElements);
-    var dict = [];
-    if (util.isNullOrUndefined(request.body)) {
+    if (typeof callback !== 'function') {
         return null;
     }
-    const data = JSON.parse(request.body);
-    for (var i = 0; i < elems.length; ++i) {
-        if (typeof data[elems.name] !== elems.type) {
-            return null;
-        } else {
-            dict.push({key: elems.name, value: data[elems.name]});
+    var body = '';
+    // Receive request data.
+    request.on('data', (data) => {
+        body += data;
+        // Check for buffer overrun attack. End connection and return error if too much data.
+        if (body.length > 1e6) {
+            body = '';
+            request.connection.destroy();
         }
-    }
-    return dict;
+    });
+    // Parse request body.
+    request.on('end', function() {
+        if (body == '') {
+            return callback('Empty request body');
+        }
+        // Try to parse the body as JSON.
+        var object;
+        try {
+            object = JSON.parse(body);
+        } catch (SyntaxError) {
+            return callback('Invalid JSON data');
+        }
+        // Extract the elements named by 'elems'.
+        var result = {};
+        for (var name in elems) {
+            var type = elems[name];
+            if (!(util.isNullOrUndefined(object[name])) && typeof object[name] === type) {
+                result[name] = object[name];
+            }
+        }
+        // Forward the dictionary to callback.
+        callback(result);
+    });
 }
 
 // Write JSON data to the response.

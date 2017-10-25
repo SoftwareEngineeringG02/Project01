@@ -75,9 +75,10 @@ function getLocation(id) {
     }
     // Get a list of entries in 'locdata' with correct ID, sorted by decreasing timestamp.
     const entries = locdata.chain().find({ id: { '$eq': id }}).simplesort('time', false).data();
-    if (entries.length >= 1) {
+    if (entries.length > 0) {
         // Return long/lat for the most recent (first) entry.
-        const { longitude, latitude } = entries[0];
+        const  { longitude, latitude } = entries[0];
+        log.info(`Found long=${longitude} lat=${latitude}`);
         return { longitude, latitude };
     }
     // Return null if there are no results.
@@ -98,7 +99,9 @@ function setLocation(id, time, longitude, latitude) {
     if (util.isNullOrUndefined(database) || util.isNullOrUndefined(locdata)) {
         return log.error('Bug: Database used but not initialised');
     }
-    return locdata.insert({ id: id, time: time, longitude: longitude, latitude: latitude });
+    const entry = { 'id': id, 'time': time, 'longitude': longitude, 'latitude': latitude };
+    log.info('Insert ' + JSON.stringify(entry));
+    locdata.insert(entry);
 }
 
 module.exports.setLocation = setLocation;
