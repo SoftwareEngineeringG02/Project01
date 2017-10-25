@@ -1,0 +1,108 @@
+#!/bin/bash
+
+#
+# tests/blackbox -- Blackbox testbed for server.
+#
+
+set -e
+
+program_name=$(basename "$0")
+program_dir=$(dirname "$0")
+script_name="verify_json.js"
+script_path="${program_dir}/${script_name}"
+
+function say {
+    echo "${program_name}: $@"
+}
+
+function die {
+    say $@ >&2
+    exit 1
+}
+
+# Check for cURL
+[[ -x $(which curl) ]] || die "Require cURL but it could not be found"
+
+# Check for node
+[[ -x $(which node) ]] || die "Require node but it could not be found"
+
+# Check for verify_json.js
+[[ -f "${script_path}" ]] || die "Could not find ${script_path}"
+
+# Check for address
+if [[ "x${address}" = "x" ]]; then
+    address="127.0.0.1"
+    say "Using default address ${address}"
+fi
+
+# Check for port
+if [[ "x${port}" = "x" ]]; then
+    port="80"
+    say "Using default port ${port}"
+fi
+
+tests_passed=0
+tests_failed=0
+
+# Test a GET request.
+# Args:
+# * URL (e.g. /)
+# * property (e.g. error)
+# * expected value (e.g. 0)
+# Return value: 0 if the property existed and had the expected value, otherwise 1.
+function test_get {
+    local url="$1"
+    local property="$2"
+    local type="$3"
+    local value="$4"
+    say "Testing GET ${url}"
+    local json=$(curl -s "${address}:${port}${url}")
+    if node ${script_path} "${json}" "${property}" "${type}" "${value}"; then
+        tests_passed=$[tests_passed + 1]
+    else
+        tests_failed=$[tests_failed + 1]
+    fi
+}
+
+# Test a POST request with data.
+# Args:
+# * URL (e.g. /)
+# * request body
+# * property name (e.g. error)
+# * expected type (e.g. number, string, object)
+# * expected value (e.g. 0)
+# Return value: 0 if the property existed and had the expected value, otherwise 1.
+function test_post {
+    local url="$1"
+    local body="$2"
+    local property="$3"
+    local type="$4"
+    local value="$5"
+    say "Testing POST ${url} with body=${body}"
+    local json=$(curl -s -X POST "${address}:${port}${url}" --data "${body}")
+    if node ${script_path} "${json}" "${property}" "${type}" "${value}"; then
+        tests_passed=$[tests_passed + 1]
+    else
+        tests_failed=$[tests_failed + 1]
+    fi
+}
+
+id="xxxxxxxxxxx"
+timestamp=$(date +%s)
+longitude="0.01"
+latitude="0.10"
+
+# GET / should succeed.
+test_get "/" "error" "number" "0"
+# GET /location should fail.
+test_get "/location" "error" "number" "1"
+# GET /invalid should fail.
+test_get "/invalid" "error" "number" "1"
+# POST /location/update should succeed.
+test_post "/location/update" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": ${longitude}, \"latitude\": ${latitude} }" "error" "number" "0"
+# POST /location should return the same values for longitude and latitude.
+test_post "/location" "{\"id\": \"${id}\"}" "longitude" "number" "${longitude}"
+# POST /location should return the same values for longitude and latitude.
+test_post "/location" "{\"id\": \"${id}\"}" "latitude" "number" "${latitude}"
+
+say "Passed ${tests_passed} and failed ${tests_failed} tests"
