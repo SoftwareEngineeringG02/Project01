@@ -19,7 +19,7 @@ deploy:
   access_key_id: AKIAIL3L2MPGHOQZSHUQ
   secret_access_key: &1
     secure: YQ/GzaeG+NGH+nu1SgPNZ4Z9qRVaEnxaZFyZ2/1PdAHyBeDOAOTPuqMNQjQHCd7HmHI6YYZeGYiZWDSqg7yEkDJzr1fAqSa/dAm5TSpxBgTb+koLcF1veRGQQCXhFgMrCsbeMz59oheXNYq85/mPxbq1eSJs368NUCbgMA4BU4O/N3bdm6HWhG6G/lkJLpseqsB/vyPRZNhg9jpR7qU0gL5NRvPuG4p18BreIQVR41LS0TyJ3h8oGITA/LM0LWu6JwazODpIJtH6TKbq6jyBNgWUTB9DOHQaCJgkg1io4BfwypXvnyVBeg6tq1LbriO5/BE5FDt9up6oAeUKF0Lgl1cKFHxgV9ncRTfpuAW9pHXSLlXJNoNWK6jCI+FbRWNnKRXvo/Js0yNuylDXtG+eqSOQ1D5QflYsUceh4BuiXN1erSTf8I3J3rRKAKBDLD2A679Mf0QaVGCGPXdH+LLEFnutz5piyQrlLeuysBQMscDr/zB5gHhe1TqcTlcR/XSXRB3THx6Y8INC3Gz/s85AiiDBe8Yl6VHmZmv7gbHt7oDvk7gKX4969+Z6vFtSpUldlElHA1Yf29V6CwR9fnyjh9wbtg1NQM973V8EtY5lfIHhoydv929ejTEq11MnsWS9vmZuH/U35dHtah3vZjJAb3O5pNWZf51RafhKuzC4YK4=
-  application: Project01
+  application: advse-project01
   deployment_group: 'travisgroup'
   on: &2
     repo: SoftwareEngineeringG02/Project01
