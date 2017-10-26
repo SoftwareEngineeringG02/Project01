@@ -113,3 +113,6 @@ test_post "/location" "{\"id\": \"${id}\"}" "longitude" "number" "${longitude}"
 test_post "/location" "{\"id\": \"${id}\"}" "latitude" "number" "${latitude}"
 
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
+
+# Fail if any test failed.
+exit ${tests_failed}
