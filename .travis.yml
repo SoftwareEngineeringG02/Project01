@@ -19,8 +19,9 @@ deploy:
   access_key_id: AKIAIL3L2MPGHOQZSHUQ
   secret_access_key: &1
     secure: YQ/GzaeG+NGH+nu1SgPNZ4Z9qRVaEnxaZFyZ2/1PdAHyBeDOAOTPuqMNQjQHCd7HmHI6YYZeGYiZWDSqg7yEkDJzr1fAqSa/dAm5TSpxBgTb+koLcF1veRGQQCXhFgMrCsbeMz59oheXNYq85/mPxbq1eSJs368NUCbgMA4BU4O/N3bdm6HWhG6G/lkJLpseqsB/vyPRZNhg9jpR7qU0gL5NRvPuG4p18BreIQVR41LS0TyJ3h8oGITA/LM0LWu6JwazODpIJtH6TKbq6jyBNgWUTB9DOHQaCJgkg1io4BfwypXvnyVBeg6tq1LbriO5/BE5FDt9up6oAeUKF0Lgl1cKFHxgV9ncRTfpuAW9pHXSLlXJNoNWK6jCI+FbRWNnKRXvo/Js0yNuylDXtG+eqSOQ1D5QflYsUceh4BuiXN1erSTf8I3J3rRKAKBDLD2A679Mf0QaVGCGPXdH+LLEFnutz5piyQrlLeuysBQMscDr/zB5gHhe1TqcTlcR/XSXRB3THx6Y8INC3Gz/s85AiiDBe8Yl6VHmZmv7gbHt7oDvk7gKX4969+Z6vFtSpUldlElHA1Yf29V6CwR9fnyjh9wbtg1NQM973V8EtY5lfIHhoydv929ejTEq11MnsWS9vmZuH/U35dHtah3vZjJAb3O5pNWZf51RafhKuzC4YK4=
-  application: 'advse-project01'
-  deployment_group: 'travisgroup'
+  application: advse-project01
+  deployment_group: travisgroup
+  region: eu-west-2
   on: &2
     repo: SoftwareEngineeringG02/Project01
     branch: chris-server
@@ -28,7 +29,6 @@ deploy:
 notifications:
   slack:
     secure: GKbDGOCmxHeP9A43+EaWQ4KoWwCp7uDF5/QISKLtZzSZNrL/cCn75WEWVj8N18OgYbODC/6LXy8LIzE9d0IupNq0knEa+GdSKM/ZwQZxcZrS/vLcqZLUoUnKeDV4w9RbxD3fQANhCHIjupEPzzDOo1oJiFIoqvT56QK20RsiVvbPRaS0EBEqs/eQHsbqvTz92JhtBwEs1g0G/4GZFArw1cXW2CmC5EY7NXG85KsIRh5BkfoG9OWfrTFuMTO2KjYFEKQ0jwQnoYTWRa8dtOXxoB+rE/AsVm68jbPsqw+v7PEYQVJBT3gIJ+r2JBsZJWJAXySL55W3njNSx/Fok9Y3m1EDvfAzKm8XnqvTjqwAxwhuGc7AbNkL156dwUMqvGkb41b+uB30K9Ntrs4ODAP2eQYz4PAwMg2UgPeoP6sBwUYMyK5PSl6gcHrmJ7fEhSS+4qxthUCJf9qAzUchg7qx5KpXsgondnulpZi9YsRTXpdtP6l1KcGUWUZFi15Ks9RQhcGFXifCbaUWwOckjsQ2khEiBOvpm9m4s/UvTqp136TFHBFz/VUZUHBhaIiA9dVA7bw02r6XZftiYrU6RBnQ39++54GIgEpq6fY+1ZvygYeudzOA2jRCMS2mOoKB152xZQ+tju+WJk/9Jftd86sw9+23xme8qQAaqUa9SgvNVZg=
-    on_success: always
 
 after_deploy:
   - npm install
