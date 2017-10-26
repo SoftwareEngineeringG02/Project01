@@ -13,7 +13,7 @@
     "nodemon": "^1.12.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "QUIET=1 tests/blackbox",
     "start": "nodemon src/server.js"
   },
   "repository": {

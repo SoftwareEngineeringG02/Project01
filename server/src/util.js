@@ -2,7 +2,8 @@
  * Various utility functions.
  * @module util
  */
-var path = require('path');
+const fs   = require('fs');
+const path = require('path');
 
 /**
  * Return true if the object has type 'undefined' or value 'null'.
@@ -29,5 +30,64 @@ module.exports.getModuleName = function(mod) {
  * @example getFunctionName({filename: 'module.js'}, {name: 'foo'}) ==> 'module.foo'
  */
 module.exports.getFunctionName = function(mod, fun) {
+    if (typeof mod !== 'object') {
+        throw new TypeError(`Expected a module`);
+    }
+    if (typeof fun !== 'function') {
+        throw new TypeError(`Expected a function`);
+    }
     return `${module.exports.getModuleName(mod)}.${fun.name}`;
+}
+
+/**
+ * Iterate over a directory recursively.
+ * @param dir The path to the directory.
+ * @param callback A function called for each regular file contained in the directory or one of its
+ * subdirectories.
+ */
+module.exports.walk = function(dir, callback) {
+    fs.readdir(dir, (error, files) => {
+        if (error) {
+            throw error;
+        }
+        files.forEach((file) => {
+            const filepath = path.join(dir, file);
+            fs.stat(filepath, (error, stat) => {
+                if (stat.isDirectory()) {
+                    module.exports.walk(filepath, callback);
+                } else if (stat.isFile()) {
+                    callback(filepath);
+                }
+            });
+        });
+    });
+}
+
+/**
+ * Extract JSON objects from HTTP request body data with rudimentary type-checking.
+ * @param body A buffer che HTTP request body.
+ * @param elems A dictionary associating object names to their expected types, e.g. 'string',
+ * 'object' or 'number.'
+ * @return A Javascript object containing the items found, if any.
+ */
+module.exports.getJsonElements = function(body, elems) {
+    // Try to parse the body as JSON.
+    var object;
+    try {
+        object = JSON.parse(body);
+    } catch (SyntaxError) {
+        throw new Error('Invalid JSON data');
+    }
+    // Extract the elements named by 'elems'.
+    var result = {};
+    for (var name in elems) {
+        var type = elems[name];
+        if (!(module.exports.isNullOrUndefined(object[name]))) {
+            if (typeof object[name] !== type) {
+                throw new Error('Invalid JSON data');
+            }
+            result[name] = object[name];
+        }
+    }
+    return result;
 }

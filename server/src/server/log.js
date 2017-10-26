@@ -2,7 +2,7 @@
  * Server logging system. Writes formatted messages to
  * @module server/log
  */
-const util = require('../util');
+const util = require(`${global.SERVER_ROOT}/util`);
 
 /**
  * Log level.

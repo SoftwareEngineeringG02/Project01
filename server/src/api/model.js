@@ -2,9 +2,9 @@
  * Server API model.
  * @module api/model
  */
-const log  = require('../server/log');
+const log  = require(`${global.SERVER_ROOT}/server/log`);
 const loki = require('lokijs');
-const util = require('../util');
+const util = require(`${global.SERVER_ROOT}/util`);
 
 /**
  * Initialise the model.

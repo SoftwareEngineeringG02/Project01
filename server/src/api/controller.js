@@ -2,16 +2,18 @@
  * Server API controller.
  * @module api/controller
  */
-const log   = require('../server/log');
-const model = require('./model');
-const util  = require('../util');
+const log    = require(`${global.SERVER_ROOT}/server/log`);
+const model  = require(`${global.SERVER_ROOT}/api/model`);
+const routes = require(`${global.SERVER_ROOT}/api/routes`);
+const util   = require(`${global.SERVER_ROOT}/util`);
 
 /**
  * Initialise the controller.
  * @param config The configuration.
  */
 module.exports.init = function(config) {
-    return model.init(config);
+    routes.init();
+    model.init(config);
 }
 
 /**
@@ -32,10 +34,18 @@ function handleRequest(request, response) {
     const agent   = headers['user-agent'];
     log.info(`Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
     // Call the handler for the endpoint if it exists.
-    for (var i = 0; i < links.length; ++i) {
-        const endpoint = links[i];
-        if (endpoint.href == url && method == endpoint.method) {
-            return endpoint.handler.call(endpoint, request, response);
+    for (var i = 0; i < routes.endpoints.length; ++i) {
+        const endpoint = routes.endpoints[i];
+        if (endpoint.href === url && method === endpoint.method) {
+            try {
+                return endpoint.callback.call(endpoint, request, response);
+            } catch (error) {
+                // If an exception occurs, log it, return an error to the client, and kill the
+                // connection.
+                log.error(error.toString());
+                badRequest(request, response, error.toString());
+                request.connection.destroy();
+            }
         }
     }
     // If we get here, there was no handler defined for the endpoint and method.
@@ -44,137 +54,47 @@ function handleRequest(request, response) {
 
 module.exports.handleRequest = handleRequest;
 
-// Endpoint links with handlers (handlers are stripped by JSON.stringify).
-const links = [
-    { rel: 'index',        href: '/',                method: 'GET',  handler: index       },
-    { rel: 'get-location', href: '/location',        method: 'POST', handler: getLocation },
-    { rel: 'set-location', href: '/location/update', method: 'POST', handler: setLocation }
-];
-
-// Handle the 'index' endpoint.
-function index(request, response) {
-    log.trace(module, index);
-    return doResponse(response, {
-        error:   0,
-        message: 'Success',
-        links:   links
-    });
-}
-
-// Handle the 'get-location' endpoint.
-function getLocation(request, response) {
-    log.trace(module, getLocation);
-    // Try to extract `id` JSON property.
-    getJsonElements(request, {'id': 'string'}, (result) => {
-        if (typeof result !== 'object') {
-            return badRequest(request, response, result);
-        }
-        if (util.isNullOrUndefined(result.id)) {
-            return badRequest(request, response, 'Incomplete request');
-        }
-        result = model.getLocation(result.id);
-        if (util.isNullOrUndefined(result)) {
-            return badRequest(request, response, 'No location associated with ID');
-        }
-        const { longitude, latitude, time } = result;
-        // Send response.
-        doResponse(response, {
-            error:     0,
-            message:   'Success',
-            longitude: longitude,
-            latitude:  latitude,
-            time:      time,
-            links:     links
-        });
-    });
-}
-
-// Handle the 'set-location' endpoint.
-function setLocation(request, response) {
-    log.trace(module, setLocation);
-    // Try to extract `id`, `time`, `longitude` and `latitude` JSON properties.
-    const elems = {
-        id:        'string',
-        time:      'number',
-        longitude: 'number',
-        latitude:  'number'
-    };
-    getJsonElements(request, elems, (result) => {
-        if (typeof result !== 'object' || result == null) {
-            return badRequest(request, response, result);
-        }
-        const { id, time, longitude, latitude } = result;
-        if (util.isNullOrUndefined(id)
-         || util.isNullOrUndefined(time)
-         || util.isNullOrUndefined(longitude)
-         || util.isNullOrUndefined(latitude)) {
-            return badRequest(request, response, 'Incomplete request');
-        }
-        // Persist the values to the model.
-        model.setLocation(id, time, longitude, latitude);
-        doResponse(response, {
-            error:   0,
-            message: 'Success',
-            links:   links
-        });
-    });
-}
-
 // Handle invalid requests e.g. bad endpoint, wrong method, or missing/invalid data.
 function badRequest(request, response, message) {
     log.trace(module, badRequest);
     if (util.isNullOrUndefined(message)) {
         const { method, url } = request;
-        message = `Bad request: ${method} '${url}'`;
+        message = `Bad request: ${method} ${url}`;
     }
     log.warn(message);
     return doResponse(response, {
-        error:   1,
-        message: message,
-        links:   links
+        'error':   1,
+        'message': message,
+        'links':   routes.endpoints
     });
 }
 
-// Extract JSON data from request with rudimentary type-checking.
-function getJsonElements(request, elems, callback) {
-    log.trace(module, getJsonElements);
+module.exports.badRequest = badRequest;
+
+// Extract the body data from a request.
+// Throws:
+// * TypeError if 'callback' is not a function
+// * Error if there is a problem with the request
+function getRequestBody(request, callback) {
+    log.trace(module, getRequestBody);
     if (typeof callback !== 'function') {
-        return null;
+        throw new TypeError('Expected callback function');
     }
     var body = '';
-    // Receive request data.
     request.on('data', (data) => {
         body += data;
-        // Check for buffer overrun attack. End connection and return error if too much data.
+        // Check for buffer overrun attack. Throws exception if data too large.
         if (body.length > 1e6) {
             body = '';
-            request.connection.destroy();
+            throw new Error('Request body too large');
         }
     });
-    // Parse request body.
     request.on('end', function() {
-        if (body == '') {
-            return callback('Empty request body');
-        }
-        // Try to parse the body as JSON.
-        var object;
-        try {
-            object = JSON.parse(body);
-        } catch (SyntaxError) {
-            return callback('Invalid JSON data');
-        }
-        // Extract the elements named by 'elems'.
-        var result = {};
-        for (var name in elems) {
-            var type = elems[name];
-            if (!(util.isNullOrUndefined(object[name])) && typeof object[name] === type) {
-                result[name] = object[name];
-            }
-        }
-        // Forward the dictionary to callback.
-        callback(result);
+        callback(body);
     });
 }
+
+module.exports.getRequestBody = getRequestBody;
 
 // Write JSON data to the response.
 function doResponse(response, json) {
@@ -182,3 +102,5 @@ function doResponse(response, json) {
     response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify(json));
 }
+
+module.exports.doResponse = doResponse;
