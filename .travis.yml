@@ -11,6 +11,7 @@ install:
   - ls
   - npm install -g lokijs
   - npm install -g nodemon
+  - npm install -g newrelic
 
 deploy:
 - provider: codedeploy
@@ -22,8 +23,15 @@ deploy:
   on: &2
     repo: SoftwareEngineeringG02/Project01
     branch: chris-server
+  notify:
+    - newrelic:
+      app_name: advse-gps-project
+      license_key: &3
+        secure: "fqPymhaAkZRYRlW4jNhiLnChbSR9Cobpw1tRGgoNQOuVormhX9H8XabpEkSUvFNzVbJe74mKJRAoTE0gburcZydTrh//wZ/wn6cSH3U/4JY127fNmkJKbnPO5B1BO/0Vz6ziOxlpx3TXW0h84twvFt3MeEUoFCRYlXDkf0bw5V4Xvjct6F8iRe9Li4j/eH1DezZjStWuIyjRVnhKtNyz4fG5SR3D+q/N7IMg87g6Gui1CtZMd+PYNIulR9bk75PmmWnKjCS0a0uapCzEwGoq6k5WdOkLV/1JQkkV3guj8ZewVyaYx8duZIPsF0fZ+yZNpkXcnaztFXD4GEG4CnwLkH9l25XHE0Nd+N5gutBUl+jp735dyxckrQg/pmmOA2HsomigGLxybZI7vV+ocLskbTkB/QtsDXPd9f75Iaum/ng5WxUIMzY4yuDIymP1QbZ6YUWHeAnYnCwQbQZj8kipq/ULfZ1xDamWmPELWoIyl4SV2i/mdrM7YtYtjG+/xAYzmEfxzwVIxoyLEbSMNGlCqcturx00nWpFS8tqMJfjPRlbLkLJO9ar6fauEcwoh/ZrC0CMrzs9h/WQZMwwf7JXv+Fzm46kqb8CLw5iJNvD07BjVI4oCKsjA8u6RSZwzdGPPPd63w9Ywvqy2JzCX/PqfAQmLCBh3Niz84a4o7RkP5k="
+      description: "Deployed by Travis CI"
 
 after_deploy:
   - npm install
+  - cp /etc/advse/newrelic.js ./newrelic.js
   - sudo ./launch-server
   - npm run start
