@@ -30,10 +30,11 @@ notifications:
   slack:
     secure: GKbDGOCmxHeP9A43+EaWQ4KoWwCp7uDF5/QISKLtZzSZNrL/cCn75WEWVj8N18OgYbODC/6LXy8LIzE9d0IupNq0knEa+GdSKM/ZwQZxcZrS/vLcqZLUoUnKeDV4w9RbxD3fQANhCHIjupEPzzDOo1oJiFIoqvT56QK20RsiVvbPRaS0EBEqs/eQHsbqvTz92JhtBwEs1g0G/4GZFArw1cXW2CmC5EY7NXG85KsIRh5BkfoG9OWfrTFuMTO2KjYFEKQ0jwQnoYTWRa8dtOXxoB+rE/AsVm68jbPsqw+v7PEYQVJBT3gIJ+r2JBsZJWJAXySL55W3njNSx/Fok9Y3m1EDvfAzKm8XnqvTjqwAxwhuGc7AbNkL156dwUMqvGkb41b+uB30K9Ntrs4ODAP2eQYz4PAwMg2UgPeoP6sBwUYMyK5PSl6gcHrmJ7fEhSS+4qxthUCJf9qAzUchg7qx5KpXsgondnulpZi9YsRTXpdtP6l1KcGUWUZFi15Ks9RQhcGFXifCbaUWwOckjsQ2khEiBOvpm9m4s/UvTqp136TFHBFz/VUZUHBhaIiA9dVA7bw02r6XZftiYrU6RBnQ39++54GIgEpq6fY+1ZvygYeudzOA2jRCMS2mOoKB152xZQ+tju+WJk/9Jftd86sw9+23xme8qQAaqUa9SgvNVZg=
 
+sudo: required
 after_deploy:
   - npm install
-  - ll /etc/advse
+  - ls /etc/advse
   - cp /etc/advse/newrelic.js ./newrelic.js
-  - ll
-  - ./launch-server
+  - ls
+  - sudo ./launch-server
   - npm run start
