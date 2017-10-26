@@ -14,7 +14,6 @@
   },
   "scripts": {
     "start": "nodemon src/server.js",
-    "test":"tests/blackbox"
   },
   "repository": {
     "type": "git",
