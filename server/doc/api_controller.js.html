@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: api/controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: api/controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Server API controller.
+ * @module api/controller
+ */
+const log    = require(`${global.SERVER_ROOT}/server/log`);
+const model  = require(`${global.SERVER_ROOT}/api/model`);
+const routes = require(`${global.SERVER_ROOT}/api/routes`);
+const util   = require(`${global.SERVER_ROOT}/util`);
+
+/**
+ * Initialise the controller.
+ * @param config The configuration.
+ */
+module.exports.init = function(config) {
+    routes.init();
+    model.init(config);
+}
+
+/**
+ * Handle an HTTP request.
+ * Matches the endpoint in the request to its appropriate handler, or badRequest if there is an
+ * error.
+ * @param request The client's request.
+ * @param response The server's response.
+ */
+function handleRequest(request, response) {
+    log.trace(module, handleRequest);
+    request.on('error', (error) => {
+        badRequest(request, response, error);
+    });
+    const { method, url, headers } = request;
+    // Log user info.
+    const address = request.connection.remoteAddress;
+    const agent   = headers['user-agent'];
+    log.info(`Request &lt;address=${address}, request=${method} ${url}, user-agent=${agent}>`);
+    // Call the handler for the endpoint if it exists.
+    for (var i = 0; i &lt; routes.endpoints.length; ++i) {
+        const endpoint = routes.endpoints[i];
+        if (endpoint.href === url &amp;&amp; method === endpoint.method) {
+            try {
+                return endpoint.callback.call(endpoint, request, response);
+            } catch (error) {
+                // If an exception occurs, log it, return an error to the client, and kill the
+                // connection.
+                log.error(error.toString());
+                badRequest(request, response, error.toString());
+                request.connection.destroy();
+            }
+        }
+    }
+    // If we get here, there was no handler defined for the endpoint and method.
+    return badRequest(request, response);
+}
+
+module.exports.handleRequest = handleRequest;
+
+// Handle invalid requests e.g. bad endpoint, wrong method, or missing/invalid data.
+function badRequest(request, response, message) {
+    log.trace(module, badRequest);
+    if (util.isNullOrUndefined(message)) {
+        const { method, url } = request;
+        message = `Bad request: ${method} ${url}`;
+    }
+    log.warn(message);
+    return doResponse(response, {
+        'error':   1,
+        'message': message,
+        'links':   routes.endpoints
+    });
+}
+
+module.exports.badRequest = badRequest;
+
+// Extract the body data from a request.
+// Throws:
+// * TypeError if 'callback' is not a function
+// * Error if there is a problem with the request
+function getRequestBody(request, callback) {
+    log.trace(module, getRequestBody);
+    if (typeof callback !== 'function') {
+        throw new TypeError('Expected callback function');
+    }
+    var body = '';
+    request.on('data', (data) => {
+        body += data;
+        // Check for buffer overrun attack. Throws exception if data too large.
+        if (body.length > 1e6) {
+            body = '';
+            throw new Error('Request body too large');
+        }
+    });
+    request.on('end', function() {
+        callback(body);
+    });
+}
+
+module.exports.getRequestBody = getRequestBody;
+
+// Write JSON data to the response.
+function doResponse(response, json) {
+    log.trace(module, doResponse);
+    response.setHeader('Content-Type', 'application/json');
+    response.end(JSON.stringify(json));
+}
+
+module.exports.doResponse = doResponse;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 26 2017 16:12:59 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
