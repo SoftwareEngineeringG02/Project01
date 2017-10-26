@@ -2,9 +2,9 @@
  * Server API model.
  * @module api/model
  */
-const log  = require(`${global.SERVER_ROOT}/server/log`);
-const loki = require('lokijs');
-const util = require(`${global.SERVER_ROOT}/util`);
+const database = require(`${global.SERVER_ROOT}/database/lokijs`);
+const log      = require(`${global.SERVER_ROOT}/server/log`);
+const util     = require(`${global.SERVER_ROOT}/util`);
 
 /**
  * Initialise the model.
@@ -14,48 +14,15 @@ const util = require(`${global.SERVER_ROOT}/util`);
 function init(config) {
     log.trace(module, init);
     // Find the database path.
-    var path = null;
+    var filepath = null;
     if (typeof config === 'string') {
-        path = config;
+        filepath = config;
     } else if (typeof config === 'object') {
-        path = config.DATABASE;
+        filepath = config.DATABASE;
     } else {
-        return log.error(`Invalid type '${typeof config}' of parameter 'config'`);
+        throw new TypeError(`Invalid type '${typeof config}' of parameter 'config'`);
     }
-    // Open the database with autoloading and autosaving (see initDB).
-    log.info(`Opening database '${path}'`);
-    database = new loki(path, {
-        autoload:         true,
-        autoloadCallback: initDB,
-        autosave:         true,
-        autosaveInterval: 1000
-    });
-    if (util.isNullOrUndefined(database)) {
-        // Log error and quit on failure.
-        log.error('Fatal: Failed to open database');
-        process.exit(1);
-    }
-    // Save DB on exit.
-    process.on('exit', function() {
-        if (!(util.isNullOrUndefined(database))) {
-            database.saveDatabase();
-        }
-    })
-    // Initialise the database.
-    function initDB() {
-        log.info('Initialising database');
-        // Try to load location data.
-        locdata = database.getCollection('locdata');
-        if (util.isNullOrUndefined(locdata)) {
-            // Create a collection for the location data.
-            locdata = database.addCollection('locdata');
-            if (util.isNullOrUndefined(locdata)) {
-                // Log error and quit on failure.
-                log.error('Fatal: Database error');
-                process.exit(1);
-            }
-        }
-    }
+    return database.init(filepath);
 }
 
 module.exports.init = init;
@@ -63,23 +30,17 @@ module.exports.init = init;
 /**
  * Get the most recent location data associated with an ID, if available.
  * @param id The ID string, e.g. a phone number.
- * @return A Javascript object containing the longitude and latitude on success; otherwise,
+ * @return A Javascript object containing the longitude, latitude and time on success; otherwise,
  * undefined.
  */
 function getLocation(id) {
     log.trace(module, getLocation);
-    if (util.isNullOrUndefined(database) || util.isNullOrUndefined(locdata)) {
-        return log.error('Bug: Database used but not initialised');
+    const entries = database.find({ id: { '$eq': id }}, 'time', false);
+    if (util.isNullOrUndefined(entries) || entries.length == 0) {
+        return null;
     }
-    // Get a list of entries in 'locdata' with correct ID, sorted by decreasing timestamp.
-    const entries = locdata.chain().find({ id: { '$eq': id }}).simplesort('time', false).data();
-    if (entries.length > 0) {
-        // Return long/lat for the most recent (first) entry.
-        const  { longitude, latitude, time } = entries[0];
-        return { longitude, latitude, time };
-    }
-    // Return null if there are no results.
-    return null;
+    const  { longitude, latitude, time } = entries[0];
+    return { longitude, latitude, time };
 }
 
 module.exports.getLocation = getLocation;
@@ -92,15 +53,13 @@ module.exports.getLocation = getLocation;
  * @param latitude The latitude.
  */
 function setLocation(id, time, longitude, latitude) {
-    log.trace(module, module.exports.setLocation);
-    if (util.isNullOrUndefined(database) || util.isNullOrUndefined(locdata)) {
-        return log.error('Bug: Database used but not initialised');
-    }
-    const entry = { 'id': id, 'time': time, 'longitude': longitude, 'latitude': latitude };
-    locdata.insert(entry);
+    log.trace(module, setLocation);
+    return database.insert({
+        'id': id,
+        'time': time,
+        'longitude': longitude,
+        'latitude': latitude
+    });
 }
 
 module.exports.setLocation = setLocation;
-
-var database = undefined;
-var locdata  = undefined;
