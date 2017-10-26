@@ -38,6 +38,7 @@ notifications:
 sudo: required
 after_deploy:
   - npm install
+  - chmod 764 ../newrelic.sh
   - ../newrelic.sh NEWRELIC_APP_NAME NEWRELIC_LICENSE_KEY
   - ls
   - sudo ./launch-server
