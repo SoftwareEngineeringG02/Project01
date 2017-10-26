@@ -2,6 +2,10 @@ language: node_js
 node_js:
   - 8.7
 
+env:
+  secure: "H58yEc5CU8d+mD/dmkU5kVA1u7mtC8mMWSEWlAo22DW34wHJazJg+jNDJeStk53EM58/l1HdT3nEnMEkw4x3j8qtT/wSCQZDe7/8NeGua9zGbJPuALjiD812v+uiQ7ULOqcO2kN+uMsUCJZoAgbmmeEJL2CfdPigwa9rT+l6C2qhlQK08+76edOyFNdQD88sGaHadWqFQvtf4oddEWOTypeJny2o2i4THXLLPGTYAMWaiHVRz59DYZ8z2x3YwqnxR01V074D3gu3aGo9zlhqj10nXxANI7AAUuT3VOb2ukokstPsJ5URGcpyka3OVXWcVmLNCccorLa0yP2nTJAa+JPwIuXmXYY5WRRm7obkVesT2AwvAv16bm5S0KsWYztnC6sD/lCrAC89haN44bxb4GV3uItCuqSjpj5veCmKhOHMkvvKJMPWgUw1YovzcaZ9HTh/TUtdCLlGTftYifWybEgpk6qg2UKT+Kpx1kezjH7HSRPoQ5DfSjUSYHvvqKwt2aK5VqSjWpxpivW6L3cTTruXNgXiGSLfFM7QuJ8aIDPvRjyWYKYZOdSkspzQw/LgLuH2YGTFBnMAt5/odU61nKEn7yk2EUyM6A7qV9FRt/S+ix4kKB+uaKtvJY4HRBNICfiI+8YpujDyeVLwwjWQiBLQ6abLNqqmaQuf2WzxX/8="
+  secure: "fVrSeh+YFlrxJb6P70v+V9R9Y2Thk/nEcpoz9frOi5P7Jj6uztdpqnr+ZW+BvfjDEkjOpsmK5+efdQzWSw3P4ahmdfrO54aJ2reVlpntUaImbhRRjkNPD93RwXq1KJdD5tV0vbnGn3wyoNAWl3VlxRZnljRW4TjQnp7okE8b9+mXSZAsgDdXZ4d1Ljer9GbT7HzMOYGDUd8EZAHa1ZW6QohNEWVOHjEbFutdB98k5UFZdQMYPaBkZSxknZ7yPMpvS29fRhKXUmPBwzOJfYihhyIgqIMIswy9TCPuP4pFfU1lCl17+t6QOobfEUUFKcw1E730mI+WlFtKqtY6GU4RFncCgyirQ0DigIM77+mHMZi3WKAVBJYTJZ0cHvthrrBSSh0jhWrB08jYCzilXE5SwnC3NUcuiKjjGY2uHLXXPUDztNJPYwFDmvhfscaUQVNGUJXmA4FALHF8cxAlJois2X6agdwXK+afpYo4E5MghErGy6WBB/KoAxSIRdX70VnM/YyuG9divcXLPkmHZU/WvADtg923rWgc7LEtFlKnuZssF2LS+FR+9hhSOx1FEUo5OP7UDV4FZL9aJgCf4yCq8tx1xryQLSwQo1ZOoIyoiQs2wJV2Cw9faGk6ZoZH46v2nxj+QyEHorqbMez0pSHwN/wlvygnDKLMB3+2ID5BIgE="
+
 services:
 - mongodb
 
@@ -9,6 +13,7 @@ install:
   - pwd
   - cd server
   - ls
+  - npm install -g node
   - npm install -g lokijs
   - npm install -g nodemon
   - npm install -g jsdoc
@@ -24,7 +29,7 @@ deploy:
   region: eu-west-2
   on: &2
     repo: SoftwareEngineeringG02/Project01
-    branch: chris-server
+    branch: chris-server-test
 
 notifications:
   slack:
@@ -33,8 +38,7 @@ notifications:
 sudo: required
 after_deploy:
   - npm install
-  - ls /etc/advse
-  - cp /etc/advse/newrelic.js ./newrelic.js
+  - ../newrelic.sh NEWRELIC_APP_NAME NEWRELIC_LICENSE_KEY
   - ls
   - sudo ./launch-server
   - npm run start
