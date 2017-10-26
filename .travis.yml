@@ -1,0 +1,38 @@
+language: node_js
+node_js:
+  - 8.7
+
+services:
+- mongodb
+
+install:
+  - pwd
+  - cd server
+  - ls
+  - npm install -g lokijs
+  - npm install -g nodemon
+  - npm install -g jsdoc
+  - npm install -g newrelic
+
+deploy:
+- provider: codedeploy
+  access_key_id: AKIAIL3L2MPGHOQZSHUQ
+  secret_access_key: &1
+    secure: YQ/GzaeG+NGH+nu1SgPNZ4Z9qRVaEnxaZFyZ2/1PdAHyBeDOAOTPuqMNQjQHCd7HmHI6YYZeGYiZWDSqg7yEkDJzr1fAqSa/dAm5TSpxBgTb+koLcF1veRGQQCXhFgMrCsbeMz59oheXNYq85/mPxbq1eSJs368NUCbgMA4BU4O/N3bdm6HWhG6G/lkJLpseqsB/vyPRZNhg9jpR7qU0gL5NRvPuG4p18BreIQVR41LS0TyJ3h8oGITA/LM0LWu6JwazODpIJtH6TKbq6jyBNgWUTB9DOHQaCJgkg1io4BfwypXvnyVBeg6tq1LbriO5/BE5FDt9up6oAeUKF0Lgl1cKFHxgV9ncRTfpuAW9pHXSLlXJNoNWK6jCI+FbRWNnKRXvo/Js0yNuylDXtG+eqSOQ1D5QflYsUceh4BuiXN1erSTf8I3J3rRKAKBDLD2A679Mf0QaVGCGPXdH+LLEFnutz5piyQrlLeuysBQMscDr/zB5gHhe1TqcTlcR/XSXRB3THx6Y8INC3Gz/s85AiiDBe8Yl6VHmZmv7gbHt7oDvk7gKX4969+Z6vFtSpUldlElHA1Yf29V6CwR9fnyjh9wbtg1NQM973V8EtY5lfIHhoydv929ejTEq11MnsWS9vmZuH/U35dHtah3vZjJAb3O5pNWZf51RafhKuzC4YK4=
+  application: Project01
+  deployment_group: ''
+  on: &2
+    repo: SoftwareEngineeringG02/Project01
+    branch: chris-server
+  notify:
+    - newrelic:
+      app_name: advse-gps-project
+      license_key: &3
+        secure: "fqPymhaAkZRYRlW4jNhiLnChbSR9Cobpw1tRGgoNQOuVormhX9H8XabpEkSUvFNzVbJe74mKJRAoTE0gburcZydTrh//wZ/wn6cSH3U/4JY127fNmkJKbnPO5B1BO/0Vz6ziOxlpx3TXW0h84twvFt3MeEUoFCRYlXDkf0bw5V4Xvjct6F8iRe9Li4j/eH1DezZjStWuIyjRVnhKtNyz4fG5SR3D+q/N7IMg87g6Gui1CtZMd+PYNIulR9bk75PmmWnKjCS0a0uapCzEwGoq6k5WdOkLV/1JQkkV3guj8ZewVyaYx8duZIPsF0fZ+yZNpkXcnaztFXD4GEG4CnwLkH9l25XHE0Nd+N5gutBUl+jp735dyxckrQg/pmmOA2HsomigGLxybZI7vV+ocLskbTkB/QtsDXPd9f75Iaum/ng5WxUIMzY4yuDIymP1QbZ6YUWHeAnYnCwQbQZj8kipq/ULfZ1xDamWmPELWoIyl4SV2i/mdrM7YtYtjG+/xAYzmEfxzwVIxoyLEbSMNGlCqcturx00nWpFS8tqMJfjPRlbLkLJO9ar6fauEcwoh/ZrC0CMrzs9h/WQZMwwf7JXv+Fzm46kqb8CLw5iJNvD07BjVI4oCKsjA8u6RSZwzdGPPPd63w9Ywvqy2JzCX/PqfAQmLCBh3Niz84a4o7RkP5k="
+      description: "Deployed by Travis CI"
+
+after_deploy:
+  - npm install
+  - cp /etc/advse/newrelic.js ./newrelic.js
+  - sudo ./launch-server
+  - npm run start

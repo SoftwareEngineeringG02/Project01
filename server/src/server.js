@@ -3,6 +3,7 @@
  * @module server
  */
 
+const newrelic = require('newrelic');
 const path = require('path');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
