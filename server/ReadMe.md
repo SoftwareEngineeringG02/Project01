@@ -1,21 +1,38 @@
-# API
+# Server
+
+## Installation
+You can install the server by running the following command:
+
+```
+ $ curl "https://raw.githubusercontent.com/SoftwareEngineeringG02/Project01/chris-server/server/install.sh" | /bin/bash
+```
+
+This will set up the environment with the correct version of Node and install the server's dependencies.
+
+## Documentation
+### JSDoc
+
+Automatically generated code documentation can be found in the doc/ directory.
+
+### API
 
 The server uses a HATEOAS-like API with data transferred in JSON format.
 
-## Endpoints
+#### Endpoints
 
 The endpoints currently defined are:
 
-rel            | href               | methods | Effect
--------------- | ------------------ | --------| --
-`index`        | `/`                | `GET`   | Get a list of available endpoints
-`get-location` | `/location`        | `POST`  | Get the most recent location of the client if any
-`set-location` | `/location/update` | `POST`  | Update the client's location
+rel             | href               | methods | Effect
+--------------- | ------------------ | --------| --
+`index`         | `/`                | `GET`   | Get a list of available endpoints
+`get-location`  | `/location`        | `POST`  | Get the most recent location of the client if any
+`set-location`  | `/location/update` | `POST`  | Update the client's location
+`list-location` | `/location/list`   | `POST`  | Nothing - not implemented.
 
  * Each endpoint responds only to the method listed in the table.
  * The reason for the `rel` column will become clear in the `Responses` section.
 
-## Requests
+#### Requests
 
  * Requests to `get-location` and `set-location` should include a JSON object with at least the following fields:
 
@@ -28,7 +45,7 @@ rel            | href               | methods | Effect
 
  * When using the `set-location` endpoint the client should also include the `longitude` and `latitude` properties, which are double-precision floating point numbers defining its longitude and its latitude respectively.
 
-## Responses
+#### Responses
 
 Every response from the server will include a JSON object with at least the following properties:
 

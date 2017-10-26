@@ -11,6 +11,7 @@ install:
   - ls
   - npm install -g lokijs
   - npm install -g nodemon
+  - npm install -g jsdoc
   - npm install -g newrelic
 
 deploy:

@@ -94,10 +94,10 @@ function test_post {
     fi
 }
 
-id="xxxxxxxxxxx"
+id=$(uuidgen)
 timestamp=$(date +%s)
-longitude="0.01"
-latitude="0.10"
+longitude="${RANDOM}.${RANDOM}"
+latitude="${RANDOM}.${RANDOM}"
 
 # GET / should succeed.
 test_get "/" "error" "number" "0"
@@ -113,3 +113,6 @@ test_post "/location" "{\"id\": \"${id}\"}" "longitude" "number" "${longitude}"
 test_post "/location" "{\"id\": \"${id}\"}" "latitude" "number" "${latitude}"
 
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
+
+# Fail if any test failed.
+exit ${tests_failed}
