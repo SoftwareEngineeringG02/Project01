@@ -76,13 +76,14 @@ function getLocation(request, response) {
         if (util.isNullOrUndefined(result)) {
             return badRequest(request, response, 'No location associated with ID');
         }
-        const { longitude, latitude } = result;
+        const { longitude, latitude, time } = result;
         // Send response.
         doResponse(response, {
             error:     0,
             message:   'Success',
             longitude: longitude,
             latitude:  latitude,
+            time:      time,
             links:     links
         });
     });

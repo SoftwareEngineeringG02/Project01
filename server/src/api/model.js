@@ -75,8 +75,8 @@ function getLocation(id) {
     const entries = locdata.chain().find({ id: { '$eq': id }}).simplesort('time', false).data();
     if (entries.length > 0) {
         // Return long/lat for the most recent (first) entry.
-        const  { longitude, latitude } = entries[0];
-        return { longitude, latitude };
+        const  { longitude, latitude, time } = entries[0];
+        return { longitude, latitude, time };
     }
     // Return null if there are no results.
     return null;
