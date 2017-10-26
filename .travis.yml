@@ -32,6 +32,8 @@ notifications:
 
 after_deploy:
   - npm install
+  - ll /etc/advse
   - cp /etc/advse/newrelic.js ./newrelic.js
-  - sudo ./launch-server
+  - ll
+  - ./launch-server
   - npm run start
