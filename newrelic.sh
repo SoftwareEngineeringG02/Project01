@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 if [ -e node_modules/newrelic/newrelic.js ]
 then
-  node > newrelic.js <<EOF
+  node > src/newrelic.js <<EOF
 //Read default node config
 var settings = require('./node_modules/newrelic/newrelic.js');
 
