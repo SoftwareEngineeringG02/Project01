@@ -13,7 +13,8 @@
     "nodemon": "^1.12.1"
   },
   "scripts": {
-    "start": "nodemon src/server.js"
+    "start": "nodemon src/server.js",
+    "test":"tests/blackbox"
   },
   "repository": {
     "type": "git",
