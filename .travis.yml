@@ -2,6 +2,10 @@ language: node_js
 node_js:
   - 8.7
 
+env:
+  secure: "H58yEc5CU8d+mD/dmkU5kVA1u7mtC8mMWSEWlAo22DW34wHJazJg+jNDJeStk53EM58/l1HdT3nEnMEkw4x3j8qtT/wSCQZDe7/8NeGua9zGbJPuALjiD812v+uiQ7ULOqcO2kN+uMsUCJZoAgbmmeEJL2CfdPigwa9rT+l6C2qhlQK08+76edOyFNdQD88sGaHadWqFQvtf4oddEWOTypeJny2o2i4THXLLPGTYAMWaiHVRz59DYZ8z2x3YwqnxR01V074D3gu3aGo9zlhqj10nXxANI7AAUuT3VOb2ukokstPsJ5URGcpyka3OVXWcVmLNCccorLa0yP2nTJAa+JPwIuXmXYY5WRRm7obkVesT2AwvAv16bm5S0KsWYztnC6sD/lCrAC89haN44bxb4GV3uItCuqSjpj5veCmKhOHMkvvKJMPWgUw1YovzcaZ9HTh/TUtdCLlGTftYifWybEgpk6qg2UKT+Kpx1kezjH7HSRPoQ5DfSjUSYHvvqKwt2aK5VqSjWpxpivW6L3cTTruXNgXiGSLfFM7QuJ8aIDPvRjyWYKYZOdSkspzQw/LgLuH2YGTFBnMAt5/odU61nKEn7yk2EUyM6A7qV9FRt/S+ix4kKB+uaKtvJY4HRBNICfiI+8YpujDyeVLwwjWQiBLQ6abLNqqmaQuf2WzxX/8="
+  secure: "fVrSeh+YFlrxJb6P70v+V9R9Y2Thk/nEcpoz9frOi5P7Jj6uztdpqnr+ZW+BvfjDEkjOpsmK5+efdQzWSw3P4ahmdfrO54aJ2reVlpntUaImbhRRjkNPD93RwXq1KJdD5tV0vbnGn3wyoNAWl3VlxRZnljRW4TjQnp7okE8b9+mXSZAsgDdXZ4d1Ljer9GbT7HzMOYGDUd8EZAHa1ZW6QohNEWVOHjEbFutdB98k5UFZdQMYPaBkZSxknZ7yPMpvS29fRhKXUmPBwzOJfYihhyIgqIMIswy9TCPuP4pFfU1lCl17+t6QOobfEUUFKcw1E730mI+WlFtKqtY6GU4RFncCgyirQ0DigIM77+mHMZi3WKAVBJYTJZ0cHvthrrBSSh0jhWrB08jYCzilXE5SwnC3NUcuiKjjGY2uHLXXPUDztNJPYwFDmvhfscaUQVNGUJXmA4FALHF8cxAlJois2X6agdwXK+afpYo4E5MghErGy6WBB/KoAxSIRdX70VnM/YyuG9divcXLPkmHZU/WvADtg923rWgc7LEtFlKnuZssF2LS+FR+9hhSOx1FEUo5OP7UDV4FZL9aJgCf4yCq8tx1xryQLSwQo1ZOoIyoiQs2wJV2Cw9faGk6ZoZH46v2nxj+QyEHorqbMez0pSHwN/wlvygnDKLMB3+2ID5BIgE="
+
 services:
 - mongodb
 
@@ -9,6 +13,7 @@ install:
   - pwd
   - cd server
   - ls
+  - npm install -g node
   - npm install -g lokijs
   - npm install -g nodemon
   - npm install -g jsdoc
@@ -24,17 +29,12 @@ deploy:
   region: eu-west-2
   on: &2
     repo: SoftwareEngineeringG02/Project01
-    branch: chris-server
+    branch: chris-server-test
 
 notifications:
   slack:
-    secure: GKbDGOCmxHeP9A43+EaWQ4KoWwCp7uDF5/QISKLtZzSZNrL/cCn75WEWVj8N18OgYbODC/6LXy8LIzE9d0IupNq0knEa+GdSKM/ZwQZxcZrS/vLcqZLUoUnKeDV4w9RbxD3fQANhCHIjupEPzzDOo1oJiFIoqvT56QK20RsiVvbPRaS0EBEqs/eQHsbqvTz92JhtBwEs1g0G/4GZFArw1cXW2CmC5EY7NXG85KsIRh5BkfoG9OWfrTFuMTO2KjYFEKQ0jwQnoYTWRa8dtOXxoB+rE/AsVm68jbPsqw+v7PEYQVJBT3gIJ+r2JBsZJWJAXySL55W3njNSx/Fok9Y3m1EDvfAzKm8XnqvTjqwAxwhuGc7AbNkL156dwUMqvGkb41b+uB30K9Ntrs4ODAP2eQYz4PAwMg2UgPeoP6sBwUYMyK5PSl6gcHrmJ7fEhSS+4qxthUCJf9qAzUchg7qx5KpXsgondnulpZi9YsRTXpdtP6l1KcGUWUZFi15Ks9RQhcGFXifCbaUWwOckjsQ2khEiBOvpm9m4s/UvTqp136TFHBFz/VUZUHBhaIiA9dVA7bw02r6XZftiYrU6RBnQ39++54GIgEpq6fY+1ZvygYeudzOA2jRCMS2mOoKB152xZQ+tju+WJk/9Jftd86sw9+23xme8qQAaqUa9SgvNVZg=
+    secure: "nc8meBnt7dOoHlKq5if5DfFLOB3gphUzPM2L022f6BbnEvz8mRDnNDSQ2OAOMI4w0+03dqHiMqik999URhhlyPi5EFDIWZ6NZfAk9LTJlHET0u+/b3H6RMK0CHFw3VmLi9R0CLQUxlxa6H3/Keghp2yaAQ/d8319MQX8LUtBtZ517ZIAQ9RObbECoTk8wCQHTIuk2gXIdrw76MDjdYQi3IhgcXalEuZk92ZUwMvE8OmLc3B0KICESj8hk2pHwH2PAJ1EXuk/hey5FhhFvwENfOkUGqDrrQExRsuwv+3bqyD2BZorHWcSfRQ4BQw4ByvkggEGRtT4kCpnK7qmuhXYLuFlCIEJB9FTnbcfc8C4W4+cZ/mtIKbt+Wb8KPvZxvfrBTzuSX3Fe1j9Xuevwy8UjMVd//bvqNHXo7MJczd0vkxPp10qkWrrhZQmJVYewBB5yAbCDBLpEQ1MJlzxVZ9Dr0LWEv3qIDMoL3U+fZot72cRK4hdg6oMVBLbsk0g/sKYBGLX8BdlQcz6jN4azmBFASN7ciqZx0I18u2Fbf6oxkZZNPH5xhKvVC+yrxX0y95Dd2V2rdTQ6wmwFujzOEJazCSVaf16w0YiN1/vLmUFzWwUbMXVyTQD5fX2aEEgxiLT8Ph04NseDAM4AALyQM9ky6wOCcTPNwI7ChE+jJdmEa8="
 
 sudo: required
 after_deploy:
   - npm install
-  - ls /etc/advse
-  - cp /etc/advse/newrelic.js ./newrelic.js
-  - ls
-  - sudo ./launch-server
-  - npm run start
