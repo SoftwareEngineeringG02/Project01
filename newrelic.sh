@@ -10,7 +10,7 @@ settings.config.app_name = '$1';
 settings.config.license_key = '$2';
 
 //Output data
-console.log(JSON.stringify(settings));
+console.log("'use strict'\n exports.config = " + JSON.stringify(settings.config));
 
 EOF
 fi
