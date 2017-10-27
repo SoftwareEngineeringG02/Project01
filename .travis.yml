@@ -43,5 +43,11 @@ after_deploy:
   - ls
   - pwd
   - ls /home
-  - ls /home/ec2-user
-  - ls /home/travis-test
+  - ls /home/aj
+  - ls /home/carmen
+  - ls /home/emma
+  - ls /home/henrik
+  - ls /home/igor
+  - ls /home/konstantinhaase
+  - ls /home/maria
+  - ls /home/me
