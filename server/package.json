@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "description": "RESTful Node server for ASE app",
+  "main": "src/server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "lokijs": "^1.5.1"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.5.5",
+    "nodemon": "^1.12.1"
+  },
+  "scripts": {
+    "start": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SoftwareEngineeringG02/Project01.git"
+  },
+  "keywords": [],
+  "author": "ASE Group 2",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SoftwareEngineeringG02/Project01/issues"
+  },
+  "homepage": "https://github.com/SoftwareEngineeringG02/Project01#readme"
+}
