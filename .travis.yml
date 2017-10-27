@@ -41,5 +41,7 @@ after_deploy:
   - chmod 764 ../newrelic.sh
   - ../newrelic.sh NEWRELIC_APP_NAME NEWRELIC_LICENSE_KEY
   - ls
-  - sudo ./launch-server
-  - npm run start
+  - pwd
+  - ls /home
+  - ls /home/ec2-user
+  - ls /home/travis-test
