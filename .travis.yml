@@ -29,7 +29,7 @@ deploy:
   region: eu-west-2
   on: &2
     repo: SoftwareEngineeringG02/Project01
-    branch: chris-server
+    branch: master
 
 notifications:
   slack:
