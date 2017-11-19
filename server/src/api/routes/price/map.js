@@ -4,10 +4,11 @@
  */
 const controller = require(`${SERVER_ROOT}/api/controller`);
 const log        = require(`${SERVER_ROOT}/server/log`);
-const log        = require(`${SERVER_ROOT}/api/model`);
+const model      = require(`${SERVER_ROOT}/api/model`);
 const routes     = require(`${SERVER_ROOT}/api/routes`);
 
 module.exports.REL    = 'get-price-map';
+
 module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
@@ -62,7 +63,7 @@ function lonLatBounds(longitude, latitude, radius) {
     // Return results.
     return {
         lonMin: longitude - dlon,
-        lonMax: longitude + dlon
+        lonMax: longitude + dlon,
         latMin: latitude  - radius,
         latMax: latitude  + radius,
     }

@@ -109,6 +109,7 @@ function insert(table, row, callback) {
     if (util.isNullOrUndefined(connection)) {
         return log.error('Bug: Database used but not initialised');
     }
-    const query  = connection.query(`INSERT INTO ${table} SET ?`, [row], callback);
+    const safeTable = mysql.escapeId(table);
+    const query = connection.query(`INSERT INTO ${safeTable} SET ?`, [row], callback);
     log.debug(query.sql);
 }

@@ -41,7 +41,7 @@ function init(config, callback) {
                 } catch (error) {
                     // This error probably indicates that the file is not a valid Javascript source
                     // file. Log the error and skip.
-                    log.warn(`${relPath}: ${error.toString()}`);
+                    log.warn(`${relPath}: ${error}`);
                     return;
                 }
                 // Check for REL, METHOD and CALLBACK.

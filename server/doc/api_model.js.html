@@ -30,87 +30,55 @@
  * Server API model.
  * @module api/model
  */
-const log  = require(`${global.SERVER_ROOT}/server/log`);
-const loki = require('lokijs');
-const util = require(`${global.SERVER_ROOT}/util`);
+const database = require(`${global.SERVER_ROOT}/database/mysql.js`);
+const log      = require(`${global.SERVER_ROOT}/server/log`);
+const util     = require(`${global.SERVER_ROOT}/util`);
+
+
+module.exports.init         = init;
+module.exports.getLocation  = getLocation;
+module.exports.listLocation = listLocation;
+module.exports.setLocation  = setLocation;
+module.exports.getPrice     = getPrice;
+module.exports.getPriceMap  = getPriceMap;
 
 /**
  * Initialise the model.
- * @param config The configuration. Either a string which names the path to the database, or a
- * Javascript object containing a property called 'database' which names the path to the database.
+ * @param config The configuration.
  */
-function init(config) {
+function init(config, callback) {
     log.trace(module, init);
-    // Find the database path.
-    var path = null;
-    if (typeof config === 'string') {
-        path = config;
-    } else if (typeof config === 'object') {
-        path = config.DATABASE;
-    } else {
-        return log.error(`Invalid type '${typeof config}' of parameter 'config'`);
-    }
-    // Open the database with autoloading and autosaving (see initDB).
-    log.info(`Opening database '${path}'`);
-    database = new loki(path, {
-        autoload:         true,
-        autoloadCallback: initDB,
-        autosave:         true,
-        autosaveInterval: 1000
-    });
-    if (util.isNullOrUndefined(database)) {
-        // Log error and quit on failure.
-        log.error('Fatal: Failed to open database');
-        process.exit(1);
-    }
-    // Save DB on exit.
-    process.on('exit', function() {
-        if (!(util.isNullOrUndefined(database))) {
-            database.saveDatabase();
-        }
-    })
-    // Initialise the database.
-    function initDB() {
-        log.info('Initialising database');
-        // Try to load location data.
-        locdata = database.getCollection('locdata');
-        if (util.isNullOrUndefined(locdata)) {
-            // Create a collection for the location data.
-            locdata = database.addCollection('locdata');
-            if (util.isNullOrUndefined(locdata)) {
-                // Log error and quit on failure.
-                log.error('Fatal: Database error');
-                process.exit(1);
-            }
-        }
-    }
+    return database.init(config, callback);
 }
 
-module.exports.init = init;
+
+// Table containing price data.
+const TPRICE    = 'price';
+// Table containing location data.
+const TLOCATION = 'location';
 
 /**
  * Get the most recent location data associated with an ID, if available.
  * @param id The ID string, e.g. a phone number.
- * @return A Javascript object containing the longitude and latitude on success; otherwise,
- * undefined.
+ * @param callback A function to call when results are ready. Arguments are (error, results).
  */
-function getLocation(id) {
+function getLocation(id, callback) {
     log.trace(module, getLocation);
-    if (util.isNullOrUndefined(database) || util.isNullOrUndefined(locdata)) {
-        return log.error('Bug: Database used but not initialised');
+    database.find(TLOCATION, { lhs: 'id', op: '=', rhs: id }, preCallback, 'time');
+    function preCallback(error, rows) {
+        if (util.isNullOrUndefined(rows) || rows.length == 0) {
+            callback(error, null);
+        } else {
+            callback(error, rows[0]);
+        }
     }
-    // Get a list of entries in 'locdata' with correct ID, sorted by decreasing timestamp.
-    const entries = locdata.chain().find({ id: { '$eq': id }}).simplesort('time', false).data();
-    if (entries.length > 0) {
-        // Return long/lat for the most recent (first) entry.
-        const  { longitude, latitude, time } = entries[0];
-        return { longitude, latitude, time };
-    }
-    // Return null if there are no results.
-    return null;
 }
 
-module.exports.getLocation = getLocation;
+function listLocation(id, callback) {
+    log.trace(module, listLocation);
+    database.find(TLOCATION, { lhs: 'id', op: '=', rhs: id}, callback);
+}
+
 
 /**
  * Persist location data.
@@ -118,20 +86,54 @@ module.exports.getLocation = getLocation;
  * @param time The POSIX timestamp.
  * @param longitude The longitude.
  * @param latitude The latitude.
+ * @param callback A function to call when results are ready. Arguments are (error, results).
  */
-function setLocation(id, time, longitude, latitude) {
-    log.trace(module, module.exports.setLocation);
-    if (util.isNullOrUndefined(database) || util.isNullOrUndefined(locdata)) {
-        return log.error('Bug: Database used but not initialised');
-    }
-    const entry = { 'id': id, 'time': time, 'longitude': longitude, 'latitude': latitude };
-    locdata.insert(entry);
+function setLocation(id, time, longitude, latitude, callback) {
+    log.trace(module, setLocation);
+    database.insert(TLOCATION, {
+        'id':        id,
+        'time':      time,
+        'longitude': longitude,
+        'latitude':  latitude
+    }, callback);
 }
 
-module.exports.setLocation = setLocation;
+/**
+ * Retrieve price for longitude and latitude.
+ * @param longitude The longitude.
+ * @param latitude The latitude.
+ * @param callback A function to call when results are ready. Arguments are (error, results).
+ */
+function getPrice(longitude, latitude, callback) {
+    log.trace(module, getPrice);
+    const search = { lhs: { lhs: 'longitude', op: '=', rhs: longitude },
+                     op:  'and',
+                     rhs: { lhs: 'latitude',  op: '=', rhs: latitude } };
+    database.find(TPRICE, search, preCallback);
+    function preCallback(error, results) {
+        if (util.isNullOrUndefined(results) || results.length == 0) {
+            callback(error, null);
+        } else {
+            callback(error, results[0])
+        }
+    }
+}
 
-var database = undefined;
-var locdata  = undefined;
+/**
+ * Get a list of rows where longitude and latitude are within [lonMin,lonMax] and [latMin,latMax]
+ * respectively.
+ */
+function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
+    log.trace(module, getPriceMap);
+    const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
+                            op:  'and',
+                            rhs: { lhs: 'longitude', op: '&lt;=', rhs: lonMax }},
+                     op:  'and',
+                     rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
+                            op:  'and',
+                            rhs: { lhs: 'latitude', op: '&lt;=', rhs: latMax }}};
+    database.find(TPRICE, search, callback);
+}
 </code></pre>
         </article>
     </section>
@@ -142,13 +144,13 @@ var locdata  = undefined;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 26 2017 16:12:59 GMT+0100 (GMT Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 17:43:46 GMT+0000 (GMT Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
