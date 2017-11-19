@@ -29,13 +29,11 @@ module.exports.CALLBACK = function(request, response) {
             if (util.isNullOrUndefined(result)) {
                 return controller.badRequest(request, response, 'No data associated with ID');
             }
-            const { longitude, latitude, time } = result;
             // Send response.
             controller.doResponse(response, {
                 'error':     0,
                 'message':   'Success',
-                'longitude': longitude,
-                'latitude':  latitude,
+                'results':   results,
                 'time':      time,
                 'links':     routes.endpoints
             });

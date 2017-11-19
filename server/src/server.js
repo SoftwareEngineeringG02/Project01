@@ -42,7 +42,7 @@ function startServer() {
 
 // Called on 'exit' event.
 function handleExit() {
-    return log.info('Server exiting normally');
+    return log.info('Server exiting');
 }
 
 // Log error and exit.

@@ -27,7 +27,7 @@ rel             | href               | methods | Effect
 `index`         | `/`                | `GET`   | Get a list of available endpoints
 `get-location`  | `/location`        | `POST`  | Get the most recent location of the client if any
 `set-location`  | `/location/update` | `POST`  | Update the client's location
-`list-location` | `/location/list`   | `POST`  | Nothing - not implemented.
+`list-location` | `/location/list`   | `POST`  | Get all the locations the client has sent
 
  * Each endpoint responds only to the method listed in the table.
  * The reason for the `rel` column will become clear in the `Responses` section.
@@ -63,6 +63,8 @@ Every response from the server will include a JSON object with at least the foll
 
  * Before making any other requests, clients should make a `GET` request to `/` which will return the above JSON object. Clients should then get the URL of the endpoint they want to use from the `links` array rather than hardcoding it. This allows the endpoint paths to be changed without breaking client code.
 
- * Clients should always check the value of the `error` field and report any errors to the user
+ * Clients should always check the value of the `error` field and report any errors to the user.
 
  * When using the `get-location` endpoint, the response will include `longitude` and `latitude` properties, which are double-precision floating point numbers defining the longitude and its latitude respectively.
+
+* When using the `list-location` endpoint, the response will include an array of Javascript objects with `longitude`, `latitude` and `time` properties.
