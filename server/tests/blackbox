@@ -111,6 +111,8 @@ test_post "/location/update" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"long
 test_post "/location" "{\"id\": \"${id}\"}" "longitude" "number" "${longitude}"
 # POST /location should return the same values for longitude and latitude.
 test_post "/location" "{\"id\": \"${id}\"}" "latitude" "number" "${latitude}"
+# POST /location should return the same values for longitude and latitude.
+test_post "/price" "{\"longitude\": 0, \"latitude\": 0}" "price" "number" "0"
 
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
 
