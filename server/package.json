@@ -7,7 +7,6 @@
     "doc": "docs"
   },
   "dependencies": {
-    "lokijs": "^1.5.1",
     "mysql": "^2.15.0"
   },
   "devDependencies": {

@@ -12,6 +12,7 @@ module.exports.getLocation  = getLocation;
 module.exports.listLocation = listLocation;
 module.exports.setLocation  = setLocation;
 module.exports.getPrice     = getPrice;
+module.exports.getPriceMap  = getPriceMap;
 
 /**
  * Initialise the model.
@@ -77,10 +78,10 @@ function setLocation(id, time, longitude, latitude, callback) {
  */
 function getPrice(longitude, latitude, callback) {
     log.trace(module, getPrice);
-    const columns = { lhs: { lhs: 'longitude', op: '=', rhs: longitude },
-                      op:  'and',
-                      rhs: { lhs: 'latitude',  op: '=', rhs: latitude } };
-    database.find(TPRICE, columns, preCallback);
+    const search = { lhs: { lhs: 'longitude', op: '=', rhs: longitude },
+                     op:  'and',
+                     rhs: { lhs: 'latitude',  op: '=', rhs: latitude } };
+    database.find(TPRICE, search, preCallback);
     function preCallback(error, results) {
         if (util.isNullOrUndefined(results) || results.length == 0) {
             callback(error, null);
@@ -88,4 +89,20 @@ function getPrice(longitude, latitude, callback) {
             callback(error, results[0])
         }
     }
+}
+
+/**
+ * Get a list of rows where longitude and latitude are within [lonMin,lonMax] and [latMin,latMax]
+ * respectively.
+ */
+function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
+    log.trace(module, getPriceMap);
+    const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
+                            op:  'and',
+                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax }},
+                     op:  'and',
+                     rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
+                            op:  'and',
+                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax }}};
+    database.find(TPRICE, search, callback);
 }
