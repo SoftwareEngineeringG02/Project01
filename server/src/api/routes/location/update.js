@@ -13,7 +13,7 @@ module.exports.REL    = 'set-location'
 module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
-    log.debug(module);
+    log.debug(module.exports.REL);
     // Try to extract `id`, `time`, `longitude` and `latitude` JSON properties.
     const elems = {
         id:        'string',

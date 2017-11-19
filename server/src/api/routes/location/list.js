@@ -12,10 +12,31 @@ module.exports.REL    = 'list-location'
 module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
-     log.debug(module);
-     return controller.doResponse(response, {
-         'error':   1,
-         'message': 'Not implemented yet',
-         'links':   routes.endpoints
-     });
+    log.trace(module.exports.REL);
+    // Try to extract `id` JSON property.
+    controller.getRequestBody(request, (body) => {
+        const object = util.getJsonElements(body, {'id': 'string'});
+        if (typeof object !== 'object') {
+            return controller.badRequest(request, response, result);
+        }
+        if (util.isNullOrUndefined(object.id)) {
+            return controller.badRequest(request, response, 'Incomplete request');
+        }
+        model.listLocation(object.id, (error, result) => {
+            if (error) {
+                throw error;
+            }
+            if (util.isNullOrUndefined(result)) {
+                return controller.badRequest(request, response, 'No data associated with ID');
+            }
+            // Send response.
+            controller.doResponse(response, {
+                'error':     0,
+                'message':   'Success',
+                'results':   results,
+                'time':      time,
+                'links':     routes.endpoints
+            });
+        });
+    });
  }

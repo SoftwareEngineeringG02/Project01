@@ -11,9 +11,8 @@ const util   = require(`${global.SERVER_ROOT}/util`);
  * Initialise the controller.
  * @param config The configuration.
  */
-module.exports.init = function(config) {
-    routes.init();
-    model.init(config);
+module.exports.init = function(config, callback) {
+    routes.init(config, () => { model.init(config, callback); });
 }
 
 /**

@@ -2,48 +2,55 @@
  * Server API model.
  * @module api/model
  */
-const database = require(`${global.SERVER_ROOT}/database/lokijs`);
+const database = require(`${global.SERVER_ROOT}/database/mysql.js`);
 const log      = require(`${global.SERVER_ROOT}/server/log`);
 const util     = require(`${global.SERVER_ROOT}/util`);
 
+
+module.exports.init         = init;
+module.exports.getLocation  = getLocation;
+module.exports.listLocation = listLocation;
+module.exports.setLocation  = setLocation;
+module.exports.getPrice     = getPrice;
+module.exports.getPriceMap  = getPriceMap;
+
 /**
  * Initialise the model.
- * @param config The configuration. Either a string which names the path to the database, or a
- * Javascript object containing a property called 'database' which names the path to the database.
+ * @param config The configuration.
  */
-function init(config) {
+function init(config, callback) {
     log.trace(module, init);
-    // Find the database path.
-    var filepath = null;
-    if (typeof config === 'string') {
-        filepath = config;
-    } else if (typeof config === 'object') {
-        filepath = config.DATABASE;
-    } else {
-        throw new TypeError(`Invalid type '${typeof config}' of parameter 'config'`);
-    }
-    return database.init(filepath);
+    return database.init(config, callback);
 }
 
-module.exports.init = init;
+
+// Table containing price data.
+const TPRICE    = 'price';
+// Table containing location data.
+const TLOCATION = 'location';
 
 /**
  * Get the most recent location data associated with an ID, if available.
  * @param id The ID string, e.g. a phone number.
- * @return A Javascript object containing the longitude, latitude and time on success; otherwise,
- * undefined.
+ * @param callback A function to call when results are ready. Arguments are (error, results).
  */
-function getLocation(id) {
+function getLocation(id, callback) {
     log.trace(module, getLocation);
-    const entries = database.find({ id: { '$eq': id }}, 'time', false);
-    if (util.isNullOrUndefined(entries) || entries.length == 0) {
-        return null;
+    database.find(TLOCATION, { lhs: 'id', op: '=', rhs: id }, preCallback, 'time');
+    function preCallback(error, rows) {
+        if (util.isNullOrUndefined(rows) || rows.length == 0) {
+            callback(error, null);
+        } else {
+            callback(error, rows[0]);
+        }
     }
-    const  { longitude, latitude, time } = entries[0];
-    return { longitude, latitude, time };
 }
 
-module.exports.getLocation = getLocation;
+function listLocation(id, callback) {
+    log.trace(module, listLocation);
+    database.find(TLOCATION, { lhs: 'id', op: '=', rhs: id}, callback);
+}
+
 
 /**
  * Persist location data.
@@ -51,15 +58,51 @@ module.exports.getLocation = getLocation;
  * @param time The POSIX timestamp.
  * @param longitude The longitude.
  * @param latitude The latitude.
+ * @param callback A function to call when results are ready. Arguments are (error, results).
  */
-function setLocation(id, time, longitude, latitude) {
+function setLocation(id, time, longitude, latitude, callback) {
     log.trace(module, setLocation);
-    return database.insert({
-        'id': id,
-        'time': time,
+    database.insert(TLOCATION, {
+        'id':        id,
+        'time':      time,
         'longitude': longitude,
-        'latitude': latitude
-    });
+        'latitude':  latitude
+    }, callback);
 }
 
-module.exports.setLocation = setLocation;
+/**
+ * Retrieve price for longitude and latitude.
+ * @param longitude The longitude.
+ * @param latitude The latitude.
+ * @param callback A function to call when results are ready. Arguments are (error, results).
+ */
+function getPrice(longitude, latitude, callback) {
+    log.trace(module, getPrice);
+    const search = { lhs: { lhs: 'longitude', op: '=', rhs: longitude },
+                     op:  'and',
+                     rhs: { lhs: 'latitude',  op: '=', rhs: latitude } };
+    database.find(TPRICE, search, preCallback);
+    function preCallback(error, results) {
+        if (util.isNullOrUndefined(results) || results.length == 0) {
+            callback(error, null);
+        } else {
+            callback(error, results[0])
+        }
+    }
+}
+
+/**
+ * Get a list of rows where longitude and latitude are within [lonMin,lonMax] and [latMin,latMax]
+ * respectively.
+ */
+function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
+    log.trace(module, getPriceMap);
+    const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
+                            op:  'and',
+                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax }},
+                     op:  'and',
+                     rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
+                            op:  'and',
+                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax }}};
+    database.find(TPRICE, search, callback);
+}

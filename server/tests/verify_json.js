@@ -26,7 +26,7 @@ if (typeof object[propertyName] !== expectedType) {
     process.exit(1);
 }
 
-// Test against the value of the property. We're using the unequal operator !==) instead of the
+// Test against the value of the property. We're using the unequal operator !=) instead of the
 // strict unequal operator (!==) because the former will convert the property to a string, the same
 // as expectedValue, before comparison. This is nice because we don't have to do any explicit
 // parsing.

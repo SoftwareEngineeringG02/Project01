@@ -142,7 +142,7 @@
     
 
     
-    <h4 class="name" id="~getLocation"><span class="type-signature">(inner) </span>getLocation<span class="signature">(id)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~getLocation"><span class="type-signature">(inner) </span>getLocation<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
     
 
     
@@ -201,6 +201,24 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A function to call when results are ready. Arguments are (error, results).</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -238,7 +256,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line69">line 69</a>
+        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -261,17 +279,259 @@
 
 
 
-<h5>Returns:</h5>
+
+
+
+
 
         
-<div class="param-desc">
-    A Javascript object containing the longitude and latitude on success; otherwise,
-undefined.
+            
+
+    
+
+    
+    <h4 class="name" id="~getPrice"><span class="type-signature">(inner) </span>getPrice<span class="signature">(longitude, latitude, callback)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieve price for longitude and latitude.
 </div>
 
 
 
+
+
+
+
+
+
+    <h5>Parameters:</h5>
     
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>longitude</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The longitude.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>latitude</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The latitude.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A function to call when results are ready. Arguments are (error, results).</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line79">line 79</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~getPriceMap"><span class="type-signature">(inner) </span>getPriceMap<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a list of rows where longitude and latitude are within [lonMin,lonMax] and [latMin,latMax]
+respectively.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line98">line 98</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -338,8 +598,7 @@ undefined.
 
             
 
-            <td class="description last">The configuration. Either a string which names the path to the database, or a
-Javascript object containing a property called 'database' which names the path to the database.</td>
+            <td class="description last">The configuration.</td>
         </tr>
 
     
@@ -380,7 +639,7 @@ Javascript object containing a property called 'database' which names the path t
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line14">line 14</a>
+        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -414,7 +673,7 @@ Javascript object containing a property called 'database' which names the path t
     
 
     
-    <h4 class="name" id="~setLocation"><span class="type-signature">(inner) </span>setLocation<span class="signature">(id, time, longitude, latitude)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~setLocation"><span class="type-signature">(inner) </span>setLocation<span class="signature">(id, time, longitude, latitude, callback)</span><span class="type-signature"></span></h4>
     
 
     
@@ -527,6 +786,24 @@ Javascript object containing a property called 'database' which names the path t
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A function to call when results are ready. Arguments are (error, results).</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -564,7 +841,7 @@ Javascript object containing a property called 'database' which names the path t
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line94">line 94</a>
+        <a href="api_model.js.html">api/model.js</a>, <a href="api_model.js.html#line63">line 63</a>
     </li></ul></dd>
     
 
@@ -608,13 +885,13 @@ Javascript object containing a property called 'database' which names the path t
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 26 2017 16:12:59 GMT+0100 (GMT Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 17:43:46 GMT+0000 (GMT Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

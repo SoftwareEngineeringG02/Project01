@@ -25,7 +25,7 @@ const util = require(`${global.SERVER_ROOT}/util`);
  * when the endpoint is requested. Callbacks take two arguments: an http.Request object, and an
  * http.Response object.
  */
-function init() {
+function init(config, callback) {
     const dir = `${global.SERVER_ROOT}/api/routes`;
     try {
         var endpoints = [];
@@ -41,7 +41,7 @@ function init() {
                 } catch (error) {
                     // This error probably indicates that the file is not a valid Javascript source
                     // file. Log the error and skip.
-                    log.warn(`${relPath}: ${error.toString()}`);
+                    log.warn(`${relPath}: ${error}`);
                     return;
                 }
                 // Check for REL, METHOD and CALLBACK.
@@ -69,7 +69,7 @@ function init() {
             }
         });
         module.exports.endpoints = endpoints;
-        return endpoints;
+        return callback();
     } catch (error) {
         log.error(`Fatal: ${error.toString()}`);
         process.exit(1);
