@@ -2,30 +2,25 @@
  * Server API model.
  * @module api/model
  */
-const database = require(`${global.SERVER_ROOT}/database/lokijs`);
+const database = require(`${global.SERVER_ROOT}/database/mysql.js`);
 const log      = require(`${global.SERVER_ROOT}/server/log`);
 const util     = require(`${global.SERVER_ROOT}/util`);
 
 /**
  * Initialise the model.
- * @param config The configuration. Either a string which names the path to the database, or a
- * Javascript object containing a property called 'database' which names the path to the database.
+ * @param config The configuration.
  */
-function init(config) {
+function init(config, callback) {
     log.trace(module, init);
-    // Find the database path.
-    var filepath = null;
-    if (typeof config === 'string') {
-        filepath = config;
-    } else if (typeof config === 'object') {
-        filepath = config.DATABASE;
-    } else {
-        throw new TypeError(`Invalid type '${typeof config}' of parameter 'config'`);
-    }
-    return database.init(filepath);
+    return database.init(config, callback);
 }
 
 module.exports.init = init;
+
+// Table containing price data.
+const TPRICE    = 'price';
+// Table containing location data.
+const TLOCATION = 'location';
 
 /**
  * Get the most recent location data associated with an ID, if available.
@@ -33,14 +28,16 @@ module.exports.init = init;
  * @return A Javascript object containing the longitude, latitude and time on success; otherwise,
  * undefined.
  */
-function getLocation(id) {
+function getLocation(id, callback) {
     log.trace(module, getLocation);
-    const entries = database.find({ id: { '$eq': id }}, 'time', false);
-    if (util.isNullOrUndefined(entries) || entries.length == 0) {
-        return null;
+    database.find(TLOCATION, { column: 'id', operator: '=', value: id }, preCallback, 'time');
+    function preCallback(error, rows) {
+        if (util.isNullOrUndefined(rows) || rows.length == 0) {
+            callback(error, null);
+        } else {
+            callback(error, rows[0]);
+        }
     }
-    const  { longitude, latitude, time } = entries[0];
-    return { longitude, latitude, time };
 }
 
 module.exports.getLocation = getLocation;
@@ -52,14 +49,14 @@ module.exports.getLocation = getLocation;
  * @param longitude The longitude.
  * @param latitude The latitude.
  */
-function setLocation(id, time, longitude, latitude) {
+function setLocation(id, time, longitude, latitude, callback) {
     log.trace(module, setLocation);
-    return database.insert({
-        'id': id,
-        'time': time,
+    database.insert(TLOCATION, {
+        'id':        id,
+        'time':      time,
         'longitude': longitude,
-        'latitude': latitude
-    });
+        'latitude':  latitude
+    }, callback);
 }
 
 module.exports.setLocation = setLocation;
