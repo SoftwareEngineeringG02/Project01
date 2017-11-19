@@ -13,7 +13,7 @@ module.exports.REL    = 'get-location'
 module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
-    log.debug(module);
+    log.debug(module.exports.REL);
     // Try to extract `id` JSON property.
     controller.getRequestBody(request, (body) => {
         const object = util.getJsonElements(body, {'id': 'string'});
@@ -23,19 +23,23 @@ module.exports.CALLBACK = function(request, response) {
         if (util.isNullOrUndefined(object.id)) {
             return controller.badRequest(request, response, 'Incomplete request');
         }
-        const entry = model.getLocation(object.id);
-        if (util.isNullOrUndefined(entry)) {
-            return controller.badRequest(request, response, 'No data associated with ID');
-        }
-        const { longitude, latitude, time } = entry;
-        // Send response.
-        controller.doResponse(response, {
-            'error':     0,
-            'message':   'Success',
-            'longitude': longitude,
-            'latitude':  latitude,
-            'time':      time,
-            'links':     routes.endpoints
+        model.getLocation(object.id, (error, result) => {
+            if (error) {
+                throw error;
+            }
+            if (util.isNullOrUndefined(result)) {
+                return controller.badRequest(request, response, 'No data associated with ID');
+            }
+            const { longitude, latitude, time } = result;
+            // Send response.
+            controller.doResponse(response, {
+                'error':     0,
+                'message':   'Success',
+                'longitude': longitude,
+                'latitude':  latitude,
+                'time':      time,
+                'links':     routes.endpoints
+            });
         });
     });
 }

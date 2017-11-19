@@ -77,9 +77,7 @@ function find(table, search, callback, orderBy, descending) {
         }
     }
     // Perform query.
-    const query = connection.query(`SELECT * FROM ? WHERE ? ${operator} ?`,
-                                   [table, column, value],
-                                   callback);
+    const query = connection.query(sql, callback);
     log.debug(query.sql);
 }
 
@@ -92,7 +90,7 @@ function insert(table, row, callback) {
     if (util.isNullOrUndefined(connection)) {
         return log.error('Bug: Database used but not initialised');
     }
-    const query = connection.query(`INSERT INTO ? VALUES(?)`, [table, row], callback);
+    const query  = connection.query(`INSERT INTO ${table} SET ?`, [row], callback);
     log.debug(query.sql);
 }
 

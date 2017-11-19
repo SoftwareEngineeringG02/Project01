@@ -42,6 +42,13 @@ function getLocation(id, callback) {
 
 module.exports.getLocation = getLocation;
 
+function listLocation(id, callback) {
+    log.trace(module, listLocation);
+    database.find(TLOCATION, { column: 'id', operator: '=', value: id}, callback);
+}
+
+module.exports.listLocation = listLocation;
+
 /**
  * Persist location data.
  * @param id The ID string.
