@@ -2,6 +2,7 @@
  * Server entry point.
  * @module server
  */
+require('newrelic');
 const path = require('path');
 const http = require('http');
 
