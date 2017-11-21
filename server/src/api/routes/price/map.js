@@ -14,40 +14,42 @@ module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
     log.debug(module.exports.REL);
-    // Process request body.
-    controller.getRequestBody(request, (body) => {
-        // Try to extract `longitude`, `latitude` and 'radius' JSON properties.
-        const elems = {
-            longitude: 'number',
-            latitude:  'number',
-            radius:    'number'
-        };
-        const object = util.getJsonElements(body, elems);
-        if (typeof object !== 'object' || object == null) {
-            return controller.badRequest(request, response);
-        }
-        const { longitude, latitude, radius } = object;
-        if (util.isNullOrUndefined(longitude)
-         || util.isNullOrUndefined(latitude)
-         || util.isNullOrUndefined(radius)) {
-            return controller.badRequest(request, response, 'Incomplete request');
-        }
-        // Find all the data within the radius.
-        const EARTH_RADIUS = 6371e3; // metres.
-        const radRadius = radius/EARTH_RADIUS; // Convert distance to radians.
-        const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
-        model.getPriceMap(lonMin, lonMax, latMin, latMax, (error, results) => {
-            if (error) {
-                throw error;
-            }
-            // Return the results.
-            controller.doResponse(response, {
-                'error':   0,
-                'message': 'Success',
-                'map':     results,
-                'links':   routes.endpoints
-            });
-        });
+    controller.getRequestBody(request, handleBody.bind(null, request, response));
+}
+
+function handleBody(request, response, error, body) {
+    if (error) {
+        return request.emit('error', error)
+    }
+    const elems = {
+        longitude: 'number',
+        latitude:  'number',
+        radius:    'number'
+    };
+    util.getJsonElements(body, elems, handleJson.bind(null, request, response));
+}
+
+function handleJson(request, response, error, object) {
+    if (error) {
+        return request.emit('error', error)
+    }
+    const { longitude, latitude, radius } = object;
+    const EARTH_RADIUS = 6371e3; // metres.
+    const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
+    const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
+    model.getPriceMap(lonMin, lonMax, latMin, latMax, handlePriceMap.bind(null, request, response));
+}
+
+function handlePriceMap(request, response, error, results) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    // Return the results.
+    controller.doResponse(response, {
+        'error':   0,
+        'message': 'Success',
+        'map':     results,
+        'links':   routes.endpoints
     });
 }
 

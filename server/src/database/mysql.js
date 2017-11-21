@@ -40,8 +40,7 @@ function init(config, callback) {
     // Connect, handle error if any, otherwise call callback.
     connection.connect((error) => {
         if (error) {
-            log.error('Database error: ' + error.toString());
-            process.exit(1);
+            throw new Error('Database error: ' + error.toString());
         }
         log.info('Connected to MySQL database');
         callback();
@@ -62,7 +61,7 @@ function init(config, callback) {
 function find(table, search, callback, orderBy, descending) {
     log.trace(module, find);
     if (util.isNullOrUndefined(connection)) {
-        return log.error('Bug: Database used but not initialised');
+        throw new Error('Bug: Database used but not initialised');
     }
     var sql = makeSelect(table, search);
     // Escape DB inputs.
@@ -107,7 +106,7 @@ function makeSelect(table, search, inner) {
  */
 function insert(table, row, callback) {
     if (util.isNullOrUndefined(connection)) {
-        return log.error('Bug: Database used but not initialised');
+        throw new Error('Bug: Database used but not initialised');
     }
     const safeTable = mysql.escapeId(table);
     const query = connection.query(`INSERT INTO ${safeTable} SET ?`, [row], callback);
