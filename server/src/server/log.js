@@ -2,12 +2,13 @@
  * Server logging system. Writes formatted messages to
  * @module server/log
  */
-const util = require(`${global.SERVER_ROOT}/util`);
+const util   = require(`${global.SERVER_ROOT}/util`);
 
 /**
  * Log level.
+ * Note: If you change something here remember to change formatMessage.
  */
-module.exports.LogLevel = {
+const LogLevel = {
     DEBUG: 0,
     INFO:  1,
     WARN:  2,
@@ -26,9 +27,9 @@ module.exports.LogLevel = {
  * be suppressed.
  * @return The previous log-level is returned.
  */
-module.exports.setLogLevel = function(level) {
+function setLogLevel(level) {
     const tmp = logLevel;
-    logLevel = level;
+    logLevel  = level;
     return tmp;
 }
 
@@ -39,7 +40,7 @@ module.exports.setLogLevel = function(level) {
  * @param msg A message string.
  * @param args An array of other arguments which are appended to the output.
  */
-module.exports.print = function(level, msg, args) {
+function print(level, msg, args) {
     if (level >= logLevel) {
         if (util.isNullOrUndefined(args)) {
             return console.log(formatMessage(level, msg));
@@ -55,7 +56,7 @@ module.exports.print = function(level, msg, args) {
  * @param msg A message string.
  * @param args An array of other arguments which are appended to the output.
  */
-module.exports.debug = function(msg, args) {
+function debug(msg, args) {
     return print(LogLevel.DEBUG, msg, args);
 }
 
@@ -64,7 +65,7 @@ module.exports.debug = function(msg, args) {
  * Does nothing if this is below the server's current minimum log-level: @see LogLevel
  * @see setLogLevel
  */
-module.exports.trace = function(mod, fun) {
+function trace(mod, fun) {
     return print(LogLevel.DEBUG, util.getFunctionName(mod, fun));
 }
 
@@ -74,7 +75,7 @@ module.exports.trace = function(mod, fun) {
  * @param msg A message string.
  * @param args An array of other arguments which are appended to the output.
  */
-module.exports.info = function(msg, args) {
+function info(msg, args) {
     return print(LogLevel.INFO,  msg, args);
 }
 
@@ -84,7 +85,7 @@ module.exports.info = function(msg, args) {
  * @param msg A message string.
  * @param args An array of other arguments which are appended to the output.
  */
-module.exports.warn = function(msg, args) {
+function warn(msg, args) {
     return print(LogLevel.WARN,  msg, args);
 }
 
@@ -94,13 +95,9 @@ module.exports.warn = function(msg, args) {
  * @param msg A message string.
  * @param args An array of other arguments which are appended to the output.
  */
-module.exports.error = function(msg, args) {
+function error(msg, args) {
     return print(LogLevel.ERROR, msg, args);
 }
-
-// Alias out of `module.exports` object.
-const LogLevel = module.exports.LogLevel;
-const print = module.exports.print;
 
 // Current minimum log-level.
 var logLevel = LogLevel.DEBUG;
@@ -115,3 +112,12 @@ function getTimeStamp() {
 function formatMessage(level, msg) {
     return getTimeStamp() + ' ' + LogLevel.name[level] + ': ' + msg;
 }
+
+module.exports.LogLevel    = LogLevel;
+module.exports.setLogLevel = setLogLevel;
+module.exports.print       = print;
+module.exports.debug       = debug;
+module.exports.trace       = trace;
+module.exports.info        = info;
+module.exports.warn        = warn;
+module.exports.error       = error;

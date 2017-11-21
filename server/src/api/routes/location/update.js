@@ -14,31 +14,31 @@ module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
     log.debug(module.exports.REL);
-    // Try to extract `id`, `time`, `longitude` and `latitude` JSON properties.
+    controller.getRequestBody(request, handleBody.bind(null, request, response));
+}
+
+function handleBody(request, response, error, body) {
+    if (error) {
+        return request.emit('error', error);
+    }
     const elems = {
         id:        'string',
         time:      'number',
         longitude: 'number',
         latitude:  'number'
     };
-    controller.getRequestBody(request, (body) => {
-        const object = util.getJsonElements(body, elems);
-        if (typeof object !== 'object' || object == null) {
-            return controller.badRequest(request, response);
-        }
-        const { id, time, longitude, latitude } = object;
-        if (util.isNullOrUndefined(id)
-         || util.isNullOrUndefined(time)
-         || util.isNullOrUndefined(longitude)
-         || util.isNullOrUndefined(latitude)) {
-            return controller.badRequest(request, response, 'Incomplete request');
-        }
-        // Persist the values to the model.
-        model.setLocation(id, time, longitude, latitude);
-        controller.doResponse(response, {
-            'error':   0,
-            'message': 'Success',
-            'links':   routes.endpoints
-        });
+    util.getJsonElements(body, elems, handleJson.bind(null, request, response));
+}
+
+function handleJson(request, response, error, object) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    const { id, time, longitude, latitude } = object;
+    model.setLocation(id, time, longitude, latitude);
+    controller.doResponse(response, {
+        'error':   0,
+        'message': 'Success',
+        'links':   routes.endpoints
     });
 }

@@ -18,14 +18,19 @@ init();
 function init() {
     // Initialise log.
     log.setLogLevel(config.LOGLEVEL);
+    log.info('====================[ Starting Server ]====================');
+    log.info(`Server process ID: ${process.pid}`);
+    log.info(`Server root directory: ${global.SERVER_ROOT}`);
+    log.trace(module, init);
     // Initialise controller.
     controller.init(config, startServer);
 }
 
-function startServer() {
-    log.info('====================[ Starting Server ]====================');
-    log.info(`Server process ID: ${process.pid}`);
-    log.info(`Server root directory: ${SERVER_ROOT}`);
+function startServer(error) {
+    if (error) {
+        return handleError(error);
+    }
+    log.trace(module, startServer);
     // Set up event handlers.
     process.on('uncaughtException', handleError);
     process.on('exit', handleExit);
@@ -42,11 +47,13 @@ function startServer() {
 
 // Called on 'exit' event.
 function handleExit() {
+    log.trace(module, handleExit);
     return log.info('Server exiting');
 }
 
 // Log error and exit.
 function handleError(error) {
-    log.error(`Fatal: ${error.toString()}`);
+    log.trace(module, handleError);
+    log.error(`Fatal: ${error}`);
     process.exit(1);
 }

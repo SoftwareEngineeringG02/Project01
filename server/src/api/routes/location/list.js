@@ -13,30 +13,33 @@ module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
     log.trace(module.exports.REL);
-    // Try to extract `id` JSON property.
-    controller.getRequestBody(request, (body) => {
-        const object = util.getJsonElements(body, {'id': 'string'});
-        if (typeof object !== 'object') {
-            return controller.badRequest(request, response, result);
-        }
-        if (util.isNullOrUndefined(object.id)) {
-            return controller.badRequest(request, response, 'Incomplete request');
-        }
-        model.listLocation(object.id, (error, result) => {
-            if (error) {
-                throw error;
-            }
-            if (util.isNullOrUndefined(result)) {
-                return controller.badRequest(request, response, 'No data associated with ID');
-            }
-            // Send response.
-            controller.doResponse(response, {
-                'error':     0,
-                'message':   'Success',
-                'results':   results,
-                'time':      time,
-                'links':     routes.endpoints
-            });
-        });
-    });
+    controller.getRequestBody(request, handleBody.bind(null, request, response));
  }
+
+function handleBody(request, response, error, body) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    util.getJsonElements(body, {'id': 'string'}, handleJson.bind(null, request, response));
+}
+
+function handleJson(request, response, error, object) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    model.listLocation(object.id, handleList.bind(null, request, response));
+}
+
+function handleList(request, response, error, result) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    // Send response.
+    controller.doResponse(response, {
+        'error':     0,
+        'message':   'Success',
+        'results':   results,
+        'time':      time,
+        'links':     routes.endpoints
+    });
+}

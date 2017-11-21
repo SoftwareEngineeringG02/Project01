@@ -8,32 +8,48 @@ const model      = require(`${SERVER_ROOT}/api/model`);
 const routes     = require(`${SERVER_ROOT}/api/routes`);
 const util       = require(`${SERVER_ROOT}/util`);
 
-module.exports.REL    = 'get-price';
-module.exports.METHOD = 'POST';
+module.exports.REL      = 'get-price';
+
+module.exports.METHOD   = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
     log.debug(module.exports.REL);
-    // Try to extract `id` JSON property.
-    controller.getRequestBody(request, (body) => {
-        const object = util.getJsonElements(body, {'longitude': 'number', 'latitude': 'number'});
-        if (typeof object !== 'object') {
-            return controller.badRequest(request, response, result);
-        }
-        const { longitude, latitude } = object;
-        model.getPrice(longitude, latitude, (error, result) => {
-            if (error) {
-                throw error;
-            }
-            if (util.isNullOrUndefined(result)) {
-                return controller.badRequest(request, response, 'No data associated with ID');
-            }
-            // Send response.
-            controller.doResponse(response, {
-                'error':     0,
-                'message':   'Success',
-                'price':     result.price,
-                'links':     routes.endpoints
-            });
-        });
-    });
+    controller.getRequestBody(request, handleBody.bind(null, request, response));
 }
+
+// Handle body data.
+function handleBody(request, response, error, body) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    const elems = {'longitude': 'number', 'latitude': 'number'};
+    util.getJsonElements(body, elems, handleJson.bind(null, request, response));
+}
+
+function handleJson(request, response, error, object) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    model.getPrice(
+        object.longitude,
+        object.latitude,
+        handlePrice.bind(null, request, response)
+    );
+}
+
+// Return price in response.
+function handlePrice(request, response, error, result) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    if (util.isNullOrUndefined(result)) {
+        return request.emit('error', 'No data associated with ID');
+    }
+    // Send response.
+    controller.doResponse(response, {
+        'error':   0,
+        'message': 'Success',
+        'price':   result.price,
+        'links':   routes.endpoints
+    });
+};
