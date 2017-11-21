@@ -111,8 +111,10 @@ test_post "/location/update" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"long
 test_post "/location" "{\"id\": \"${id}\"}" "longitude" "number" "${longitude}"
 # POST /location should return the same values for longitude and latitude.
 test_post "/location" "{\"id\": \"${id}\"}" "latitude" "number" "${latitude}"
-# POST /location should return the same values for longitude and latitude.
-test_post "/price" "{\"longitude\": 0, \"latitude\": 0}" "price" "number" "0"
+# POST /price should return the price.
+test_post "/price" "{\"longitude\": 0, \"latitude\": 0}" "price" "number" "1000"
+# POST /price/map should succeed.
+test_post "/price/map" "{\"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833, \"radius\": 10000}" "error" "number" "0"
 
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
 

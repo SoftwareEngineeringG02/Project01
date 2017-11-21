@@ -6,6 +6,7 @@ const controller = require(`${SERVER_ROOT}/api/controller`);
 const log        = require(`${SERVER_ROOT}/server/log`);
 const model      = require(`${SERVER_ROOT}/api/model`);
 const routes     = require(`${SERVER_ROOT}/api/routes`);
+const util       = require(`${SERVER_ROOT}/util`);
 
 module.exports.REL    = 'get-price-map';
 
@@ -15,10 +16,8 @@ module.exports.CALLBACK = function(request, response) {
     log.debug(module.exports.REL);
     // Process request body.
     controller.getRequestBody(request, (body) => {
-        // Try to extract `id`, `time`, `longitude`, `latitude` and 'radius' JSON properties.
+        // Try to extract `longitude`, `latitude` and 'radius' JSON properties.
         const elems = {
-            id:        'string',
-            time:      'number',
             longitude: 'number',
             latitude:  'number',
             radius:    'number'
@@ -27,16 +26,14 @@ module.exports.CALLBACK = function(request, response) {
         if (typeof object !== 'object' || object == null) {
             return controller.badRequest(request, response);
         }
-        const { id, time, longitude, latitude, radius } = object;
-        if (util.isNullOrUndefined(id)
-         || util.isNullOrUndefined(time)
-         || util.isNullOrUndefined(longitude)
+        const { longitude, latitude, radius } = object;
+        if (util.isNullOrUndefined(longitude)
          || util.isNullOrUndefined(latitude)
          || util.isNullOrUndefined(radius)) {
             return controller.badRequest(request, response, 'Incomplete request');
         }
         // Find all the data within the radius.
-        const EARTH_RADIUS = 6371e3;
+        const EARTH_RADIUS = 6371e3; // metres.
         const radRadius = radius/EARTH_RADIUS; // Convert distance to radians.
         const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
         model.getPriceMap(lonMin, lonMax, latMin, latMax, (error, results) => {
@@ -59,7 +56,7 @@ module.exports.CALLBACK = function(request, response) {
 function lonLatBounds(longitude, latitude, radius) {
     // Compute Δlongitude.
     const latT = Math.asin(Math.sin(latitude)/Math.cos(radius));
-    const dlon = Math.acos((Math.cos(radius) - Math.sin(latT)*Math.sin(latitude))/(Math.cos(latT)/Math.cos(lat)));
+    const dlon = Math.acos((Math.cos(radius) - Math.sin(latT)*Math.sin(latitude))/(Math.cos(latT)/Math.cos(latitude)));
     // Return results.
     return {
         lonMin: longitude - dlon,
