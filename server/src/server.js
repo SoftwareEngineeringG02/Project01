@@ -6,6 +6,7 @@ require('newrelic');
 
 const path = require('path');
 const http = require('http');
+const https = require('https');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
@@ -41,7 +42,13 @@ function startServer(error) {
     process.on('uncaughtException', handleError);
     process.on('exit', handleExit);
     // Start the server.
-    var server = http.createServer(controller.handleRequest);
+    if (util.isNullOrUndefined(config.SSL_KEY)) {
+        var server = http.createServer(controller.handleRequest);
+    } else {
+        ssl = { key: config.SSL_KEY, cert: config.SSL_CERT, ca: config.SSL_CA };
+        var server = https.createServer(ssl, controller.handleRequest);
+        config.PORT = config.SSL_PORT;
+    }
     server.on('error', handleError);
     server.listen(config.PORT, (error) => {
         if (error) {
