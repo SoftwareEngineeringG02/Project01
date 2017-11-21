@@ -35,9 +35,11 @@ function die {
 }
 
 function setup_env {
-    while read LINE; do
-        export "${LINE}"
-    done <"${server_conf}"
+    if [[ -f "${server_conf}" ]]; then
+        while read LINE; do
+            export "${LINE}"
+        done <"${server_conf}"
+    fi
 }
 
 function start_daemon {

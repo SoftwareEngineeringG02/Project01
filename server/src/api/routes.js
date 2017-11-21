@@ -3,8 +3,8 @@
  * @module api/routes
  */
 const path = require('path');
-const log  = require(`${global.SERVER_ROOT}/server/log`);
-const util = require(`${global.SERVER_ROOT}/util`);
+const log  = require(`${SERVER_ROOT}/server/log`);
+const util = require(`${SERVER_ROOT}/util`);
 
 /**
  * Initialise routing.
@@ -27,7 +27,7 @@ const util = require(`${global.SERVER_ROOT}/util`);
  */
 function init() {
     log.trace(module, init);
-    const dir = `${global.SERVER_ROOT}/api/routes`;
+    const dir = `${SERVER_ROOT}/api/routes`;
     var endpoints = [];
     // Find all Javascript files in dir.
     util.walk(dir, (filepath) => {

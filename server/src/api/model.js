@@ -2,9 +2,9 @@
  * Server API model.
  * @module api/model
  */
-const database = require(`${global.SERVER_ROOT}/database/mysql.js`);
-const log      = require(`${global.SERVER_ROOT}/server/log`);
-const util     = require(`${global.SERVER_ROOT}/util`);
+const database = require(`${SERVER_ROOT}/database/mysql.js`);
+const log      = require(`${SERVER_ROOT}/server/log`);
+const util     = require(`${SERVER_ROOT}/util`);
 
 // Table containing price data.
 const TPRICE    = 'price';
@@ -61,10 +61,9 @@ function setLocation(id, time, longitude, latitude, callback) {
 function getPrice(longitude, latitude, callback) {
     log.trace(module, getPrice);
     // Longitudes and latitudes in the DB are precise to 13 decimal places. 10^-12 of a degree is
-    // about 6.5 nm, which means the server won't return
-    // To fix
-    // this, we allow a tolerance of 10^-6 degrees, which is about 11 m. We then log how many
-    // results this returns (for debugging) and return the first (and hopefully only) result.
+    // about 6.5 nm, which means the server won't return anything unless the user stands in a very
+    // specific spot. To fix this, we allow a tolerance of 10^-6 degrees, which is about 11 m. We
+    // then log how many results this returns (for debugging) and return the first (and hopefully only) result.
     const R10M   = 1e-6;
     const lonMin = longitude - R10M;
     const lonMax = longitude + R10M;

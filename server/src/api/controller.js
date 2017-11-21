@@ -2,10 +2,19 @@
  * Server API controller.
  * @module api/controller
  */
-const log    = require(`${global.SERVER_ROOT}/server/log`);
-const model  = require(`${global.SERVER_ROOT}/api/model`);
-const routes = require(`${global.SERVER_ROOT}/api/routes`);
-const util   = require(`${global.SERVER_ROOT}/util`);
+const log    = require(`${SERVER_ROOT}/server/log`);
+const model  = require(`${SERVER_ROOT}/api/model`);
+const routes = require(`${SERVER_ROOT}/api/routes`);
+const util   = require(`${SERVER_ROOT}/util`);
+
+/**
+ * Initialise the controller.
+ * @param config The configuration.
+ */
+function init(config, callback) {
+    log.trace(module, init);
+    routes.init(config, () => { model.init(config, callback); });
+}
 
 /**
  * Handle an HTTP request.

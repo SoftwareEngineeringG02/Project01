@@ -2,7 +2,7 @@
  * Configuration of the server.
  * @module server/config
  */
-const log = require(`${global.SERVER_ROOT}/server/log`);
+const log = require(`${SERVER_ROOT}/server/log`);
 
 /**
  * Default values for configuration. Uses environment variables if available, otherwise defines
