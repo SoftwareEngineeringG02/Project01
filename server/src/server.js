@@ -9,7 +9,7 @@ const http = require('http');
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
 
-const config     = require(`${global.SERVER_ROOT}/server/config`).defaults;
+const config     = require('/etc/advse/config.js');
 const controller = require(`${global.SERVER_ROOT}/api/controller`);
 const log        = require(`${global.SERVER_ROOT}/server/log`);
 const util       = require(`${global.SERVER_ROOT}/util`);
