@@ -6,10 +6,19 @@ const database = require(`${SERVER_ROOT}/database/mysql.js`);
 const log      = require(`${SERVER_ROOT}/server/log`);
 const util     = require(`${SERVER_ROOT}/util`);
 
-// Table containing price data.
-const TPRICE    = 'price';
-// Table containing location data.
+// Tables.
+const TCLIENT   = 'client';
+const TSERVER   = 'server';
+const TREQUEST  = 'request';
 const TLOCATION = 'location';
+const TPRICE    = 'price';
+
+/**
+ * Persist a request to the database.
+ */
+function onRequest(request, id, time, ) {
+    log.trace(module, getLocation);
+}
 
 /**
  * Get the most recent location data associated with an ID, if available.
@@ -40,7 +49,7 @@ function listLocation(id, callback) {
  * @param time The POSIX timestamp.
  * @param longitude The longitude.
  * @param latitude The latitude.
- * @param callback A function to call when results are ready. Arguments are (error, results).
+ * @param callback A function(error, results) to call when results are ready.
  */
 function setLocation(id, time, longitude, latitude, callback) {
     log.trace(module, setLocation);
