@@ -30,12 +30,6 @@ module.exports.getModuleName = function(mod) {
  * @example getFunctionName({filename: 'module.js'}, {name: 'foo'}) ==> 'module.foo'
  */
 module.exports.getFunctionName = function(mod, fun) {
-    if (typeof mod !== 'object') {
-        throw new TypeError(`Expected a module`);
-    }
-    if (typeof fun !== 'function') {
-        throw new TypeError(`Expected a function`);
-    }
     return `${module.exports.getModuleName(mod)}.${fun.name}`;
 }
 
@@ -68,26 +62,26 @@ module.exports.walk = function(dir, callback) {
  * @param body A buffer che HTTP request body.
  * @param elems A dictionary associating object names to their expected types, e.g. 'string',
  * 'object' or 'number.'
- * @return A Javascript object containing the items found, if any.
+ * @param callback A function(error, object) which processes the resulting Javascript object.
  */
-module.exports.getJsonElements = function(body, elems) {
+module.exports.getJsonElements = function(body, elems, callback) {
     // Try to parse the body as JSON.
-    var object;
     try {
-        object = JSON.parse(body);
-    } catch (SyntaxError) {
-        throw new Error('Invalid JSON data');
+        var object = JSON.parse(body);
+    } catch (error) {
+        return callback(error);
     }
     // Extract the elements named by 'elems'.
     var result = {};
     for (var name in elems) {
-        var type = elems[name];
-        if (!(module.exports.isNullOrUndefined(object[name]))) {
-            if (typeof object[name] !== type) {
-                throw new Error('Invalid JSON data');
-            }
-            result[name] = object[name];
+        const type = elems[name];
+        if (module.exports.isNullOrUndefined(object[name])) {
+            return callback(new Error(`Missing property '${name}' in request`))
         }
+        if (typeof object[name] !== type) {
+            return callback(new Error(`Property '${name}' (expected ${type}, got ${typeof object[name]})`));
+        }
+        result[name] = object[name];
     }
-    return result;
+    return callback(null, result);
 }

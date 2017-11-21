@@ -78,17 +78,23 @@ function setLocation(id, time, longitude, latitude, callback) {
  */
 function getPrice(longitude, latitude, callback) {
     log.trace(module, getPrice);
-    const search = { lhs: { lhs: 'longitude', op: '=', rhs: longitude },
-                     op:  'and',
-                     rhs: { lhs: 'latitude',  op: '=', rhs: latitude } };
-    database.find(TPRICE, search, preCallback);
-    function preCallback(error, results) {
-        if (util.isNullOrUndefined(results) || results.length == 0) {
-            callback(error, null);
-        } else {
-            callback(error, results[0])
+    // Longitudes and latitudes in the DB are precise to 13 decimal places, which is 6.5 nm. To fix
+    // this, we allow a tolerance of 10^-4 degrees, which is about 11 m. We then log how many
+    // results this returns (for debugging) and return the first (and hopefully only) result.
+    const R10M   = 1e-15;
+    const lonMin = longitude - R10M;
+    const lonMax = longitude + R10M;
+    const latMin = latitude  - R10M;
+    const latMax = latitude  + R10M;
+    getPriceMap(lonMin, lonMax, latMin, latMax, (error, results) => {
+        var count = 0;
+        if (results) {
+            count   = results.length;
+            results = results[0];
         }
-    }
+        log.debug(`${count} results within ${R10M} radius of (${latitude},${longitude})`);
+        callback(error, results);
+    });
 }
 
 /**
