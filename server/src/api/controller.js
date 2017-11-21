@@ -8,15 +8,6 @@ const routes = require(`${global.SERVER_ROOT}/api/routes`);
 const util   = require(`${global.SERVER_ROOT}/util`);
 
 /**
- * Initialise the controller.
- * @param config The configuration.
- */
-function init(config, callback) {
-    log.trace(module, init);
-    routes.init(config, () => { model.init(config, callback); });
-}
-
-/**
  * Handle an HTTP request.
  * Matches the endpoint in the request to its appropriate handler, or badRequest if there is an
  * error.
@@ -102,7 +93,6 @@ function doResponse(response, json, code) {
     response.end(JSON.stringify(json));
 }
 
-module.exports.init           = init;
 module.exports.handleRequest  = handleRequest;
 module.exports.badRequest     = badRequest;
 module.exports.getRequestBody = getRequestBody;

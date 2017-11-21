@@ -10,6 +10,9 @@ global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
 
 const config     = require(`${global.SERVER_ROOT}/server/config`).defaults;
 const controller = require(`${global.SERVER_ROOT}/api/controller`);
+const database   = require(`${global.SERVER_ROOT}/database/mysql`);
+const model      = require(`${global.SERVER_ROOT}/api/model`);
+const routes     = require(`${global.SERVER_ROOT}/api/routes`);
 const log        = require(`${global.SERVER_ROOT}/server/log`);
 const util       = require(`${global.SERVER_ROOT}/util`);
 
@@ -22,15 +25,16 @@ function init() {
     log.info(`Server process ID: ${process.pid}`);
     log.info(`Server root directory: ${global.SERVER_ROOT}`);
     log.trace(module, init);
-    // Initialise controller.
-    controller.init(config, startServer);
+    // Initialise subsystems.
+    routes.init();
+    database.init(config, startServer);
 }
 
 function startServer(error) {
-    if (error) {
-        return handleError(error);
-    }
     log.trace(module, startServer);
+    if (error) {
+        handleError(error);
+    }
     // Set up event handlers.
     process.on('uncaughtException', handleError);
     process.on('exit', handleExit);
@@ -53,7 +57,9 @@ function handleExit() {
 
 // Log error and exit.
 function handleError(error) {
-    log.trace(module, handleError);
-    log.error(`Fatal: ${error}`);
-    process.exit(1);
+    if (error) {
+        log.trace(module, handleError);
+        log.error(`Fatal: ${error}`);
+        process.exit(1);
+    }
 }

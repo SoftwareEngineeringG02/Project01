@@ -6,24 +6,6 @@ const database = require(`${global.SERVER_ROOT}/database/mysql.js`);
 const log      = require(`${global.SERVER_ROOT}/server/log`);
 const util     = require(`${global.SERVER_ROOT}/util`);
 
-
-module.exports.init         = init;
-module.exports.getLocation  = getLocation;
-module.exports.listLocation = listLocation;
-module.exports.setLocation  = setLocation;
-module.exports.getPrice     = getPrice;
-module.exports.getPriceMap  = getPriceMap;
-
-/**
- * Initialise the model.
- * @param config The configuration.
- */
-function init(config, callback) {
-    log.trace(module, init);
-    return database.init(config, callback);
-}
-
-
 // Table containing price data.
 const TPRICE    = 'price';
 // Table containing location data.
@@ -114,3 +96,10 @@ function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
                             rhs: { lhs: 'latitude', op: '<=', rhs: latMax } } };
     database.find(TPRICE, search, callback);
 }
+
+
+module.exports.getLocation  = getLocation;
+module.exports.listLocation = listLocation;
+module.exports.setLocation  = setLocation;
+module.exports.getPrice     = getPrice;
+module.exports.getPriceMap  = getPriceMap;

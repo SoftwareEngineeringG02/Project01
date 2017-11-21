@@ -19,16 +19,13 @@ const util = require(`${global.SERVER_ROOT}/util`);
  * Files called index.js are treated specially in that they handle the endpoint for their
  * parent directory. For example, 'api/routes/foo/index.js' defines the endpoint '/foo'.
  *
- * @param config
- * @param callback A function(config) to call when finished.
- *
  * @return The endpoint table is returned. The endpoint table is an array of JavaScript objects with
  * three properties: 'path', which names the endpoint's path, 'method', which names the HTTP method
  * it supports ('GET', 'PUT', 'POST' or 'DELETE'), and 'callback', which is the function to call
  * when the endpoint is requested. Callbacks take two arguments: an http.Request object, and an
  * http.Response object.
  */
-function init(config, callback) {
+function init() {
     log.trace(module, init);
     const dir = `${global.SERVER_ROOT}/api/routes`;
     var endpoints = [];
@@ -70,7 +67,6 @@ function init(config, callback) {
         }
     });
     module.exports.endpoints = endpoints;
-    return callback(config);
 }
 
 module.exports.init = init;
