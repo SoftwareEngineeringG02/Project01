@@ -2,10 +2,10 @@
  * Server API controller.
  * @module api/controller
  */
-const log    = require(`${global.SERVER_ROOT}/server/log`);
-const model  = require(`${global.SERVER_ROOT}/api/model`);
-const routes = require(`${global.SERVER_ROOT}/api/routes`);
-const util   = require(`${global.SERVER_ROOT}/util`);
+const log    = require(`${SERVER_ROOT}/server/log`);
+const model  = require(`${SERVER_ROOT}/api/model`);
+const routes = require(`${SERVER_ROOT}/api/routes`);
+const util   = require(`${SERVER_ROOT}/util`);
 
 /**
  * Initialise the controller.
@@ -102,7 +102,6 @@ function doResponse(response, json, code) {
     response.end(JSON.stringify(json));
 }
 
-module.exports.init           = init;
 module.exports.handleRequest  = handleRequest;
 module.exports.badRequest     = badRequest;
 module.exports.getRequestBody = getRequestBody;

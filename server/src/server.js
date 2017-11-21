@@ -3,16 +3,20 @@
  * @module server
  */
 require('newrelic');
+
 const path = require('path');
 const http = require('http');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
 
-const config     = require('/etc/advse/config.js');
-const controller = require(`${global.SERVER_ROOT}/api/controller`);
-const log        = require(`${global.SERVER_ROOT}/server/log`);
-const util       = require(`${global.SERVER_ROOT}/util`);
+const config     = require(`${SERVER_ROOT}/server/config.js`).defaults;
+const controller = require(`${SERVER_ROOT}/api/controller`);
+const database   = require(`${SERVER_ROOT}/database/mysql`);
+const model      = require(`${SERVER_ROOT}/api/model`);
+const routes     = require(`${SERVER_ROOT}/api/routes`);
+const log        = require(`${SERVER_ROOT}/server/log`);
+const util       = require(`${SERVER_ROOT}/util`);
 
 init();
 
@@ -21,14 +25,18 @@ function init() {
     log.setLogLevel(config.LOGLEVEL);
     log.info('====================[ Starting Server ]====================');
     log.info(`Server process ID: ${process.pid}`);
-    log.info(`Server root directory: ${global.SERVER_ROOT}`);
+    log.info(`Server root directory: ${SERVER_ROOT}`);
     log.trace(module, init);
-    // Initialise controller.
-    controller.init(config, startServer);
+    // Initialise subsystems.
+    routes.init();
+    database.init(config, startServer);
 }
 
-function startServer() {
+function startServer(error) {
     log.trace(module, startServer);
+    if (error) {
+        handleError(error);
+    }
     // Set up event handlers.
     process.on('uncaughtException', handleError);
     process.on('exit', handleExit);
@@ -51,7 +59,9 @@ function handleExit() {
 
 // Log error and exit.
 function handleError(error) {
-    log.trace(module, handleError);
-    log.error(`Fatal: ${error}`);
-    process.exit(1);
+    if (error) {
+        log.trace(module, handleError);
+        log.error(`Fatal: ${error}`);
+        process.exit(1);
+    }
 }

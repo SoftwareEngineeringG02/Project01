@@ -32,7 +32,7 @@ function init(config, callback) {
         if (!(util.isNullOrUndefined(connection))) {
             connection.end((error) => {
                 if (error) {
-                    throw error;
+                    return callback(error);
                 }
             });
         }
@@ -40,10 +40,10 @@ function init(config, callback) {
     // Connect, handle error if any, otherwise call callback.
     connection.connect((error) => {
         if (error) {
-            throw new Error('Database error: ' + error.toString());
+            return callback(error);
         }
         log.info('Connected to MySQL database');
-        callback();
+        callback(null);
     });
 }
 

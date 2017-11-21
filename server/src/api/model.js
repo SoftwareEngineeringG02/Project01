@@ -2,27 +2,9 @@
  * Server API model.
  * @module api/model
  */
-const database = require(`${global.SERVER_ROOT}/database/mysql.js`);
-const log      = require(`${global.SERVER_ROOT}/server/log`);
-const util     = require(`${global.SERVER_ROOT}/util`);
-
-
-module.exports.init         = init;
-module.exports.getLocation  = getLocation;
-module.exports.listLocation = listLocation;
-module.exports.setLocation  = setLocation;
-module.exports.getPrice     = getPrice;
-module.exports.getPriceMap  = getPriceMap;
-
-/**
- * Initialise the model.
- * @param config The configuration.
- */
-function init(config, callback) {
-    log.trace(module, init);
-    return database.init(config, callback);
-}
-
+const database = require(`${SERVER_ROOT}/database/mysql.js`);
+const log      = require(`${SERVER_ROOT}/server/log`);
+const util     = require(`${SERVER_ROOT}/util`);
 
 // Table containing price data.
 const TPRICE    = 'price';
@@ -78,10 +60,11 @@ function setLocation(id, time, longitude, latitude, callback) {
  */
 function getPrice(longitude, latitude, callback) {
     log.trace(module, getPrice);
-    // Longitudes and latitudes in the DB are precise to 13 decimal places, which is 6.5 nm. To fix
-    // this, we allow a tolerance of 10^-4 degrees, which is about 11 m. We then log how many
-    // results this returns (for debugging) and return the first (and hopefully only) result.
-    const R10M   = 1e-15;
+    // Longitudes and latitudes in the DB are precise to 13 decimal places. 10^-12 of a degree is
+    // about 6.5 nm, which means the server won't return anything unless the user stands in a very
+    // specific spot. To fix this, we allow a tolerance of 10^-6 degrees, which is about 11 m. We
+    // then log how many results this returns (for debugging) and return the first (and hopefully only) result.
+    const R10M   = 1e-6;
     const lonMin = longitude - R10M;
     const lonMax = longitude + R10M;
     const latMin = latitude  - R10M;
@@ -105,10 +88,17 @@ function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
     log.trace(module, getPriceMap);
     const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
                             op:  'and',
-                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax }},
+                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax } },
                      op:  'and',
                      rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
                             op:  'and',
-                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax }}};
+                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax } } };
     database.find(TPRICE, search, callback);
 }
+
+
+module.exports.getLocation  = getLocation;
+module.exports.listLocation = listLocation;
+module.exports.setLocation  = setLocation;
+module.exports.getPrice     = getPrice;
+module.exports.getPriceMap  = getPriceMap;

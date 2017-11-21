@@ -9,6 +9,7 @@ set -e
 server_dir=$(pwd)/$(dirname "$0")
 server_main="${server_dir}/src/server.js"
 server_log="${server_dir}/server.log"
+server_conf="/etc/advse/server.conf"
 
 function is_windows {
     case $(uname -s) in
@@ -33,6 +34,14 @@ function die {
     exit 1
 }
 
+function setup_env {
+    if [[ -f "${server_conf}" ]]; then
+        while read LINE; do
+            export "${LINE}"
+        done <"${server_conf}"
+    fi
+}
+
 function start_daemon {
     [[ -x $(which setsid) ]] || die "setsid command required"
     echo "*** Starting server daemon" >&2
@@ -51,4 +60,5 @@ is_windows || is_root || die "Server should be run as root"
 # Make sure Node.js is installed.
 [[ -x $(which node) ]] || die "Node.js (node) is not in PATH"
 
+setup_env
 start_daemon
