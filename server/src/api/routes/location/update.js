@@ -35,7 +35,11 @@ function handleJson(request, response, error, object) {
         return request.emit('error', error);
     }
     const { id, time, longitude, latitude } = object;
-    model.setLocation(id, time, longitude, latitude);
+    model.setLocation(id, time, longitude, latitude, (innerError) => {
+        if (innerError) {
+            return request.emit('error', innerError);
+        }
+    });
     controller.doResponse(response, {
         'error':   0,
         'message': 'Success',
