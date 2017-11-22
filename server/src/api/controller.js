@@ -7,6 +7,11 @@ const model  = require(`${SERVER_ROOT}/api/model`);
 const routes = require(`${SERVER_ROOT}/api/routes`);
 const util   = require(`${SERVER_ROOT}/util`);
 
+module.exports.handleRequest  = handleRequest;
+module.exports.badRequest     = badRequest;
+module.exports.getRequestBody = getRequestBody;
+module.exports.doResponse     = doResponse;
+
 /**
  * Initialise the controller.
  * @param config The configuration.
@@ -27,14 +32,13 @@ function handleRequest(request, response) {
     log.trace(module, handleRequest);
     // Set up error handler.
     request.on('error', (error) => {
-        badRequest(request, response, error, 400);
+        if (util.isNullOrUndefined(response.statusCode) || response.statusCode == 0 || response.statusCode == 200) {
+            response.statusCode = 400;
+        }
+        badRequest(request, response, error.toString());
         request.connection.destroy();
     });
-    const { method, url, headers } = request;
-    // Log user info.
-    const address = request.connection.remoteAddress;
-    const agent   = headers['user-agent'];
-    log.info(`Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
+    const { method, url } = request;
     // Call the handler for the endpoint if it exists.
     for (var i = 0; i < routes.endpoints.length; ++i) {
         const endpoint = routes.endpoints[i];
@@ -49,6 +53,7 @@ function handleRequest(request, response) {
 /**
  * Get the body data from a request.
  * @param request The request.
+ * @param response The response.
  * @param callback A function(error, data) which processes the body data.
  */
 function getRequestBody(request, callback) {
@@ -70,9 +75,10 @@ function getRequestBody(request, callback) {
  * @param request The HTTP request.
  * @param response The HTTP response.
  * @param [message] An optional error message.
- * @param [code] An optional HTTP response code.
+ * @param [status] An optional HTTP status code.
+ * @param [requestID] @see model.startRequest @see model.endRequest
  */
-function badRequest(request, response, message, code) {
+function badRequest(request, response, message, status) {
     log.trace(module, badRequest);
     if (util.isNullOrUndefined(message)) {
         const { method, url } = request;
@@ -83,26 +89,29 @@ function badRequest(request, response, message, code) {
         'error':   1,
         'message': message,
         'links':   routes.endpoints
-    }, code);
+    }, status);
 }
 
 /**
  * Respond to an HTTP request.
  * @param response The HTTP response.
  * @param json JSON data to write.
- * @param [code] An optional HTTP response code.
+ * @param [status] An optional HTTP status code.
+ * @param [requestID] @see model.startRequest @see model.endRequest
  */
-function doResponse(response, json, code) {
+function doResponse(response, json, status, requestID) {
     log.trace(module, doResponse);
-    if (util.isNullOrUndefined(code)) {
-        code = 200;
+    if (util.isNullOrUndefined(status)) {
+        status = 200;
     }
-    response.statusCode = code;
+    response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify(json));
+    if (!(util.isNullOrUndefined(requestID))) {
+        model.endRequest(requestID, status, (error) => {
+            if (error) {
+                log.warn(error);
+            }
+        });
+    }
 }
-
-module.exports.handleRequest  = handleRequest;
-module.exports.badRequest     = badRequest;
-module.exports.getRequestBody = getRequestBody;
-module.exports.doResponse     = doResponse;

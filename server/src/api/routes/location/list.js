@@ -20,26 +20,42 @@ function handleBody(request, response, error, body) {
     if (error) {
         return request.emit('error', error);
     }
-    util.getJsonElements(body, {'id': 'string'}, handleJson.bind(null, request, response));
+    util.getJsonElements(
+        body,
+        {id: 'string', time: 'number'},
+        handleJson.bind(null, request, response)
+    );
 }
 
 function handleJson(request, response, error, object) {
     if (error) {
         return request.emit('error', error);
     }
-    model.listLocation(object.id, handleList.bind(null, request, response));
+    const { id, time } = object;
+    model.startRequest(request, id, time, getList.bind(null, request, response, id));
 }
 
-function handleList(request, response, error, result) {
+function getList(request, response, id, error, requestID) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    model.listLocation(id, handleList.bind(null, request, response, requestID));
+}
+
+function handleList(request, response, requestID, error, results) {
     if (error) {
         return request.emit('error', error);
     }
     // Send response.
-    controller.doResponse(response, {
-        'error':     0,
-        'message':   'Success',
-        'results':   results,
-        'time':      time,
-        'links':     routes.endpoints
-    });
+    controller.doResponse(
+        response,
+        {
+            'error':   0,
+            'message': 'Success',
+            'results': results,
+            'links':   routes.endpoints
+        },
+        200,
+        requestID
+    );
 }

@@ -22,7 +22,12 @@ function handleBody(request, response, error, body) {
     if (error) {
         return request.emit('error', error);
     }
-    const elems = {'longitude': 'number', 'latitude': 'number'};
+    const elems = {
+        id:        'string',
+        time:      'number',
+        longitude: 'number',
+        latitude:  'number'
+    };
     util.getJsonElements(body, elems, handleJson.bind(null, request, response));
 }
 
@@ -30,26 +35,44 @@ function handleJson(request, response, error, object) {
     if (error) {
         return request.emit('error', error);
     }
+    const { id, time, longitude, latitude } = object;
+    model.startRequest(
+        request,
+        id,
+        time,
+        getPrice.bind(null, request, response, longitude, latitude)
+    );
+}
+
+function getPrice(request, response, longitude, latitude, error, requestID) {
+    if (error) {
+        return request.emit('error', error);
+    }
     model.getPrice(
-        object.longitude,
-        object.latitude,
-        handlePrice.bind(null, request, response)
+        longitude,
+        latitude,
+        handlePrice.bind(null, request, response, requestID)
     );
 }
 
 // Return price in response.
-function handlePrice(request, response, error, result) {
+function handlePrice(request, response, requestID, error, result) {
     if (error) {
         return request.emit('error', error);
     }
     if (util.isNullOrUndefined(result)) {
-        return request.emit('error', 'No data associated with ID');
+        return request.emit('error', 'No price associated with location');
     }
     // Send response.
-    controller.doResponse(response, {
-        'error':   0,
-        'message': 'Success',
-        'price':   result.price,
-        'links':   routes.endpoints
-    });
+    controller.doResponse(
+        response,
+        {
+            'error':   0,
+            'message': 'Success',
+            'price':   result.price,
+            'links':   routes.endpoints
+        },
+        200,
+        requestID
+    );
 };

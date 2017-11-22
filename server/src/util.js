@@ -3,6 +3,7 @@
  * @module util
  */
 const fs   = require('fs');
+const ip   = require('ip');
 const path = require('path');
 
 /**
@@ -76,12 +77,27 @@ module.exports.getJsonElements = function(body, elems, callback) {
     for (var name in elems) {
         const type = elems[name];
         if (module.exports.isNullOrUndefined(object[name])) {
-            return callback(new Error(`Missing property '${name}' in request`))
+            return callback(`${name}: undefined`);
         }
         if (typeof object[name] !== type) {
-            return callback(new Error(`Property '${name}' (expected ${type}, got ${typeof object[name]})`));
+            return callback(`${name}: expected ${type}, got ${typeof object[name]}`);
         }
         result[name] = object[name];
     }
     return callback(null, result);
+}
+
+/**
+ * Get the server's local network IP address.
+ */
+module.exports.getLocalAddress = function() {
+    return ip.address();
+}
+
+/**
+ * Get the current UTC time as an ISO-formatted string.
+ */
+module.exports.getTimeStamp = function() {
+    var d = new Date();
+    return d.toISOString().replace('T', ' ').substr(0, 19);
 }

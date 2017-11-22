@@ -77,3 +77,13 @@ Every response from the server will include a JSON object the following properti
 * When using the `list-location` endpoint, the response will include an array of Javascript objects with `longitude`, `latitude` and `time` properties.
 
 * `get-price` returns a property called `price` which is the price paid for the property in pounds. `get-price-map` returns a property called `map` which associates longitude and latitudes with prices paid within a radius of the supplied `longitude` and `latitude`. This also returns post codes and addresses where available.
+
+### Data model
+
+The MySQL database `serverdb` contains these tables:
+
+1. `client`:   Associates client identifiers (phone number) and IP addresses.
+2. `server`:   Associates server IDs and IP addresses.
+3. `request`:  Associates requests with clients and servers along with start time, end time and status (0: success, 1: failure).
+4. `location`: Associates clients with location history.
+5. `price`:    Associates addresses/co-ordinates with house prices.

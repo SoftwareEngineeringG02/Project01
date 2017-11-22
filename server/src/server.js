@@ -4,8 +4,8 @@
  */
 require('newrelic');
 
-const path = require('path');
-const http = require('http');
+const path  = require('path');
+const http  = require('http');
 const https = require('https');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
