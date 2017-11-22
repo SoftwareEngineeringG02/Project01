@@ -6,6 +6,7 @@ const controller = require(`${SERVER_ROOT}/api/controller`);
 const log        = require(`${SERVER_ROOT}/server/log`);
 const model      = require(`${SERVER_ROOT}/api/model`);
 const routes     = require(`${SERVER_ROOT}/api/routes`);
+const util       = require(`${SERVER_ROOT}/util`);
 
 module.exports.REL    = 'list-location'
 
