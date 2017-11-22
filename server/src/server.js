@@ -39,7 +39,6 @@ function startServer(error) {
         handleError(error);
     }
     // Set up event handlers.
-    process.on('uncaughtException', handleError);
     process.on('exit', handleExit);
     // Start the server.
     if (util.isNullOrUndefined(config.SSL_KEY)) {

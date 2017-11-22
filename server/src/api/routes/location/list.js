@@ -11,51 +11,23 @@ module.exports.REL    = 'list-location'
 
 module.exports.METHOD = 'POST';
 
-module.exports.CALLBACK = function(request, response) {
-    log.trace(module.exports.REL);
-    controller.getRequestBody(request, handleBody.bind(null, request, response));
- }
+module.exports.INPUTS = {'id': 'string'};
 
-function handleBody(request, response, error, body) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    util.getJsonElements(
-        body,
-        {id: 'string', time: 'number'},
-        handleJson.bind(null, request, response)
-    );
-}
-
-function handleJson(request, response, error, object) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    const { id, time } = object;
-    model.startRequest(request, id, time, getList.bind(null, request, response, id));
-}
-
-function getList(request, response, id, error, requestID) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    model.listLocation(id, handleList.bind(null, request, response, requestID));
-}
-
-function handleList(request, response, requestID, error, results) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    // Send response.
-    controller.doResponse(
-        response,
-        {
-            'error':   0,
-            'message': 'Success',
-            'results': results,
-            'links':   routes.endpoints
-        },
-        200,
-        requestID
-    );
+module.exports.CALLBACK = function(inputs) {
+    log.debug(module.exports.REL);
+    return model.listLocation(inputs.id)
+        .then(results => {
+            if (util.isNullOrUndefined(results)) {
+                return Promise.reject(new util.ServerError('No location data associated with client'));
+            }
+            return [
+                200,
+                {
+                    'error':   0,
+                    'message': 'Success',
+                    'results': results
+                }
+            ];
+        })
+    ;
 }
