@@ -22,6 +22,8 @@ function handleBody(request, response, error, body) {
         return request.emit('error', error)
     }
     const elems = {
+        id:        'string',
+        time:      'number',
         longitude: 'number',
         latitude:  'number',
         radius:    'number'
@@ -33,24 +35,47 @@ function handleJson(request, response, error, object) {
     if (error) {
         return request.emit('error', error)
     }
-    const { longitude, latitude, radius } = object;
+    const { id, time, longitude, latitude, radius } = object;
+    model.startRequest(
+        request,
+        id,
+        time,
+        getPriceMap.bind(null, request, response, longitude, radius, latitude)
+    );
+}
+
+function getPriceMap(request, response, longitude, latitude, radius, error, requestID) {
+    if (error) {
+        return request.emit('error', error)
+    }
     const EARTH_RADIUS = 6371e3; // metres.
     const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
     const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
-    model.getPriceMap(lonMin, lonMax, latMin, latMax, handlePriceMap.bind(null, request, response));
+    model.getPriceMap(
+        lonMin,
+        lonMax,
+        latMin,
+        latMax,
+        handlePriceMap.bind(null, request, response, requestID)
+    );
 }
 
-function handlePriceMap(request, response, error, results) {
+function handlePriceMap(request, response, requestID, error, results) {
     if (error) {
         return request.emit('error', error);
     }
     // Return the results.
-    controller.doResponse(response, {
-        'error':   0,
-        'message': 'Success',
-        'map':     results,
-        'links':   routes.endpoints
-    });
+    controller.doResponse(
+        response,
+        {
+            'error':   0,
+            'message': 'Success',
+            'map':     results,
+            'links':   routes.endpoints
+        },
+        200,
+        requestID
+    );
 }
 
 // Compute the minimum and maximum longitude and latitude of points within a radius of a given point

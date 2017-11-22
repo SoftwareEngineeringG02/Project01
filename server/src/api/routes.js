@@ -30,14 +30,14 @@ function init() {
     const dir = `${SERVER_ROOT}/api/routes`;
     var endpoints = [];
     // Find all Javascript files in dir.
-    util.walk(dir, (filepath) => {
-        filepath = path.posix.normalize(filepath.replace(/\\/g, '/'));
-        if (path.extname(filepath) == '.js') {
-            const relPath = filepath.replace(dir, '');
+    util.walk(dir, (filePath) => {
+        filePath = path.posix.normalize(filePath.replace(/\\/g, '/'));
+        if (path.extname(filePath) == '.js') {
+            const relPath = filePath.replace(dir, '');
             // Try to load the module
             var epModule;
             try {
-                epModule = require(filepath);
+                epModule = require(filePath);
             } catch (error) {
                 // This error probably indicates that the file is not a valid Javascript source
                 // file. Log the error and skip.
@@ -48,9 +48,9 @@ function init() {
              || util.isNullOrUndefined(epModule.METHOD)
              || util.isNullOrUndefined(epModule.CALLBACK)) {
                 // Not a valid module - log and skip.
-                return log.warn(`Javascript source file ${filepath} does not define an endpoint`);
+                return log.warn(`Javascript source file ${filePath} does not define an endpoint`);
             }
-            // Compute the endpoint path from the filepath. If the module is called 'index.js',
+            // Compute the endpoint path from the filePath. If the module is called 'index.js',
             // strip the filename from the path.
             var epPath = relPath.replace('.js', '');
             if (path.basename(epPath) == 'index') {

@@ -102,15 +102,9 @@ function error(msg, args) {
 // Current minimum log-level.
 var logLevel = LogLevel.DEBUG;
 
-// Get the current UTC time as an ISO-formatted string.
-function getTimeStamp() {
-    var d = new Date();
-    return d.toISOString().replace('T', ' ').substr(0, 19);
-}
-
 // Format a message with the timestamp and log level marker.
 function formatMessage(level, msg) {
-    return getTimeStamp() + ' ' + LogLevel.name[level] + ': ' + msg;
+    return util.getTimeStamp() + ' ' + LogLevel.name[level] + ': ' + msg;
 }
 
 module.exports.LogLevel    = LogLevel;

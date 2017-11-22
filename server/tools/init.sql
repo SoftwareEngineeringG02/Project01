@@ -1,62 +1,56 @@
 /* Create database. */
-create database if not exists serverdb;
-use serverdb;
+CREATE DATABASE IF NOT EXISTS serverdb;
+USE serverdb;
 
 /* Drop any existing tables. */
-drop table if exists location;
-drop table if exists client;
-drop table if exists server;
-drop table if exists request;
-drop table if exists price;
+DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS request;
+DROP TABLE IF EXISTS price;
 
 /* Create new tables. */
-create table client (
-    name    varchar(50)   not null,
-    address varbinary(16) not null,
-    time     int          not null,
+CREATE TABLE client (
+    num     INT            NOT NULL AUTO_INCREMENT,
+    id      VARCHAR(50)    NOT NULL,
+    address VARCHAR(40)    NOT NULL,
+    agent   VARCHAR(4000),
+    time    INT            NOT NULL,
+    PRIMARY KEY(num)
+);
+
+CREATE TABLE request (
+    id        INT         NOT NULL AUTO_INCREMENT,
+    client    INT         NOT NULL,
+    url       VARCHAR(28) NOT NULL,
+    method    VARCHAR(6)  NOT NULL,
+    server    VARCHAR(40) NOT NULL,
+    starttime datetime    NOT NULL,
+    endtime   datetime,
+    status    INT,
     PRIMARY KEY(id)
 );
 
-create table server (
-    id      int           not null,
-    address varbinary(16) not null,
+CREATE TABLE location (
+    id        INT    NOT NULL AUTO_INCREMENT,
+    client    INT    NOT NULL,
+    longitude DOUBLE NOT NULL,
+    latitude  DOUBLE NOT NULL,
     PRIMARY KEY(id)
 );
 
-create table request (
-    id        int         not null, -- Request ID.
-    client    int         not null, -- Client ID.
-    url       varchar(28) not null, -- Requested URL.
-    method    varchar(4)  not null, -- Request method.
-    server    int         not null, --
-    startTime int         not null, --
-    endTime   int         not null, --
-    status    int         not null, --
-    PRIMARY KEY(id)
-);
-
-create table location (
-    id        int    not null,
-    client    int    not null,
-    time      int    not null,
-    longitude double not null,
-    latitude  double not null,
-    PRIMARY KEY(id))
-);
-
-create table price (
-    id        int          not null,
-    price     int          not null,
-    date      date         not null,
-    postcode  varchar(8),
-    paon      varchar(50),
-    saon      varchar(50),
-    street    varchar(50),
-    locality  varchar(50),
-    town      varchar(50),
-    district  varchar(50),
-    county    varchar(50),
-    latitude  double       not null,
-    longitude double       not null,
+CREATE TABLE price (
+    id        INT          NOT NULL,
+    price     INT          NOT NULL,
+    date      DATE         NOT NULL,
+    postcode  VARCHAR(8),
+    paon      VARCHAR(50),
+    saon      VARCHAR(50),
+    street    VARCHAR(50),
+    locality  VARCHAR(50),
+    town      VARCHAR(50),
+    district  VARCHAR(50),
+    county    VARCHAR(50),
+    latitude  DOUBLE       NOT NULL,
+    longitude DOUBLE       NOT NULL,
     PRIMARY KEY(id)
 );

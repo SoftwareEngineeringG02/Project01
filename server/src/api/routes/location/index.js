@@ -21,28 +21,51 @@ function handleBody(request, response, error, body) {
     if (error) {
         return request.emit('error', error);
     }
-    util.getJsonElements(body, {'id': 'string'}, handleJson.bind(null, request, response));
+    util.getJsonElements(
+        body,
+        {'id': 'string', 'time': 'number'},
+        handleJson.bind(null, request, response)
+    );
 }
 
 function handleJson(request, response, error, object) {
     if (error) {
         return request.emit('error', error);
     }
-    model.getLocation(object.id, handleLocation.bind(null, request, response));
+    const { id, time } = object;
+    model.startRequest(request, id, time, getLocation.bind(null, request, response, id));
 }
 
-function handleLocation(request, response, error, result) {
+function getLocation(request, response, id, error, requestID) {
     if (error) {
         return request.emit('error', error);
     }
+    model.getLocation(
+        id,
+        handleLocation.bind(null, request, response, requestID)
+    );
+}
+
+function handleLocation(request, response, requestID, error, result) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    if (util.isNullOrUndefined(result)) {
+        return request.emit('error', 'No data associated with ID');
+    }
     const { longitude, latitude, time } = result;
     // Send response.
-    controller.doResponse(response, {
-        'error':     0,
-        'message':   'Success',
-        'longitude': longitude,
-        'latitude':  latitude,
-        'time':      time,
-        'links':     routes.endpoints
-    });
+    controller.doResponse(
+        response,
+        {
+            'error':     0,
+            'message':   'Success',
+            'longitude': longitude,
+            'latitude':  latitude,
+            'time':      time,
+            'links':     routes.endpoints
+        },
+        200,
+        requestID
+    );
 }
