@@ -108,13 +108,13 @@ test_get "/invalid" "error" "number" "1"
 # POST /location/update should succeed.
 test_post "/location/update" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": ${longitude}, \"latitude\": ${latitude} }" "error" "number" "0"
 # POST /location should return the same values for longitude and latitude.
-test_post "/location" "{\"id\": \"${id}\"}" "longitude" "number" "${longitude}"
+test_post "/location" "{\"id\": \"${id}\", \"time\": ${timestamp}}" "longitude" "number" "${longitude}"
 # POST /location should return the same values for longitude and latitude.
-test_post "/location" "{\"id\": \"${id}\"}" "latitude" "number" "${latitude}"
+test_post "/location" "{\"id\": \"${id}\", \"time\": ${timestamp}}" "latitude" "number" "${latitude}"
 # POST /price should return the price.
-test_post "/price" "{\"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833}" "price" "number" "180000"
+test_post "/price" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833}" "price" "number" "180000"
 # POST /price/map should succeed.
-test_post "/price/map" "{\"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833, \"radius\": 10000}" "error" "number" "0"
+test_post "/price/map" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833, \"radius\": 10000}" "error" "number" "0"
 
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
 

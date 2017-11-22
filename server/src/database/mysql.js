@@ -9,13 +9,14 @@ const util  = require(`${SERVER_ROOT}/util`);
 module.exports.init   = init;
 module.exports.find   = find;
 module.exports.insert = insert;
+module.exports.update = update;
 
 var connection = null;
 
 /**
  * Initialise the database.
- * @param config
- * @param callback
+ * @param config The configuration.
+ * @param callback A function(error) to call when complete.
  */
 function init(config, callback) {
     log.trace(module, init);
@@ -53,7 +54,7 @@ function init(config, callback) {
  * @param search A Javascript object containing the keys: lhs (column name), op (comparison
  * operator) and rhs (comparison value). If operator is "and" or "or", "lhs" and "rhs" are
  * nested objects.
- * @param callback The function to call when results are ready.
+ * @param callback A function(error, rows) to call when results are ready.
  * @param [orderBy] An optional column to sort by.
  * @param [descending] Whether to sort in descending (true) or ascending (false, null, undefined)
  * order (default: ascending).
@@ -63,29 +64,83 @@ function find(table, search, callback, orderBy, descending) {
     if (util.isNullOrUndefined(connection)) {
         throw new Error('Bug: Database used but not initialised');
     }
-    var sql = makeSelect(table, search);
+    const safeTable = mysql.escapeId(table);
+    var   sql       = makeSelect(safeTable, search);
     // Escape DB inputs.
     if (!(util.isNullOrUndefined(orderBy))) {
         // Append sorting.
         const safeOrderBy = mysql.escapeId(orderBy);
         sql += ` ORDER BY ${safeOrderBy}`;
-        if (descending) {
+        if (descending === true) {
             sql += ' DESC';
+        } else {
+            sql += ' ASC';
         }
     }
     // Perform query.
-    const query = connection.query(sql, callback);
+    const query = connection.query(sql, dbCallback.bind(null, callback));
     log.debug(query.sql);
 }
 
-function makeSelect(table, search, inner) {
+/**
+ * Insert a row into a table.
+ * @param table The table to insert into.
+ * @param row The row to insert.
+ * @param callback A function(error, result) to call when finished.
+ */
+function insert(table, row, callback) {
+    if (util.isNullOrUndefined(connection)) {
+        throw new Error('Bug: Database used but not initialised');
+    }
     const safeTable = mysql.escapeId(table);
+    const query = connection.query(
+        `INSERT INTO ${safeTable} SET ?`,
+        [row],
+        dbCallback.bind(null, callback)
+    );
+    log.debug(query.sql);
+}
+
+/**
+ * Update a row.
+ * @param table The table to update into.
+ * @param search The search key to find the row. @see find
+ * @param columns The columns to update.
+ * @param callback A function(error, result) to call when finished.
+ */
+function update(table, search, columns, callback) {
+    if (util.isNullOrUndefined(connection)) {
+        throw new Error('Bug: Database used but not initialised');
+    }
+    const safeTable = mysql.escapeId(table);
+    const where = makeSelect(safeTable, search, true);
+    const query = connection.query(
+        `UPDATE ${safeTable} SET ? where ${where}`,
+        [columns],
+        dbCallback.bind(null, callback)
+    );
+    log.debug(query.sql);
+}
+
+// Pass error/result along to real callback. Used to prevent database error messages finding their
+// way into responses and giving attackers detailed info about the server's state.
+function dbCallback(callback, error, result) {
+    if (error) {
+        log.error(error);
+        callback('Internal server error');
+    } else {
+        callback(null, result);
+    }
+}
+
+// Generate a SQL select statement. NB: makeSelect expects 'safeTable' to be escaped!
+function makeSelect(safeTable, search, inner) {
     const { lhs, op, rhs } = search;
     var where = '';
     if (op == 'and' || op == 'or') {
         // Join nested expressions.
-        const lhsExpr = makeSelect(table, lhs, true);
-        const rhsExpr = makeSelect(table, rhs, true);
+        const lhsExpr = makeSelect(safeTable, lhs, true);
+        const rhsExpr = makeSelect(safeTable, rhs, true);
         where = `${lhsExpr} ${op} ${rhsExpr}`;
     } else {
         // Generate simple expression.
@@ -97,18 +152,6 @@ function makeSelect(table, search, inner) {
     if (inner) {
         return where;
     } else {
-        return `SELECT * FROM ${safeTable} WHERE ${where}`
+        return `SELECT * FROM ${safeTable} WHERE ${where}`;
     }
-}
-
-/**
- * Insert a row into a table.
- */
-function insert(table, row, callback) {
-    if (util.isNullOrUndefined(connection)) {
-        throw new Error('Bug: Database used but not initialised');
-    }
-    const safeTable = mysql.escapeId(table);
-    const query = connection.query(`INSERT INTO ${safeTable} SET ?`, [row], callback);
-    log.debug(query.sql);
 }

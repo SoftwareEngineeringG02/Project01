@@ -35,14 +35,38 @@ function handleJson(request, response, error, object) {
         return request.emit('error', error);
     }
     const { id, time, longitude, latitude } = object;
-    model.setLocation(id, time, longitude, latitude, (innerError) => {
-        if (innerError) {
-            return request.emit('error', innerError);
-        }
-    });
-    controller.doResponse(response, {
-        'error':   0,
-        'message': 'Success',
-        'links':   routes.endpoints
-    });
+    model.startRequest(
+        request,
+        id,
+        time,
+        setLocation.bind(null, request, response, id, longitude, latitude)
+    );
+}
+
+function setLocation(request, response, id, longitude, latitude, error, requestID) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    model.setLocation(
+        id,
+        longitude,
+        latitude,
+        handleLocation.bind(null, request, response, requestID)
+    );
+}
+
+function handleLocation(request, response, requestID, error, results) {
+    if (error) {
+        return request.emit('error', error);
+    }
+    controller.doResponse(
+        response,
+        {
+            'error':   0,
+            'message': 'Success',
+            'links':   routes.endpoints
+        },
+        200,
+        requestID
+    );
 }
