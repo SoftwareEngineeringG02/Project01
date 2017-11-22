@@ -35,7 +35,7 @@ function handleRequest(request, response) {
         if (util.isNullOrUndefined(response.statusCode) || response.statusCode == 0 || response.statusCode == 200) {
             response.statusCode = 400;
         }
-        badRequest(request, response, error.toString());
+        badRequest(request, response, error.message);
         request.connection.destroy();
     });
     const { method, url } = request;

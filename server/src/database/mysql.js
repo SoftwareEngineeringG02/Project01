@@ -58,15 +58,17 @@ function init(config, callback) {
  * @param [orderBy] An optional column to sort by.
  * @param [descending] Whether to sort in descending (true) or ascending (false, null, undefined)
  * order (default: ascending).
+ * @param [column] Whether to select just one or a few columns, or all of them (*). Default: *
  */
-function find(table, search, callback, orderBy, descending) {
+function find(table, search, callback, orderBy, descending, column='*') {
     log.trace(module, find);
     if (util.isNullOrUndefined(connection)) {
         throw new Error('Bug: Database used but not initialised');
     }
-    const safeTable = mysql.escapeId(table);
-    var   sql       = makeSelect(safeTable, search);
-    // Escape DB inputs.
+    // Generate SQL query.
+    const safeColumn = mysql.escapeId(column);
+    const safeTable  = mysql.escapeId(table);
+    var   sql        = makeSelect(safeTable, search, false, safeColumn);
     if (!(util.isNullOrUndefined(orderBy))) {
         // Append sorting.
         const safeOrderBy = mysql.escapeId(orderBy);
@@ -133,8 +135,8 @@ function dbCallback(callback, error, result) {
     }
 }
 
-// Generate a SQL select statement. NB: makeSelect expects 'safeTable' to be escaped!
-function makeSelect(safeTable, search, inner) {
+// Generate a SQL select statement. NB: makeSelect expects 'safeTable' and 'safeColumn' to be escaped!
+function makeSelect(safeTable, search, inner, safeColumn='*') {
     const { lhs, op, rhs } = search;
     var where = '';
     if (op == 'and' || op == 'or') {
@@ -152,6 +154,6 @@ function makeSelect(safeTable, search, inner) {
     if (inner) {
         return where;
     } else {
-        return `SELECT * FROM ${safeTable} WHERE ${where}`;
+        return `SELECT ${safeColumn} FROM ${safeTable} WHERE ${where}`;
     }
 }

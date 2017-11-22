@@ -115,7 +115,10 @@ test_post "/location" "{\"id\": \"${id}\", \"time\": ${timestamp}}" "latitude" "
 test_post "/price" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833}" "price" "number" "180000"
 # POST /price/map should succeed.
 test_post "/price/map" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": 53.4323033464106, \"latitude\": -3.04224037193833, \"radius\": 10000}" "error" "number" "0"
+# POST /postcode should return a postcode
+test_post "/postcode" "{\"id\": \"${id}\", \"time\": ${timestamp}, \"longitude\": -0.0870764878371261,\"latitude\": 50.8644696983097}" "postcode" "string" "BN1 9RH"
 
+# Show statistics
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
 
 # Fail if any test failed.

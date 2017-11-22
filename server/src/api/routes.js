@@ -35,14 +35,7 @@ function init() {
         if (path.extname(filePath) == '.js') {
             const relPath = filePath.replace(dir, '');
             // Try to load the module
-            var epModule;
-            try {
-                epModule = require(filePath);
-            } catch (error) {
-                // This error probably indicates that the file is not a valid Javascript source
-                // file. Log the error and skip.
-                return log.warn(`${relPath}: ${error}`);
-            }
+            var epModule = require(filePath);
             // Check for REL, METHOD and CALLBACK.
             if (util.isNullOrUndefined(epModule.REL)
              || util.isNullOrUndefined(epModule.METHOD)
