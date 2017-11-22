@@ -13,7 +13,7 @@ module.exports.REL    = 'list-location'
 module.exports.METHOD = 'POST';
 
 module.exports.CALLBACK = function(request, response) {
-    log.trace(module.exports.REL);
+    log.debug(module.exports.REL);
     controller.getRequestBody(request, handleBody.bind(null, request, response));
  }
 
