@@ -40,7 +40,7 @@ function handleJson(request, response, error, object) {
         request,
         id,
         time,
-        getPriceMap.bind(null, request, response, longitude, radius, latitude)
+        getPriceMap.bind(null, request, response, longitude, latitude, radius)
     );
 }
 
@@ -89,6 +89,6 @@ function lonLatBounds(longitude, latitude, radius) {
         lonMin: longitude - dlon,
         lonMax: longitude + dlon,
         latMin: latitude  - radius,
-        latMax: latitude  + radius,
+        latMax: latitude  + radius
     }
 }
