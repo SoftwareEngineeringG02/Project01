@@ -46,7 +46,7 @@ function startServer(error) {
     if (util.isNullOrUndefined(config.SSL_KEY)) {
         var server = http.createServer(controller.handleRequest);
     } else {
-        ssl = { 
+        var ssl = { 
             key: fs.readFileSync(config.SSL_KEY), 
             cert: fs.readFileSync(config.SSL_CERT), 
         };
