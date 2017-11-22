@@ -6,10 +6,10 @@ USE serverdb;
 DROP TABLE IF EXISTS location;
 DROP TABLE IF EXISTS client;
 DROP TABLE IF EXISTS request;
-DROP TABLE IF EXISTS price;
+-- DROP TABLE IF EXISTS price;
 
 /* Create new tables. */
-CREATE TABLE client (
+CREATE TABLE IF NOT EXISTS client (
     num     INT            NOT NULL AUTO_INCREMENT,
     id      VARCHAR(50)    NOT NULL,
     address VARCHAR(40)    NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE client (
     PRIMARY KEY(num)
 );
 
-CREATE TABLE request (
+CREATE TABLE IF NOT EXISTS request (
     id        INT         NOT NULL AUTO_INCREMENT,
     client    INT         NOT NULL,
     url       VARCHAR(28) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE request (
     PRIMARY KEY(id)
 );
 
-CREATE TABLE location (
+CREATE TABLE IF NOT EXISTS location (
     id        INT    NOT NULL AUTO_INCREMENT,
     client    INT    NOT NULL,
     longitude DOUBLE NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE location (
     PRIMARY KEY(id)
 );
 
-CREATE TABLE price (
+CREATE TABLE IF NOT EXISTS price (
     id        INT          NOT NULL,
     price     INT          NOT NULL,
     date      DATE         NOT NULL,
