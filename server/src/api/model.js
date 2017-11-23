@@ -2,11 +2,12 @@
  * Server API model.
  * @module api/model
  */
-const https = require('https');
 
-const database = require(`${SERVER_ROOT}/database/mysql.js`);
-const log      = require(`${SERVER_ROOT}/server/log`);
-const util     = require(`${SERVER_ROOT}/util`);
+var https = require('https');
+
+var database = require(`${SERVER_ROOT}/database/mysql.js`);
+var log      = require(`${SERVER_ROOT}/server/log`);
+var util     = require(`${SERVER_ROOT}/util`);
 
 module.exports.startRequest    = startRequest;
 module.exports.endRequest      = endRequest;
@@ -78,7 +79,7 @@ function endRequest(requestID, status) {
  */
 function getLocation(client) {
     log.trace(module, getLocation);
-    return database.find(TLOCATION, equal('client', client), sortBy='client', descending=true)
+    return database.find(TLOCATION, equal('client', client), 'client', true)
         .then(rows => rows[0])
     ;
 }
@@ -176,7 +177,7 @@ function lonLatBounds(longitude, latitude, radius) {
         lonMax: longitude + radius,
         latMin: latitude  - dlon,
         latMax: latitude  + dlon
-    }
+    };
 }
 
 

@@ -2,15 +2,17 @@
  * Various utility functions.
  * @module util
  */
-const fs   = require('fs');
-const ip   = require('ip');
-const path = require('path');
+
+
+var fs   = require('fs');
+var ip   = require('ip');
+var path = require('path');
 
 /**
  * Return true if the object has type 'undefined' or value 'null'.
  */
 module.exports.isNullOrUndefined = function(object) {
-    return typeof object === 'undefined' || object === null;
+    return object === undefined || object === null;
 }
 
 /**

@@ -2,9 +2,11 @@
  * Endpoint routing logic.
  * @module api/routes
  */
-const path = require('path');
-const log  = require(`${SERVER_ROOT}/server/log`);
-const util = require(`${SERVER_ROOT}/util`);
+
+
+var path = require('path');
+var log  = require(`${SERVER_ROOT}/server/log`);
+var util = require(`${SERVER_ROOT}/util`);
 
 module.exports.init      = init;
 module.exports.endpoints = [];
@@ -39,10 +41,10 @@ function init() {
             // Try to load the module
             var epModule = require(filePath);
             // Check for REL, METHOD and CALLBACK.
-            if (util.isNullOrUndefined(epModule.REL)
-             || util.isNullOrUndefined(epModule.METHOD)
-             || util.isNullOrUndefined(epModule.INPUTS)
-             || util.isNullOrUndefined(epModule.CALLBACK)) {
+            if (util.isNullOrUndefined(epModule.REL)    ||
+                util.isNullOrUndefined(epModule.METHOD) ||
+                util.isNullOrUndefined(epModule.INPUTS) ||
+                util.isNullOrUndefined(epModule.CALLBACK)) {
                 // Not a valid module - log and skip.
                 return log.warn(`Javascript source file ${filePath} does not define an endpoint`);
             }

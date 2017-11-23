@@ -2,11 +2,12 @@
  * /price/map endpoint handler.
  * @module api/routes/price/map
  */
-const controller = require(`${SERVER_ROOT}/api/controller`);
-const log        = require(`${SERVER_ROOT}/server/log`);
-const model      = require(`${SERVER_ROOT}/api/model`);
-const routes     = require(`${SERVER_ROOT}/api/routes`);
-const util       = require(`${SERVER_ROOT}/util`);
+
+var controller = require(`${SERVER_ROOT}/api/controller`);
+var log        = require(`${SERVER_ROOT}/server/log`);
+var model      = require(`${SERVER_ROOT}/api/model`);
+var routes     = require(`${SERVER_ROOT}/api/routes`);
+var util       = require(`${SERVER_ROOT}/util`);
 
 module.exports.REL      = 'get-price-map';
 

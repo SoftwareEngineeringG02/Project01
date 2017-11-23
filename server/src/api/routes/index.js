@@ -2,10 +2,11 @@
  * / endpoint handler.
  * @module api/routes/index
  */
-const controller = require(`${SERVER_ROOT}/api/controller`);
-const log        = require(`${SERVER_ROOT}/server/log`);
 
-module.exports.REL      = 'index'
+var controller = require(`${SERVER_ROOT}/api/controller`);
+var log        = require(`${SERVER_ROOT}/server/log`);
+
+module.exports.REL      = 'index';
 
 module.exports.METHOD   = 'GET';
 
