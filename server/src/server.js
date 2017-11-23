@@ -40,15 +40,14 @@ function startServer(error) {
         handleError(error);
     }
     // Set up event handlers.
-    process.on('uncaughtException', handleError);
     process.on('exit', handleExit);
     // Start the server.
     if (util.isNullOrUndefined(config.SSL_KEY)) {
         var server = http.createServer(controller.handleRequest);
     } else {
-        var ssl = { 
-            key: fs.readFileSync(config.SSL_KEY), 
-            cert: fs.readFileSync(config.SSL_CERT), 
+        var ssl = {
+            key: fs.readFileSync(config.SSL_KEY),
+            cert: fs.readFileSync(config.SSL_CERT),
         };
         var server = https.createServer(ssl, controller.handleRequest);
         config.PORT = config.SSL_PORT;

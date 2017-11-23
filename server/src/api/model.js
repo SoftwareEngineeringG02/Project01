@@ -2,6 +2,8 @@
  * Server API model.
  * @module api/model
  */
+const https = require('https');
+
 const database = require(`${SERVER_ROOT}/database/mysql.js`);
 const log      = require(`${SERVER_ROOT}/server/log`);
 const util     = require(`${SERVER_ROOT}/util`);
@@ -13,6 +15,7 @@ module.exports.listLocation = listLocation;
 module.exports.setLocation  = setLocation;
 module.exports.getPrice     = getPrice;
 module.exports.getPriceMap  = getPriceMap;
+module.exports.getPostcode  = getPostcode;
 
 // Tables.
 const TCLIENT   = 'client';
@@ -81,7 +84,7 @@ function endRequest(requestID, status, callback) {
     log.trace(module, endRequest);
     database.update(
         TREQUEST,
-        { lhs: 'id', op: '=', rhs: requestID },
+        equal('id', requestID),
         { 'endTime': util.getTimeStamp(), 'status': status },
         callback
     );
@@ -189,7 +192,8 @@ function getPrice(longitude, latitude, callback) {
     // Longitudes and latitudes in the DB are precise to 13 decimal places. 10^-12 of a degree is
     // about 6.5 nm, which means the server won't return anything unless the user stands in a very
     // specific spot. To fix this, we allow a tolerance of 10^-6 degrees, which is about 11 m. We
-    // then log how many results this returns (for debugging) and return the first (and hopefully only) result.
+    // then log how many results this returns (for debugging) and return the first (and hopefully
+    // only) result.
     const R10M   = 10e-6;
     const lonMin = longitude - R10M;
     const lonMax = longitude + R10M;
@@ -198,7 +202,7 @@ function getPrice(longitude, latitude, callback) {
     getPriceMap(lonMin, lonMax, latMin, latMax, (error, rows) => {
         var count  = 0;
         var result = null;
-        if (rows) {
+        if (rows && rows[0]) {
             count  = rows.length;
             result = rows[0];
         }
@@ -213,12 +217,64 @@ function getPrice(longitude, latitude, callback) {
  */
 function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
     log.trace(module, getPriceMap);
-    const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
-                            op:  'and',
-                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax } },
-                     op:  'and',
-                     rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
-                            op:  'and',
-                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax } } };
+    const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
+                       and(gteq('latitude',  latMin),  lteq('latitude',  latMax)));
     database.find(TPRICE, search, callback);
+}
+
+function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }
+function gteq(lhs,  rhs) { return { lhs, op: '>=',  rhs }; }
+function lteq(lhs,  rhs) { return { lhs, op: '<=',  rhs }; }
+function and(lhs,   rhs) { return { lhs, op: 'and', rhs }; }
+
+/**
+ * Get a postcode from a longitude/latitude.
+ * @param longitude
+ * @param latitude
+ * @param callback
+ */
+function getPostcode(longitude, latitude, callback) {
+    // First try to pull the postcode from the local database.
+    database.find(
+        TPRICE,
+        and(equal('longitude', longitude), equal('latitude', latitude)),
+        handleDBPostcode.bind(null, longitude, latitude, callback),
+        column='postcode'
+    );
+}
+
+function handleDBPostcode(longitude, latitude, callback, error, results) {
+    if (error) {
+        callback(error);
+    } else if (results && results[0] && results[0] && results[0].postcode) {
+        callback(null, results[0].postcode);
+    } else {
+        // Try to get the postcode from the internet.
+        getPostcodeOnline(longitude, latitude, callback);
+    }
+}
+
+function getPostcodeOnline(longitude, latitude, callback) {
+    const HOSTNAME = 'https://api.postcodes.io';
+    const ENDPOINT = '/postcodes';
+    var request = https.get(
+        `${HOSTNAME}/${ENDPOINT}?lon=${longitude}&lat=${latitude}&limit=1`,
+        handleOnlinePostcode.bind(null, longitude, latitude, callback)
+    );
+}
+
+function handleOnlinePostcode(longitude, latitude, callback, response) {
+    var data = '';
+    response.on('data', chunk => { data += chunk; });
+    response.on('end', () => {
+        try {
+            const object = JSON.parse(data);
+            if (object && object.result && object.result[0] && object.result[0].postcode) {
+                return callback(null, object.result[0].postcode);
+            }
+            return callback(new Error('Could not find postcode'));
+        } catch (error) {
+            return callback(error);
+        }
+    });
 }

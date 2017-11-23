@@ -69,8 +69,8 @@ function handlePriceMap(request, response, requestID, error, results) {
         response,
         {
             'error':   0,
-            'message': 'Success',
-            'map':     results,
+            'message':  'Success',
+            'map':       results,
             'links':   routes.endpoints
         },
         200,
@@ -88,7 +88,7 @@ function lonLatBounds(longitude, latitude, radius) {
     return {
         lonMin: longitude - dlon,
         lonMax: longitude + dlon,
-        latMin: latitude  - dlon,
-        latMax: latitude  + dlon
+        latMin: latitude  - latT,
+        latMax: latitude  + latT
     }
 }
