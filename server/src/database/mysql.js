@@ -66,7 +66,7 @@ function find(table, search, callback, orderBy, descending, column='*') {
         throw new Error('Bug: Database used but not initialised');
     }
     // Generate SQL query.
-    const safeColumn = mysql.escapeId(column);
+    const safeColumn = column == '*' ? column : mysql.escapeId(column);
     const safeTable  = mysql.escapeId(table);
     var   sql        = makeSelect(safeTable, search, false, safeColumn);
     if (!(util.isNullOrUndefined(orderBy))) {
