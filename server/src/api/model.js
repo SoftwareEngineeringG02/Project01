@@ -8,14 +8,15 @@ const database = require(`${SERVER_ROOT}/database/mysql.js`);
 const log      = require(`${SERVER_ROOT}/server/log`);
 const util     = require(`${SERVER_ROOT}/util`);
 
-module.exports.startRequest = startRequest;
-module.exports.endRequest   = endRequest;
-module.exports.getLocation  = getLocation;
-module.exports.listLocation = listLocation;
-module.exports.setLocation  = setLocation;
-module.exports.getPrice     = getPrice;
-module.exports.getPriceMap  = getPriceMap;
-module.exports.getPostcode  = getPostcode;
+module.exports.startRequest    = startRequest;
+module.exports.endRequest      = endRequest;
+module.exports.getLocation     = getLocation;
+module.exports.listLocation    = listLocation;
+module.exports.setLocation     = setLocation;
+module.exports.getPrice        = getPrice;
+module.exports.getPriceMap     = getPriceMap;
+module.exports.getPostcode     = getPostcode;
+module.exports.reversePostcode = reversePostcode;
 
 // Tables.
 const TCLIENT   = 'client';
@@ -135,7 +136,7 @@ function getLocationHelper(callback, error, rows) {
     if (error) {
         return callback(error);
     } else if (util.isNullOrUndefined(rows) || rows.length == 0 || rows[0] == null) {
-        return callback('No location associated with ID');
+        return callback(new Error('No location associated with ID'));
     }
     callback(error, rows[0]);
 }
@@ -219,7 +220,12 @@ function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
     log.trace(module, getPriceMap);
     const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
                        and(gteq('latitude',  latMin),  lteq('latitude',  latMax)));
-    database.find(TPRICE, search, callback);
+    database.find(TPRICE, search, (error, results) => {
+        if (results) {
+            log.debug(`${results.length} results`);
+        }
+        callback(error, results);
+    });
 }
 
 function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }
@@ -231,7 +237,7 @@ function and(lhs,   rhs) { return { lhs, op: 'and', rhs }; }
  * Get a postcode from a longitude/latitude.
  * @param longitude
  * @param latitude
- * @param callback
+ * @param callback A function(error, postcode) to call when results are ready.
  */
 function getPostcode(longitude, latitude, callback) {
     // First try to pull the postcode from the local database.
@@ -249,8 +255,9 @@ function handleDBPostcode(longitude, latitude, callback, error, results) {
     } else if (results && results[0] && results[0] && results[0].postcode) {
         callback(null, results[0].postcode);
     } else {
+        // FIXME lon/lat are reversed in database.
         // Try to get the postcode from the internet.
-        getPostcodeOnline(longitude, latitude, callback);
+        getPostcodeOnline(latitude, longitude, callback);
     }
 }
 
@@ -271,6 +278,58 @@ function handleOnlinePostcode(longitude, latitude, callback, response) {
             const object = JSON.parse(data);
             if (object && object.result && object.result[0] && object.result[0].postcode) {
                 return callback(null, object.result[0].postcode);
+            }
+            return callback(new Error('Could not find postcode'));
+        } catch (error) {
+            return callback(error);
+        }
+    });
+}
+
+/**
+ * Get a longitude and latitude from a postcode.
+ * @param postcode The postcode.
+ * @param callback A function(error, longitude, latitude) to call when results are ready.
+ */
+function reversePostcode(postcode, callback) {
+    // First try to find the longitude and latitude in the local database.
+    database.find(
+        TPRICE,
+        { lhs: 'postcode', op: '=', rhs: postcode },
+        handleDBLonLat.bind(null, postcode, callback),
+        column=['longitude','latitude']
+    );
+}
+
+function handleDBLonLat(postcode, callback, error, results) {
+    if (error) {
+        callback(error);
+    } else if (results && results[0] && results[0].longitude && results[0].latitude) {
+        callback(null, results[0].longitude, results[0].latitude)
+    } else {
+        // Use online service to get result.
+        getLonLatOnline(postcode, callback);
+    }
+}
+
+function getLonLatOnline(postcode, callback) {
+    const HOSTNAME = 'https://api.postcodes.io';
+    const ENDPOINT = '/postcodes';
+    var request = https.get(
+        `${HOSTNAME}/${ENDPOINT}?query=${postcode}`,
+        handleOnlineLonLat.bind(null, postcode, callback)
+    );
+}
+
+function handleOnlineLonLat(postcode, callback, response) {
+    var data = '';
+    response.on('data', chunk => { data += chunk; });
+    response.on('end', () => {
+        try {
+            const object = JSON.parse(data);
+            if (object && object.result && object.result[0] && object.result[0].longitude && object.result[0].latitude) {
+                // FIXME lon/lat are reversed in database.
+                return callback(null, object.result[0].latitude, object.result[0].longitude);
             }
             return callback(new Error('Could not find postcode'));
         } catch (error) {

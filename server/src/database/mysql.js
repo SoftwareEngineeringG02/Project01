@@ -66,7 +66,7 @@ function find(table, search, callback, orderBy, descending, column='*') {
         throw new Error('Bug: Database used but not initialised');
     }
     // Generate SQL query.
-    const safeColumn = column == '*' ? column : mysql.escapeId(column);
+    const safeColumn = column === '*' ? column : mysql.escapeId(column);
     const safeTable  = mysql.escapeId(table);
     var   sql        = makeSelect(safeTable, search, false, safeColumn);
     if (!(util.isNullOrUndefined(orderBy))) {
@@ -129,7 +129,7 @@ function update(table, search, columns, callback) {
 function dbCallback(callback, error, result) {
     if (error) {
         log.error(error);
-        callback('Internal server error');
+        callback(new Error('Internal server error'));
     } else {
         callback(null, result);
     }

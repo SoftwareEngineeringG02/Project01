@@ -77,10 +77,10 @@ module.exports.getJsonElements = function(body, elems, callback) {
     for (var name in elems) {
         const type = elems[name];
         if (module.exports.isNullOrUndefined(object[name])) {
-            return callback(`${name}: undefined`);
+            return callback(new Error(`${name}: undefined property in request`));
         }
         if (typeof object[name] !== type) {
-            return callback(`${name}: expected ${type}, got ${typeof object[name]}`);
+            return callback(new Error(`${name}: expected ${type}, got ${typeof object[name]}`));
         }
         result[name] = object[name];
     }
