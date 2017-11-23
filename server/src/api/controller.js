@@ -90,7 +90,7 @@ function badRequest(request, response, error, requestID) {
         error = { message: `Bad request: ${request.method} ${request.url}` };
     } else {
         if (!(error instanceof util.ServerError)) {
-            // Hide internal error messages from the user.
+            // Hide internal error messages from clients.
             log.error(error.message);
             error.message = 'Internal server error';
         }

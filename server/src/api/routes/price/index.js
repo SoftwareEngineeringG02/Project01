@@ -19,14 +19,18 @@ module.exports.CALLBACK = function(inputs) {
     const { longitude, latitude } = inputs;
     return model.getPrice(longitude, latitude)
         .then(price => {
+            var error   = 0;
+            var message = 'Success';
             if (util.isNullOrUndefined(price)) {
-                return Promise.reject(new util.ServerError(`No data for (${longitude},${latitude})`));
+                error = 1;
+                message = 'No Data';
+                price = 'No Data';
             }
             return {
                 'status': 200,
                 'body': {
-                    'error':   0,
-                    'message': 'Success',
+                    'error':   error,
+                    'message': message,
                     'price':   price
                 }
             };

@@ -131,6 +131,8 @@ test_post "/postcode/reverse" "{\"id\": \"${id}\",\"postcode\": \"BN1 9RH\"}" "l
 # POST /postcode/reverse should return expected latitude.
 test_post "/postcode/reverse" "{\"id\": \"${id}\", \"postcode\": \"BN1 9RH\"}" "latitude" "number" "-0.0870764878371261"
 
+test_post "/postcode/map" "{\"id\": \"${id}\", \"postcode\": \"CH45 5BH\", \"radius\": 1000}" "error" "number" "0"
+
 # Show statistics
 say "Passed ${tests_passed} and failed ${tests_failed} tests"
 

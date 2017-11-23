@@ -19,16 +19,10 @@ module.exports.INPUTS   = {
     'radius':    'number'
 };
 
-module.exports.CALLBACK = function(inputs) {
+module.exports.CALLBACK = function({longitude, latitude, radius}) {
     log.debug(module.exports.REL);
-    // Compute boundaries.
-    // FIXME: longitude and latidude and reversed.
-    const { longitude, latitude, radius } = inputs;
-    const EARTH_RADIUS = 6371e3; // metres.
-    const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
-    const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
     // Get price map.
-    return model.getPriceMap(lonMin, lonMax, latMin, latMax)
+    return model.getPriceMap(longitude, latitude, radius)
         .then(map => {
             if (util.isNullOrUndefined(map)) {
                 return Promise.reject(new util.ServerError(`No data within radius ${radius} of (${longitude},${latitude})`));
@@ -43,19 +37,4 @@ module.exports.CALLBACK = function(inputs) {
             };
         })
     ;
-}
-
-// Compute the minimum and maximum longitude and latitude of points within a radius of a given point
-// Based on http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
-function lonLatBounds(longitude, latitude, radius) {
-    // Compute Δlongitude.
-    const latT = Math.asin(Math.sin(latitude)/Math.cos(radius));
-    const dlon = Math.acos((Math.cos(radius) - Math.sin(latT)*Math.sin(latitude))/(Math.cos(latT)/Math.cos(latitude)));
-    // Return results.
-    return {
-        lonMin: longitude - radius,
-        lonMax: longitude + radius,
-        latMin: latitude  - dlon,
-        latMax: latitude  + dlon
-    }
 }

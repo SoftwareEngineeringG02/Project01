@@ -17,6 +17,7 @@ module.exports.getPrice        = getPrice;
 module.exports.getPriceMap     = getPriceMap;
 module.exports.getPostcode     = getPostcode;
 module.exports.reversePostcode = reversePostcode;
+module.exports.getPostcodeMap  = getPostcodeMap;
 
 // Tables.
 const TADDRESS  = 'address';
@@ -128,7 +129,9 @@ function getPrice(longitude, latitude) {
     const lonMax = longitude + R10M;
     const latMin = latitude  - R10M;
     const latMax = latitude  + R10M;
-    return getPriceMap(lonMin, lonMax, latMin, latMax)
+    const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
+                       and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
+    return database.find(TPRICE, search)
         .then(map => {
             // Find the entry closest to longitude and latitude.
             var closest = 0;
@@ -141,19 +144,41 @@ function getPrice(longitude, latitude) {
                 }
             }
             return map[closest].price;
-        });
+        })
+    ;
 }
 
 /**
  * Get a list of rows where longitude and latitude are within [lonMin,lonMax] and [latMin,latMax]
  * respectively.
  */
-function getPriceMap(lonMin, lonMax, latMin, latMax) {
+function getPriceMap(longitude, latitude, radius) {
     log.trace(module, getPriceMap);
+    // Compute boundaries.
+    // FIXME: longitude and latidude and reversed.
+    const EARTH_RADIUS = 6371e3; // metres.
+    const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
+    const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
     const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
-                       and(gteq('latitude',  latMin),  lteq('latitude',  latMax)));
+                       and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
     return database.find(TPRICE, search);
 }
+
+// Compute the minimum and maximum longitude and latitude of points within a radius of a given point
+// Based on http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
+function lonLatBounds(longitude, latitude, radius) {
+    // Compute Δlongitude.
+    const latT = Math.asin(Math.sin(latitude)/Math.cos(radius));
+    const dlon = Math.acos((Math.cos(radius) - Math.sin(latT)*Math.sin(latitude))/(Math.cos(latT)/Math.cos(latitude)));
+    // Return results.
+    return {
+        lonMin: longitude - radius,
+        lonMax: longitude + radius,
+        latMin: latitude  - dlon,
+        latMax: latitude  + dlon
+    }
+}
+
 
 /**
  * Get a postcode from a longitude/latitude.
@@ -161,11 +186,11 @@ function getPriceMap(lonMin, lonMax, latMin, latMax) {
  * @param latitude
  */
 function getPostcode(longitude, latitude) {
+    log.trace(module, getPostcode);
     // First try to pull the postcode from the local database.
     return database.find(
         TPRICE,
-        and(equal('longitude', longitude), equal('latitude', latitude)),
-        column='postcode'
+        and(equal('longitude', longitude), equal('latitude', latitude))
     ).then(result => {
         if (util.isNullOrUndefined(result) || result.length === 0) {
             return getPostcodeOnline(longitude, latitude);
@@ -203,11 +228,11 @@ function handleOnlinePostcode(resolve, reject, response) {
  * @param postcode The postcode.
  */
 function reversePostcode(postcode) {
+    log.trace(module, reversePostcode);
     // First try to find the longitude and latitude in the local database.
     return database.find(
         TPRICE,
-        equal('postcode', postcode),
-        column=['longitude','latitude']
+        equal('postcode', postcode)
     ).then(result => {
         if (util.isNullOrUndefined(result) || result.length == 0) {
             return reversePostcodeOnline(postcode);
@@ -241,6 +266,18 @@ function handleOnlineReversePostcode(resolve, reject, postcode, response) {
         }
         return reject(new util.ServerError('Could not find postcode'));
     });
+}
+
+/**
+ * Get a price map from a post code.
+ */
+function getPostcodeMap(postcode, radius) {
+    log.trace(module, getPriceMap);
+    return reversePostcode(postcode)
+        .then(({ longitude, latitude }) => {
+            return getPriceMap(longitude, latitude, radius);
+        })
+    ;
 }
 
 function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }
