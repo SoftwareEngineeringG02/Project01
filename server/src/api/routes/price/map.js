@@ -86,9 +86,9 @@ function lonLatBounds(longitude, latitude, radius) {
     const dlon = Math.acos((Math.cos(radius) - Math.sin(latT)*Math.sin(latitude))/(Math.cos(latT)/Math.cos(latitude)));
     // Return results.
     return {
-        lonMin: longitude - dlon,
-        lonMax: longitude + dlon,
+        lonMin: longitude - radius,
+        lonMax: longitude + radius,
         latMin: latitude  - dlon,
-        latMax: latitude  + dlon
+        latMax: latitude  + dlon 
     }
 }
