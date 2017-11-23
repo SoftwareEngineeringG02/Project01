@@ -88,7 +88,7 @@ function lonLatBounds(longitude, latitude, radius) {
     return {
         lonMin: longitude - dlon,
         lonMax: longitude + dlon,
-        latMin: latitude  - latT,
-        latMax: latitude  + latT
+        latMin: latitude  - dlon,
+        latMax: latitude  + dlon
     }
 }
