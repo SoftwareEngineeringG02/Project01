@@ -7,19 +7,7 @@ const model  = require(`${SERVER_ROOT}/api/model`);
 const routes = require(`${SERVER_ROOT}/api/routes`);
 const util   = require(`${SERVER_ROOT}/util`);
 
-module.exports.handleRequest  = handleRequest;
-module.exports.badRequest     = badRequest;
-module.exports.getRequestBody = getRequestBody;
-module.exports.doResponse     = doResponse;
-
-/**
- * Initialise the controller.
- * @param config The configuration.
- */
-function init(config, callback) {
-    log.trace(module, init);
-    routes.init(config, () => { model.init(config, callback); });
-}
+module.exports.handleRequest = handleRequest;
 
 /**
  * Handle an HTTP request.
@@ -30,88 +18,141 @@ function init(config, callback) {
  */
 function handleRequest(request, response) {
     log.trace(module, handleRequest);
-    // Set up error handler.
-    request.on('error', (error) => {
-        if (util.isNullOrUndefined(response.statusCode) || response.statusCode == 0 || response.statusCode == 200) {
-            response.statusCode = 400;
-        }
-        badRequest(request, response, error.message);
-        request.connection.destroy();
-    });
+    // Set error handler.
+    request.on('error', badRequest.bind(null, request, response, 400));
+    // Find endpoint.
     const { method, url } = request;
-    // Call the handler for the endpoint if it exists.
-    for (var i = 0; i < routes.endpoints.length; ++i) {
-        const endpoint = routes.endpoints[i];
-        if (endpoint.href === url && method === endpoint.method) {
-            return endpoint.callback.call(endpoint, request, response);
-        }
+    const endpoint = getRequestHandler(method, url);
+    if (util.isNullOrUndefined(endpoint)) {
+        return badRequest(request, response);
     }
-    // If we get here, there was no handler defined for the endpoint and method.
+    // Call endpoint handler.
+    if (method == 'GET') {
+        return endpoint.callback.call(null)
+            .then(([status, output]) => endRequest(null, response, status, output))
+    } else if (method == 'POST') {
+        return handlePost(request, response, endpoint)
+    }
+    // No handler for requested endpoint.
     return badRequest(request, response);
 }
+
+function getRequestHandler(method, url) {
+    for (var i = 0; i < routes.endpoints.length; ++i) {
+        const endpoint = routes.endpoints[i];
+        if (method === endpoint.method && endpoint.href === url) {
+            return endpoint;
+        }
+    }
+    return null;
+}
+
+function handlePost(request, response, endpoint) {
+    var inputs    = null;
+    var requestID = null;
+    return getRequestBody(request)
+        .then(body   => getJsonElements(body, endpoint.inputs))
+        .then(object => {
+            inputs = object;
+            return startRequest(request, inputs.id);
+        })
+        .then(reqID => {
+            requestID = reqID;
+            return endpoint.callback.call(null, inputs);
+        })
+        .then(([status, output]) => {
+            return endRequest(requestID, response, status, output);
+        })
+        .catch(error => {
+            badRequest(request, response, error, requestID);
+        })
+    ;
+}
+
+function startRequest(request, client) {
+    log.trace(module, startRequest);
+    return model.startRequest(request, client);
+}
+
+function endRequest(requestID, response, status, output) {
+    log.trace(module, endRequest);
+    response.statusCode = status;
+    response.setHeader('Content-Type', 'application/json');
+    output.links = routes.endpoints;
+    response.end(JSON.stringify(output));
+    if (output.error !== 0) {
+        log.warn(output.message);
+    }
+    if (!(util.isNullOrUndefined(requestID))) {
+        return model.endRequest(requestID, response.statusCode);
+    }
+}
+
+function badRequest(request, response, error, requestID) {
+    if (util.isNullOrUndefined(error)) {
+        error = { message: `Bad request: ${request.method} ${request.url}` };
+    } else {
+        if (!(error instanceof util.ServerError)) {
+            // Hide internal error messages from the user.
+            log.error(error.message);
+            error.message = 'Internal server error';
+        }
+        log.error(error.stack);
+    }
+    return endRequest(requestID, response, 400, { 'error': 1, message: error.message });
+    if (error instanceof Error && !(error instanceof util.ServerError)) {
+        // Crash on JS exceptions.
+        process.exit(1);
+    }
+}
+
 
 /**
  * Get the body data from a request.
  * @param request The request.
  * @param response The response.
- * @param callback A function(error, data) which processes the body data.
  */
-function getRequestBody(request, callback) {
-    log.trace(module, getRequestBody);
-    var body = '';
-    request.on('data', (data) => {
-        body += data;
-        // Check for buffer overrun attack. Return error if data too large.
-        if (body.length > 1e6) {
-            body = '';
-            callback(new Error('Request body too large'));
-        }
-    });
-    request.on('end', () => { callback(null, body) });
-}
-
-/**
- * Handle invalid requests e.g. bad endpoint, wrong method, or missing/invalid data.
- * @param request The HTTP request.
- * @param response The HTTP response.
- * @param [message] An optional error message.
- * @param [status] An optional HTTP status code.
- * @param [requestID] @see model.startRequest @see model.endRequest
- */
-function badRequest(request, response, message, status) {
-    log.trace(module, badRequest);
-    if (util.isNullOrUndefined(message)) {
-        const { method, url } = request;
-        message = `Bad request: ${method} ${url}`;
-    }
-    log.warn(message);
-    return doResponse(response, {
-        'error':   1,
-        'message': message,
-        'links':   routes.endpoints
-    }, status);
-}
-
-/**
- * Respond to an HTTP request.
- * @param response The HTTP response.
- * @param json JSON data to write.
- * @param [status] An optional HTTP status code.
- * @param [requestID] @see model.startRequest @see model.endRequest
- */
-function doResponse(response, json, status, requestID) {
-    log.trace(module, doResponse);
-    if (util.isNullOrUndefined(status)) {
-        status = 200;
-    }
-    response.statusCode = status;
-    response.setHeader('Content-Type', 'application/json');
-    response.end(JSON.stringify(json));
-    if (!(util.isNullOrUndefined(requestID))) {
-        model.endRequest(requestID, status, (error) => {
-            if (error) {
-                log.warn(error);
+function getRequestBody(request) {
+    return new Promise((resolve, reject) => {
+        var body = '';
+        request.on('data', data => {
+            body += data;
+            // Check for buffer overrun attack. Return error if data too large.
+            if (body.length > 1e6) {
+                body = '';
+                reject(new util.ServerError('Request body too large'));
             }
         });
-    }
+        request.on('end', () => { resolve(body) });
+    });
+}
+
+/**
+ * Extract JSON objects from HTTP request body data with rudimentary type-checking.
+ * @param body A buffer che HTTP request body.
+ * @param elems A dictionary associating object names to their expected types, e.g. 'string',
+ * 'object' or 'number.'
+ */
+function getJsonElements(body, elems) {
+    return new Promise((resolve, reject) => {
+        // Try to parse the body as JSON.
+        try {
+            var object = JSON.parse(body);
+        } catch (error) {
+            return reject(error);
+        }
+        // Extract the elements named by 'elems'.
+        var result = {};
+        for (var name in elems) {
+            const type = elems[name];
+            if (util.isNullOrUndefined(object[name])) {
+                reject(new util.ServerError(`${name}: undefined property`));
+            }
+            if (typeof object[name] !== type) {
+                reject(new util.ServerError(`${name}: expected ${type}, got ${typeof object[name]}`));
+            }
+            result[name] = object[name];
+        }
+        resolve(result);
+    });
 }

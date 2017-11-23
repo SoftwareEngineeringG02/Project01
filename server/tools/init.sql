@@ -3,12 +3,14 @@ CREATE DATABASE IF NOT EXISTS serverdb;
 USE serverdb;
 
 /* Drop any existing tables. */
-DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS location;
 DROP TABLE IF EXISTS request;
 -- DROP TABLE IF EXISTS price;
 
 /* Create new tables. */
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS client (
     num     INT            NOT NULL AUTO_INCREMENT,
     id      VARCHAR(50)    NOT NULL,
@@ -18,23 +20,45 @@ CREATE TABLE IF NOT EXISTS client (
     PRIMARY KEY(num)
 );
 
+=======
+CREATE TABLE IF NOT EXISTS address (
+    id      INT           NOT NULL AUTO_INCREMENT,
+    client  VARCHAR(50)   NOT NULL,
+    address VARCHAR(40)   NOT NULL,
+    agent   VARCHAR(4000) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS client (
+    id VARCHAR(50) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+>>>>>>> promise
 CREATE TABLE IF NOT EXISTS request (
     id        INT         NOT NULL AUTO_INCREMENT,
-    client    INT         NOT NULL,
+    client    VARCHAR(50) NOT NULL,
     url       VARCHAR(28) NOT NULL,
     method    VARCHAR(6)  NOT NULL,
     server    VARCHAR(40) NOT NULL,
-    starttime datetime    NOT NULL,
-    endtime   datetime,
+    starttime BIGINT      NOT NULL,
+    endtime   BIGINT,
     status    INT,
     PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS location (
+<<<<<<< HEAD
     id        INT    NOT NULL AUTO_INCREMENT,
     client    INT    NOT NULL,
     longitude DOUBLE NOT NULL,
     latitude  DOUBLE NOT NULL,
+=======
+    id        INT         NOT NULL AUTO_INCREMENT,
+    client    VARCHAR(50) NOT NULL,
+    longitude DOUBLE      NOT NULL,
+    latitude  DOUBLE      NOT NULL,
+>>>>>>> promise
     PRIMARY KEY(id)
 );
 

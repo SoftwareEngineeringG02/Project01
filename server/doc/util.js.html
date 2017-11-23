@@ -104,7 +104,7 @@ module.exports.getJsonElements = function(body, elems) {
     try {
         object = JSON.parse(body);
     } catch (SyntaxError) {
-        throw new Error('Invalid JSON data');
+        throw new util.ServerError('Invalid JSON data');
     }
     // Extract the elements named by 'elems'.
     var result = {};
@@ -112,7 +112,7 @@ module.exports.getJsonElements = function(body, elems) {
         var type = elems[name];
         if (!(module.exports.isNullOrUndefined(object[name]))) {
             if (typeof object[name] !== type) {
-                throw new Error('Invalid JSON data');
+                throw new util.ServerError('Invalid JSON data');
             }
             result[name] = object[name];
         }

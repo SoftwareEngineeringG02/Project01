@@ -19,6 +19,7 @@ module.exports.getPostcode     = getPostcode;
 module.exports.reversePostcode = reversePostcode;
 
 // Tables.
+const TADDRESS  = 'address';
 const TCLIENT   = 'client';
 const TREQUEST  = 'request';
 const TLOCATION = 'location';
@@ -27,159 +28,93 @@ const TPRICE    = 'price';
 /**
  * Persist a request to the database.
  * @param request The HTTP request.
- * @param id The client ID.
- * @param time The request timestamp.
- * @param callback A function(error, requestID) to call when done.
+ * @param client The client ID.
  */
-function startRequest(request, id, time, callback) {
+function startRequest(request, client) {
     log.trace(module, startRequest);
     // Extract & log client details.
     const { method, url, headers } = request;
     const address = request.connection.remoteAddress;
     const agent   = headers['user-agent'];
     log.info(`Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
-    // Save client info.
-    database.insert(
-        TCLIENT,
-        {'id': id, 'address': address, 'agent': agent, 'time': time },
-        saveRequest.bind(null, callback, request, url, method)
-    );
-}
-
-function saveRequest(callback, request, url, method, error, result) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    // Get the client number.
-    const client = result.insertId;
-    // Persist client info to DB.
-    database.insert(
-        TREQUEST,
-        {
-            'client':    client,
-            'url':       url,
-            'method':    method,
-            'server':    util.getLocalAddress(),
-            'startTime': util.getTimeStamp()
-        },
-        handleInsert.bind(null, callback, request)
-    );
-}
-
-function handleInsert(callback, request, error, result) {
-    // Pass the new request ID to the callback.
-    if (error) {
-        return request.emit('error', error);
-    }
-    const requestID = result.insertId;
-    callback(null, requestID);
+    const all = Promise.all([
+        database.insertIgnore(TCLIENT, {'id': client}),
+        database.insert(TADDRESS, { 'client': client, 'address': address, 'agent': agent }),
+        database.insert(
+            TREQUEST,
+            {
+                'client':    client,
+                'url':       url,
+                'method':    method,
+                'server':    util.getLocalAddress(),
+                'startTime': new Date().getTime()
+            }
+        )
+    ]);
+    return all.then(results => {
+        return results[2].insertId;
+    })
+        .catch(onDBError)
+    ;
 }
 
 /**
  * Finalise a request in the database.
  * @param requestID The request ID: @see startRequest
  * @param status The status when ending the request (0: success, 1: error).
- * @param callback A function(error, results) to call when done.
  */
-function endRequest(requestID, status, callback) {
+function endRequest(requestID, status) {
     log.trace(module, endRequest);
-    database.update(
+    return database.update(
         TREQUEST,
         equal('id', requestID),
-        { 'endTime': util.getTimeStamp(), 'status': status },
-        callback
-    );
-}
-
-/**
- * Get
- */
-function getClientByID(id, callback) {
-    database.find(
-        TCLIENT,
-        { lhs: 'id', op: '=', rhs: id },
-        getClientByIDHelper.bind(null, callback),
-        sortBy='num',
-        descending=false
-    );
-}
-
-function getClientByIDHelper(callback, error, rows) {
-    if (error) {
-        return callback(error);
-    }
-    callback(null, rows[0].num);
+        {
+            'endTime': new Date().getTime(),
+            'status':  status
+        }
+    ).catch(onDBError);
 }
 
 /**
  * Get the most recent location data associated with an ID, if available.
- * @param id The ID string, e.g. a phone number.
- * @param callback A function(error, results) to call when results are ready.
+ * @param client  The client ID.
  */
-function getLocation(id, callback) {
+function getLocation(client) {
     log.trace(module, getLocation);
-    getClientByID(id, (error, client) => {
-        if (error) {
-            return callback(error);
-        }
-        database.find(
-            TLOCATION,
-            { lhs: 'client', op: '=', rhs: client },
-            getLocationHelper.bind(null, callback),
-            sortBy='client',
-            descending=true
-        );
-    });
-}
-
-function getLocationHelper(callback, error, rows) {
-    if (error) {
-        return callback(error);
-    } else if (util.isNullOrUndefined(rows) || rows.length == 0 || rows[0] == null) {
-        return callback(new Error('No location associated with ID'));
-    }
-    callback(error, rows[0]);
+    return database.find(TLOCATION, equal('client', client), sortBy='client', descending=true)
+        .then(rows => rows[0])
+        .catch(onDBError)
+    ;
 }
 
 /**
  * List locations associated with an ID.
- * @param id The ID string.
- * @param callback A function(error, results) to call when results are ready.
+ * @param client The client ID.
  */
-function listLocation(id, callback) {
+function listLocation(client) {
     log.trace(module, listLocation);
-    getClientByID(id, (error, client) => {
-        if (error) {
-            return callback(error);
-        }
-        database.find(TLOCATION, { lhs: 'client', op: '=', rhs: client}, callback);
-    });
+    return database.find(TLOCATION, equal('client', client))
+        .catch(onDBError)
+    ;
 }
 
 /**
  * Persist location data.
- * @param id The ID string.
+ * @param client The client ID.
  * @param time The POSIX timestamp.
  * @param longitude The longitude.
  * @param latitude The latitude.
- * @param callback A function(error, results) to call when results are ready.
  */
-function setLocation(id, longitude, latitude, callback) {
+function setLocation(client, longitude, latitude) {
     log.trace(module, setLocation);
-    getClientByID(id, (error, client) => {
-        if (error) {
-            return callback(error);
+    return database.insert(
+        TLOCATION,
+        {
+            'client':    client,
+            'longitude': longitude,
+            'latitude':  latitude
         }
-        database.insert(
-            TLOCATION,
-            {
-                'client':    client,
-                'longitude': longitude,
-                'latitude':  latitude
-            },
-            callback
-        );
-    });
+    ).catch(onDBError);
 }
 
 /**
@@ -188,7 +123,7 @@ function setLocation(id, longitude, latitude, callback) {
  * @param latitude The latitude.
  * @param callback A function to call when results are ready. Arguments are (error, results).
  */
-function getPrice(longitude, latitude, callback) {
+function getPrice(longitude, latitude) {
     log.trace(module, getPrice);
     // Longitudes and latitudes in the DB are precise to 13 decimal places. 10^-12 of a degree is
     // about 6.5 nm, which means the server won't return anything unless the user stands in a very
@@ -200,24 +135,29 @@ function getPrice(longitude, latitude, callback) {
     const lonMax = longitude + R10M;
     const latMin = latitude  - R10M;
     const latMax = latitude  + R10M;
-    getPriceMap(lonMin, lonMax, latMin, latMax, (error, rows) => {
-        var count  = 0;
-        var result = null;
-        if (rows && rows[0]) {
-            count  = rows.length;
-            result = rows[0];
-        }
-        log.debug(`${count} results within ${R10M} radius of (${latitude},${longitude})`);
-        callback(error, result);
-    });
+    return getPriceMap(lonMin, lonMax, latMin, latMax)
+        .then(map => {
+            // Find the entry closest to longitude and latitude.
+            var closest = 0;
+            var minDiff = Math.sqrt(Math.pow(longitude - map[0].longitude, 2) + Math.pow(latitude - map[0].latitude, 2));
+            for (var i = 1; i < map.length; ++i) {
+                const diff = Math.sqrt(Math.pow(longitude - map[i].longitude, 2) + Math.pow(latitude - map[i].latitude, 2));
+                if (diff < minDiff) {
+                    closest = i;
+                    minDiff = diff;
+                }
+            }
+            return map[closest].price;
+        });
 }
 
 /**
  * Get a list of rows where longitude and latitude are within [lonMin,lonMax] and [latMin,latMax]
  * respectively.
  */
-function getPriceMap(lonMin, lonMax, latMin, latMax, callback) {
+function getPriceMap(lonMin, lonMax, latMin, latMax) {
     log.trace(module, getPriceMap);
+<<<<<<< HEAD
     const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
                        and(gteq('latitude',  latMin),  lteq('latitude',  latMax)));
     database.find(TPRICE, search, (error, results) => {
@@ -336,4 +276,28 @@ function handleOnlineLonLat(postcode, callback, response) {
             return callback(error);
         }
     });
+=======
+    const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
+                            op:  'and',
+                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax } },
+                     op:  'and',
+                     rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
+                            op:  'and',
+                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax } } };
+    return database.find(TPRICE, search)
+        .catch(onDBError)
+    ;
+>>>>>>> promise
 }
+
+function onDBError(error) {
+    log.error(error.message);
+    const newError = new util.ServerError('Database error');
+    newError.stack = error.stack;
+    return newError;
+}
+
+function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }
+function gteq(lhs,  rhs) { return { lhs, op: '>=',  rhs }; }
+function lteq(lhs,  rhs) { return { lhs, op: '<=',  rhs }; }
+function and(lhs,   rhs) { return { lhs, op: 'and', rhs }; }

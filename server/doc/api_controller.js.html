@@ -113,7 +113,7 @@ function getRequestBody(request, callback) {
         // Check for buffer overrun attack. Throws exception if data too large.
         if (body.length > 1e6) {
             body = '';
-            throw new Error('Request body too large');
+            throw new util.ServerError('Request body too large');
         }
     });
     request.on('end', function() {
