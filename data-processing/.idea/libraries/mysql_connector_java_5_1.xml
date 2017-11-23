@@ -1,0 +1,23 @@
+<component name="libraryTable">
+  <library name="mysql-connector-java-5.1">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Downloads/mysql-connector-java-5.1.44" />
+      <root url="file://$USER_HOME$/Java Libs/commons-net-3.6" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$USER_HOME$/Java Libs/commons-net-3.6/apidocs" />
+    </JAVADOC>
+    <NATIVE>
+      <root url="jar://$USER_HOME$/Java Libs/httpclient-4.0-alpha1.jar!/" />
+      <root url="jar://$USER_HOME$/Java Libs/org.apache.servicemix.bundles.httpcore-4.0-alpha6_1.jar!/" />
+    </NATIVE>
+    <SOURCES>
+      <root url="file://$USER_HOME$/Downloads/mysql-connector-java-5.1.44/src" />
+      <root url="file://$USER_HOME$/Java Libs/commons-net-3.6" />
+      <root url="file://$USER_HOME$/Java Libs/commons-net-3.6" />
+    </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/Downloads/mysql-connector-java-5.1.44" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/Java Libs/commons-net-3.6" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/Java Libs/commons-net-3.6" recursive="false" type="SOURCES" />
+  </library>
+</component>
