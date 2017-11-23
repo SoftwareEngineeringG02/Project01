@@ -16,7 +16,7 @@ module.exports.METHOD = "POST";
 module.exports.CALLBACK = function(request, response) {
     log.debug(module.exports.REL);
     controller.getRequestBody(request, handleBody.bind(null, request, response));
-}
+};
 
 function handleBody(request, response, error, body) {
     if (error) {
