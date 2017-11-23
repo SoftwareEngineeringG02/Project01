@@ -21,15 +21,15 @@ module.exports.CALLBACK = function(inputs) {
             if (util.isNullOrUndefined(location)) {
                 Promise.reject(new util.ServerError('No location data associated with client'));
             }
-            return [
-                200,
-                {
+            return {
+                'status': 200,
+                'body': {
                     'error':     0,
                     'message':   'Success',
                     'longitude': location.longitude,
                     'latitude':  location.latitude,
                 }
-            ];
+            };
         })
     ;
 }

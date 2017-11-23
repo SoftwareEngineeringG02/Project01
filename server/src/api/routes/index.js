@@ -13,5 +13,5 @@ module.exports.INPUTS   = {};
 
 module.exports.CALLBACK = function() {
     log.debug(module.exports.REL);
-    return Promise.resolve([200, {'error': 0, 'message': 'Success'}]);
+    return Promise.resolve({'status': 200, 'body': {'error': 0, 'message': 'Success'}});
 }

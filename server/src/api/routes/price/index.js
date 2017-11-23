@@ -22,14 +22,14 @@ module.exports.CALLBACK = function(inputs) {
             if (util.isNullOrUndefined(price)) {
                 return Promise.reject(new util.ServerError(`No data for (${longitude},${latitude})`));
             }
-            return [
-                200,
-                {
+            return {
+                'status': 200,
+                'body': {
                     'error':   0,
                     'message': 'Success',
                     'price':   price
                 }
-            ];
+            };
         })
     ;
 }

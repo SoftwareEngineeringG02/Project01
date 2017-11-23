@@ -60,12 +60,13 @@ function init(config, callback) {
  * order (default: ascending).
  * @param [column] Whether to select just one or a few columns, or all of them (*). Default: *
  */
-function find(table, search, orderBy, descending) {
+function find(table, search, orderBy, descending, column='*') {
     log.trace(module, find);
     return new Promise((resolve, reject) => {
         // Escape DB inputs.
-        const safeTable = mysql.escapeId(table);
-        var   sql       = makeSelect(safeTable, search);
+        const safeColumn = column == '*' ? column : mysql.escapeId(column);
+        const safeTable  = mysql.escapeId(table);
+        var   sql        = makeSelect(safeTable, search);
         if (!(util.isNullOrUndefined(orderBy))) {
             // Append sorting.
             const safeOrderBy = mysql.escapeId(orderBy);
@@ -138,39 +139,18 @@ function update(table, search, columns) {
     });
 }
 
-function showWarnings() {
-    connection.query('SHOW WARNINGS', (error, result) => {
-        if (error) {
-            return log.error(error.message);
-        }
-        if (result) {
-            log.info('MySQL warnings: ' + result);
-        }
-    });
-}
-
 // Pass error/result along to real callback. Used to prevent database error messages finding their
 // way into responses and giving attackers detailed info about the server's state.
 function dbCallback(resolve, reject, error, result) {
-    if (result) {
-        if (result.warningCount) {
-            log.warn(`${result.warningCount} warnings from MySQL`);
-            showWarnings();
-        }
-        if (result.message) {
-            log.info(result.message);
-        }
-    }
     if (error) {
-        log.error(error);
-        return reject(new util.ServerError('Database error'));
+        return reject(error);
     } else {
         return resolve(result);
     }
 }
 
 // Generate a SQL select statement. NB: makeSelect expects 'safeTable' to be escaped!
-function makeSelect(safeTable, search, inner=false) {
+function makeSelect(safeTable, search, inner=false, safeColumn='*') {
     const { lhs, op, rhs } = search;
     var where = '';
     if (op == 'and' || op == 'or') {

@@ -51,11 +51,7 @@ function startRequest(request, client) {
             }
         )
     ]);
-    return all.then(results => {
-        return results[2].insertId;
-    })
-        .catch(onDBError)
-    ;
+    return all.then(results => results[2].insertId);
 }
 
 /**
@@ -72,7 +68,7 @@ function endRequest(requestID, status) {
             'endTime': new Date().getTime(),
             'status':  status
         }
-    ).catch(onDBError);
+    );
 }
 
 /**
@@ -83,7 +79,6 @@ function getLocation(client) {
     log.trace(module, getLocation);
     return database.find(TLOCATION, equal('client', client), sortBy='client', descending=true)
         .then(rows => rows[0])
-        .catch(onDBError)
     ;
 }
 
@@ -93,9 +88,7 @@ function getLocation(client) {
  */
 function listLocation(client) {
     log.trace(module, listLocation);
-    return database.find(TLOCATION, equal('client', client))
-        .catch(onDBError)
-    ;
+    return database.find(TLOCATION, equal('client', client));
 }
 
 /**
@@ -114,7 +107,7 @@ function setLocation(client, longitude, latitude) {
             'longitude': longitude,
             'latitude':  latitude
         }
-    ).catch(onDBError);
+    );
 }
 
 /**
@@ -157,144 +150,97 @@ function getPrice(longitude, latitude) {
  */
 function getPriceMap(lonMin, lonMax, latMin, latMax) {
     log.trace(module, getPriceMap);
-<<<<<<< HEAD
     const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
                        and(gteq('latitude',  latMin),  lteq('latitude',  latMax)));
-    database.find(TPRICE, search, (error, results) => {
-        if (results) {
-            log.debug(`${results.length} results`);
-        }
-        callback(error, results);
-    });
+    return database.find(TPRICE, search);
 }
-
-function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }
-function gteq(lhs,  rhs) { return { lhs, op: '>=',  rhs }; }
-function lteq(lhs,  rhs) { return { lhs, op: '<=',  rhs }; }
-function and(lhs,   rhs) { return { lhs, op: 'and', rhs }; }
 
 /**
  * Get a postcode from a longitude/latitude.
  * @param longitude
  * @param latitude
- * @param callback A function(error, postcode) to call when results are ready.
  */
-function getPostcode(longitude, latitude, callback) {
+function getPostcode(longitude, latitude) {
     // First try to pull the postcode from the local database.
-    database.find(
+    return database.find(
         TPRICE,
         and(equal('longitude', longitude), equal('latitude', latitude)),
-        handleDBPostcode.bind(null, longitude, latitude, callback),
         column='postcode'
-    );
+    ).then(result => {
+        if (util.isNullOrUndefined(result) || result.length === 0) {
+            return getPostcodeOnline(longitude, latitude);
+        }
+        return Promise.resolve(result.postcode);
+    });
 }
 
-function handleDBPostcode(longitude, latitude, callback, error, results) {
-    if (error) {
-        callback(error);
-    } else if (results && results[0] && results[0] && results[0].postcode) {
-        callback(null, results[0].postcode);
-    } else {
-        // FIXME lon/lat are reversed in database.
-        // Try to get the postcode from the internet.
-        getPostcodeOnline(latitude, longitude, callback);
-    }
-}
-
-function getPostcodeOnline(longitude, latitude, callback) {
+function getPostcodeOnline(longitude, latitude) {
     const HOSTNAME = 'https://api.postcodes.io';
     const ENDPOINT = '/postcodes';
-    var request = https.get(
-        `${HOSTNAME}/${ENDPOINT}?lon=${longitude}&lat=${latitude}&limit=1`,
-        handleOnlinePostcode.bind(null, longitude, latitude, callback)
-    );
+    return new Promise((resolve, reject) => {
+        // FIXME: longitude and latitude are reversed in DB.
+        https.get(
+            `${HOSTNAME}/${ENDPOINT}?lon=${latitude}&lat=${longitude}&limit=1`,
+            handleOnlinePostcode.bind(null, resolve, reject)
+        );
+    });
 }
 
-function handleOnlinePostcode(longitude, latitude, callback, response) {
+function handleOnlinePostcode(resolve, reject, response) {
     var data = '';
     response.on('data', chunk => { data += chunk; });
     response.on('end', () => {
-        try {
-            const object = JSON.parse(data);
-            if (object && object.result && object.result[0] && object.result[0].postcode) {
-                return callback(null, object.result[0].postcode);
-            }
-            return callback(new Error('Could not find postcode'));
-        } catch (error) {
-            return callback(error);
+        const object = JSON.parse(data);
+        if (object && object.result && object.result[0] && object.result[0].postcode) {
+            return resolve(object.result[0].postcode);
         }
+        return reject(new util.ServerError('Could not find postcode'));
     });
 }
 
 /**
  * Get a longitude and latitude from a postcode.
  * @param postcode The postcode.
- * @param callback A function(error, longitude, latitude) to call when results are ready.
  */
-function reversePostcode(postcode, callback) {
+function reversePostcode(postcode) {
     // First try to find the longitude and latitude in the local database.
-    database.find(
+    return database.find(
         TPRICE,
-        { lhs: 'postcode', op: '=', rhs: postcode },
-        handleDBLonLat.bind(null, postcode, callback),
+        equal('postcode', postcode),
         column=['longitude','latitude']
-    );
+    ).then(result => {
+        if (util.isNullOrUndefined(result) || result.length == 0) {
+            return reversePostcodeOnline(postcode);
+        }
+        // FIXME: client expects reversed longitude and latitude.
+        const { longitude, latitude } = result[0];
+        return Promise.resolve({ latitude: longitude, longitude: latitude });
+    });
 }
 
-function handleDBLonLat(postcode, callback, error, results) {
-    if (error) {
-        callback(error);
-    } else if (results && results[0] && results[0].longitude && results[0].latitude) {
-        callback(null, results[0].longitude, results[0].latitude)
-    } else {
-        // Use online service to get result.
-        getLonLatOnline(postcode, callback);
-    }
-}
-
-function getLonLatOnline(postcode, callback) {
+function reversePostcodeOnline(postcode, callback) {
     const HOSTNAME = 'https://api.postcodes.io';
     const ENDPOINT = '/postcodes';
-    var request = https.get(
-        `${HOSTNAME}/${ENDPOINT}?query=${postcode}`,
-        handleOnlineLonLat.bind(null, postcode, callback)
-    );
+    return new Promise((resolve, reject) => {
+        var request = https.get(
+            `${HOSTNAME}/${ENDPOINT}?query=${postcode}`,
+            handleOnlineReversePostcode.bind(null, resolve, reject, postcode)
+        );
+    });
 }
 
-function handleOnlineLonLat(postcode, callback, response) {
+function handleOnlineReversePostcode(resolve, reject, postcode, response) {
     var data = '';
     response.on('data', chunk => { data += chunk; });
     response.on('end', () => {
-        try {
-            const object = JSON.parse(data);
-            if (object && object.result && object.result[0] && object.result[0].longitude && object.result[0].latitude) {
-                // FIXME lon/lat are reversed in database.
-                return callback(null, object.result[0].latitude, object.result[0].longitude);
-            }
-            return callback(new Error('Could not find postcode'));
-        } catch (error) {
-            return callback(error);
+        const object = JSON.parse(data);
+        if (object && object.result && object.result[0] && object.result[0].longitude && object.result[0].latitude) {
+            // FIXME lon/lat are reversed in database.
+            const { longitude, latitude } = object.result[0];
+            return resolve({longitude: latitude, latitude: longitude});
         }
+        return reject(new util.ServerError('Could not find postcode'));
     });
-=======
-    const search = { lhs: { lhs: { lhs: 'longitude', op: '>=', rhs: lonMin },
-                            op:  'and',
-                            rhs: { lhs: 'longitude', op: '<=', rhs: lonMax } },
-                     op:  'and',
-                     rhs: { lhs: { lhs: 'latitude', op: '>=', rhs: latMin },
-                            op:  'and',
-                            rhs: { lhs: 'latitude', op: '<=', rhs: latMax } } };
-    return database.find(TPRICE, search)
-        .catch(onDBError)
-    ;
->>>>>>> promise
-}
-
-function onDBError(error) {
-    log.error(error.message);
-    const newError = new util.ServerError('Database error');
-    newError.stack = error.stack;
-    return newError;
 }
 
 function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }

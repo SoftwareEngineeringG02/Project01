@@ -33,14 +33,14 @@ module.exports.CALLBACK = function(inputs) {
             if (util.isNullOrUndefined(map)) {
                 return Promise.reject(new util.ServerError(`No data within radius ${radius} of (${longitude},${latitude})`));
             }
-            return [
-                200,
-                {
+            return {
+                'status': 200,
+                'body': {
                     'error':   0,
                     'message': 'Success',
                     'map':     map
                 }
-            ];
+            };
         })
     ;
 }

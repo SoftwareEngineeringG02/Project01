@@ -73,10 +73,8 @@ module.exports.getTimeStamp = function() {
     return d.toISOString().replace('T', ' ').substr(0, 19);
 }
 
-module.exports.ServerError = function(message) {
-    this.message = message;
-    if (module.exports.isNullOrUndefined(message)) {
-        this.message = 'Internal server error';
+module.exports.ServerError = class ServerError extends Error {
+    constructor(message) {
+        super(message);
     }
-    this.stack = (new Error()).stack;
 }

@@ -17,6 +17,11 @@ module.exports.INPUTS = {'id': 'string', 'longitude': 'number', 'latitude': 'num
 module.exports.CALLBACK = function(inputs) {
     log.debug(module.exports.REL);
     return model.setLocation(inputs.id, inputs.longitude, inputs.latitude)
-        .then(() => [ 200, { 'error': 0, 'message': 'Success' } ])
+        .then(() => {
+            return {
+                'status': 200,
+                'body': { 'error': 0, 'message': 'Success' }
+            };
+        })
     ;
 }

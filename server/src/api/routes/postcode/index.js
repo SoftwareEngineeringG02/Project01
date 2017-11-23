@@ -13,60 +13,20 @@ module.exports.REL    = 'get-postcode';
 
 module.exports.METHOD = 'POST';
 
-module.exports.CALLBACK = function(request, response) {
+module.exports.INPUTS = { id: 'string', 'longitude': 'number', 'latitude': 'number' };
+
+module.exports.CALLBACK = function({longitude, latitude}) {
     log.debug(module.exports.REL);
-    controller.getRequestBody(request, handleBody.bind(null, request, response));
+    return model.getPostcode(longitude, latitude)
+        .then(postcode => {
+            return {
+                'status': 200,
+                'body': {
+                    'error':    0,
+                    'message':  'Success',
+                    'postcode': postcode
+                }
+            };
+        })
+    ;
 };
-
-function handleBody(request, response, error, body) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    util.getJsonElements(
-        body,
-        {'id': 'string', 'time': 'number', 'longitude': 'number', 'latitude': 'number'},
-        handleJson.bind(null, request, response)
-    );
-}
-
-function handleJson(request, response, error, object) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    const { id, time, longitude, latitude } = object;
-    model.startRequest(
-        request,
-        id,
-        time,
-        getPostcode.bind(null, request, response, longitude, latitude)
-    );
-}
-
-function getPostcode(request, response, longitude, latitude, error, requestID) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    model.getPostcode(
-        longitude,
-        latitude,
-        handlePostcode.bind(null, request, response, requestID)
-    );
-}
-
-function handlePostcode(request, response, requestID, error, postcode) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    // Send response.
-    controller.doResponse(
-        response,
-        {
-            'error':    0,
-            'message':  'Success',
-            'postcode': postcode,
-            'links':    routes.endpoints
-        },
-        200,
-        requestID
-    );
-}

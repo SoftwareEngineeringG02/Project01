@@ -29,7 +29,7 @@ function handleRequest(request, response) {
     // Call endpoint handler.
     if (method == 'GET') {
         return endpoint.callback.call(null)
-            .then(([status, output]) => endRequest(null, response, status, output))
+            .then(({status, body}) => endRequest(null, response, status, body))
     } else if (method == 'POST') {
         return handlePost(request, response, endpoint)
     }
@@ -60,8 +60,8 @@ function handlePost(request, response, endpoint) {
             requestID = reqID;
             return endpoint.callback.call(null, inputs);
         })
-        .then(([status, output]) => {
-            return endRequest(requestID, response, status, output);
+        .then(({status, body}) => {
+            return endRequest(requestID, response, status, body);
         })
         .catch(error => {
             badRequest(request, response, error, requestID);
@@ -74,15 +74,12 @@ function startRequest(request, client) {
     return model.startRequest(request, client);
 }
 
-function endRequest(requestID, response, status, output) {
+function endRequest(requestID, response, status, body) {
     log.trace(module, endRequest);
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
-    output.links = routes.endpoints;
-    response.end(JSON.stringify(output));
-    if (output.error !== 0) {
-        log.warn(output.message);
-    }
+    body.links = routes.endpoints;
+    response.end(JSON.stringify(body));
     if (!(util.isNullOrUndefined(requestID))) {
         return model.endRequest(requestID, response.statusCode);
     }
@@ -97,15 +94,14 @@ function badRequest(request, response, error, requestID) {
             log.error(error.message);
             error.message = 'Internal server error';
         }
-        log.error(error.stack);
     }
-    return endRequest(requestID, response, 400, { 'error': 1, message: error.message });
+    endRequest(requestID, response, 400, { 'error': 1, message: error.message });
     if (error instanceof Error && !(error instanceof util.ServerError)) {
         // Crash on JS exceptions.
+        log.error(error.stack);
         process.exit(1);
     }
 }
-
 
 /**
  * Get the body data from a request.
