@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GPS1</string>
+    <string name="resume">Get location</string>
+    <string name="pause" />
+</resources>
