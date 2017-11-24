@@ -22,11 +22,10 @@ module.exports.CALLBACK = function({postcode, radius}) {
         .then(map => {
             return {
                 'status': 200,
-                'map':    map,
                 'body': {
                     'error':    0,
                     'message':  'Success',
-                    'postcode': postcode
+                    'map':    map,
                 }
             };
         })
