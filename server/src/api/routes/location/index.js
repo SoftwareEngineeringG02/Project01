@@ -15,12 +15,12 @@ module.exports.METHOD = 'POST';
 
 module.exports.INPUTS = {'id': 'string'};
 
-module.exports.CALLBACK = function(inputs) {
+module.exports.CALLBACK = function({id}) {
     log.debug(module.exports.REL);
-    return model.getLocation(inputs.id)
+    return model.getLocation(id)
         .then(location => {
             if (util.isNullOrUndefined(location)) {
-                Promise.reject(new util.ServerError('No location data associated with client'));
+                return Promise.reject(new util.ServerError('No location data associated with client'));
             }
             return {
                 'status': 200,
