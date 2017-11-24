@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS address (
     id      INT           NOT NULL AUTO_INCREMENT,
     client  VARCHAR(50)   NOT NULL,
     address VARCHAR(40)   NOT NULL,
-    agent   VARCHAR(4000) NOT NULL,
+    agent   VARCHAR(4000),
     PRIMARY KEY(id)
 );
 
