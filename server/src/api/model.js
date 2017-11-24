@@ -2,7 +2,6 @@
  * Server API model.
  * @module api/model
  */
-
 var https = require('https');
 
 var database = require(`${SERVER_ROOT}/database/mysql.js`);
