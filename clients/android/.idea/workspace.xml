@@ -47,8 +47,8 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/viktorkaslik/gps1/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5505">
-              <caret line="987" column="25" lean-forward="false" selection-start-line="987" selection-start-column="16" selection-end-line="987" selection-end-column="25" />
+            <state relative-caret-position="88">
+              <caret line="953" column="0" lean-forward="false" selection-start-line="953" selection-start-column="0" selection-end-line="953" selection-end-column="0" />
               <folding>
                 <element signature="class#4346:4967" expanded="false" />
                 <element signature="docComment;method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
@@ -74,24 +74,28 @@
                 <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#36431#36432#0" expanded="true" />
-                <element signature="e#36457#36458#0" expanded="true" />
                 <element signature="e#36487#36488#0" expanded="true" />
                 <element signature="e#36513#36514#0" expanded="true" />
-                <element signature="e#36566#36567#0" expanded="true" />
-                <element signature="e#36605#36606#0" expanded="true" />
-                <element signature="e#36646#36647#0" expanded="true" />
-                <element signature="e#36682#36683#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExampleInstrumentedTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ExampleInstrumentedTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/ExampleInstrumentedTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
               <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EspressoTest.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/EspressoTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="173" column="27" lean-forward="false" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -133,6 +137,7 @@
       <find>addWeightedHeatMap</find>
       <find>heatMap</find>
       <find>post</find>
+      <find>setR</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -1906,6 +1911,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -1918,40 +1924,9 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gps1" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
@@ -1999,8 +1974,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2042,7 +2015,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Android App.app">
+  <component name="RunManager" selected="Android Instrumented Tests.EspressoTest">
     <configuration default="false" name="useAppContext()" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
       <module name="app" />
       <option name="TESTING_TYPE" value="3" />
@@ -2088,7 +2061,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511521987199" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523155872" />
       </method>
     </configuration>
     <configuration default="false" name="ExampleUnitTest" type="AndroidJUnit" factoryName="Android JUnit" temporary="true" nameIsGenerated="true">
@@ -2162,7 +2135,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511521987199" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523155872" />
       </method>
     </configuration>
     <configuration default="false" name="listGoesOverTheFold()" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
@@ -2210,7 +2183,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511521987199" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523155872" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
@@ -2283,7 +2256,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511521987200" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523155873" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -2331,7 +2304,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511521987200" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523155873" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2363,27 +2336,6 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <method />
-    </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
       <method />
     </configuration>
     <configuration default="true" type="JarApplication" factoryName="JAR Application">
@@ -2514,7 +2466,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511521987201" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523155874" />
       </method>
     </configuration>
     <list size="5">
@@ -2576,9 +2528,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="EspressoTest - 2017.11.14 at 13h 06m 35s.xml">
-      <configuration name="EspressoTest" configurationId="AndroidTestRunConfigurationType" />
-    </history-entry>
     <history-entry file="EspressoTest - 2017.11.14 at 13h 42m 01s.xml">
       <configuration name="EspressoTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
@@ -2592,6 +2541,9 @@
       <configuration name="EspressoTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
     <history-entry file="EspressoTest - 2017.11.24 at 09h 12m 54s.xml">
+      <configuration name="EspressoTest" configurationId="AndroidTestRunConfigurationType" />
+    </history-entry>
+    <history-entry file="EspressoTest - 2017.11.24 at 11h 32m 30s.xml">
       <configuration name="EspressoTest" configurationId="AndroidTestRunConfigurationType" />
     </history-entry>
     <history-entry file="listGoesOverTheFold() - 2017.11.14 at 13h 10m 19s.xml">
@@ -2620,7 +2572,7 @@
     <frame x="0" y="23" width="1440" height="797" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32892805" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.49427754" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18502203" sideWeight="0.481402" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14449213" sideWeight="0.50855744" order="3" side_tool="true" content_ui="tabs" />
@@ -2628,7 +2580,7 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5171674" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2857143" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2857143" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.49713877" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.49427754" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2707,7 +2659,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="12" />
+      <option name="time" value="13" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -2741,14 +2693,8 @@
             <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36431#36432#0" expanded="true" />
-            <element signature="e#36457#36458#0" expanded="true" />
             <element signature="e#36487#36488#0" expanded="true" />
             <element signature="e#36513#36514#0" expanded="true" />
-            <element signature="e#36566#36567#0" expanded="true" />
-            <element signature="e#36605#36606#0" expanded="true" />
-            <element signature="e#36646#36647#0" expanded="true" />
-            <element signature="e#36682#36683#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2810,14 +2756,8 @@
             <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36431#36432#0" expanded="true" />
-            <element signature="e#36457#36458#0" expanded="true" />
             <element signature="e#36487#36488#0" expanded="true" />
             <element signature="e#36513#36514#0" expanded="true" />
-            <element signature="e#36566#36567#0" expanded="true" />
-            <element signature="e#36605#36606#0" expanded="true" />
-            <element signature="e#36646#36647#0" expanded="true" />
-            <element signature="e#36682#36683#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2876,14 +2816,8 @@
             <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36431#36432#0" expanded="true" />
-            <element signature="e#36457#36458#0" expanded="true" />
             <element signature="e#36487#36488#0" expanded="true" />
             <element signature="e#36513#36514#0" expanded="true" />
-            <element signature="e#36566#36567#0" expanded="true" />
-            <element signature="e#36605#36606#0" expanded="true" />
-            <element signature="e#36646#36647#0" expanded="true" />
-            <element signature="e#36682#36683#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2935,14 +2869,8 @@
             <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36431#36432#0" expanded="true" />
-            <element signature="e#36457#36458#0" expanded="true" />
             <element signature="e#36487#36488#0" expanded="true" />
             <element signature="e#36513#36514#0" expanded="true" />
-            <element signature="e#36566#36567#0" expanded="true" />
-            <element signature="e#36605#36606#0" expanded="true" />
-            <element signature="e#36646#36647#0" expanded="true" />
-            <element signature="e#36682#36683#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3139,6 +3067,13 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/test/java/com/example/viktorkaslik/gps1/ExampleUnitTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -3147,17 +3082,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/test/java/com/example/viktorkaslik/gps1/ExampleUnitTest.java">
+    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/ExampleInstrumentedTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state relative-caret-position="150">
+          <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/viktorkaslik/gps1/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5505">
-          <caret line="987" column="25" lean-forward="false" selection-start-line="987" selection-start-column="16" selection-end-line="987" selection-end-column="25" />
+        <state relative-caret-position="88">
+          <caret line="953" column="0" lean-forward="false" selection-start-line="953" selection-start-column="0" selection-end-line="953" selection-end-column="0" />
           <folding>
             <element signature="class#4346:4967" expanded="false" />
             <element signature="docComment;method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
@@ -3183,30 +3119,16 @@
             <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
             <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36431#36432#0" expanded="true" />
-            <element signature="e#36457#36458#0" expanded="true" />
             <element signature="e#36487#36488#0" expanded="true" />
             <element signature="e#36513#36514#0" expanded="true" />
-            <element signature="e#36566#36567#0" expanded="true" />
-            <element signature="e#36605#36606#0" expanded="true" />
-            <element signature="e#36646#36647#0" expanded="true" />
-            <element signature="e#36682#36683#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/EspressoTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="83" column="35" lean-forward="false" selection-start-line="83" selection-start-column="35" selection-end-line="83" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/ExampleInstrumentedTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+        <state relative-caret-position="240">
+          <caret line="173" column="27" lean-forward="false" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="27" />
           <folding />
         </state>
       </provider>
