@@ -79,7 +79,15 @@ function endRequest(requestID, response, status, body) {
     log.trace(module, endRequest);
     response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
-    body.links = routes.endpoints;
+    // FIXME workaround for client regex which assumes the links don't have an `inputs` field.
+    body.links = [];
+    for (var i = 0; i < routes.endpoints.length; ++i) {
+        body.links.push({
+            'rel':    routes.endpoints[i].rel,
+            'href':   routes.endpoints[i].href,
+            'method': routes.endpoints[i].method
+        });
+    }
     response.end(JSON.stringify(body));
     if (!(util.isNullOrUndefined(requestID))) {
         return model.endRequest(requestID, response.statusCode);
