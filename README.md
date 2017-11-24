@@ -8,9 +8,10 @@ The system is designed with a client/server architecture.
 
 ### Clients
 
- * [Android app](./clients/android/ReadMe.md)
+ * [Android app](./clients/android)
+ * [iOS app (Development)](./clients/iOS)
 
 ### Backend
 
- * [REST server](./backend/server/ReadMe.md)
- * [Land value data preprocessor](./backend/ppd/ReadMe.md)
+ * [REST server](./backend/server)
+ * [Land value data preprocessor](./backend/data-processing)
