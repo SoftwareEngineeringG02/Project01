@@ -136,15 +136,19 @@ function getPrice(longitude, latitude) {
         .then(map => {
             // Find the entry closest to longitude and latitude.
             var closest = 0;
-            var minDiff = Math.sqrt(Math.pow(longitude - map[0].longitude, 2) + Math.pow(latitude - map[0].latitude, 2));
-            for (var i = 1; i < map.length; ++i) {
-                const diff = Math.sqrt(Math.pow(longitude - map[i].longitude, 2) + Math.pow(latitude - map[i].latitude, 2));
-                if (diff < minDiff) {
-                    closest = i;
-                    minDiff = diff;
+            if (map && map.length) {
+                var minDiff = Math.sqrt(Math.pow(longitude - map[0].longitude, 2) + Math.pow(latitude - map[0].latitude, 2));
+                for (var i = 1; i < map.length; ++i) {
+                    const diff = Math.sqrt(Math.pow(longitude - map[i].longitude, 2) + Math.pow(latitude - map[i].latitude, 2));
+                    if (diff < minDiff) {
+                        closest = i;
+                        minDiff = diff;
+                    }
                 }
+                return map[closest].price;
+            } else {
+                return -1;
             }
-            return map[closest].price;
         })
     ;
 }
