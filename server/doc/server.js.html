@@ -30,16 +30,16 @@
  * Server entry point.
  * @module server
  */
-const path = require('path');
-const http = require('http');
+var path = require('path');
+var http = require('http');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
 
-const config     = require(`${SERVER_ROOT}/server/config`).defaults;
-const controller = require(`${SERVER_ROOT}/api/controller`);
-const log        = require(`${SERVER_ROOT}/server/log`);
-const util       = require(`${SERVER_ROOT}/util`);
+var config     = require(`${SERVER_ROOT}/server/config`).defaults;
+var controller = require(`${SERVER_ROOT}/api/controller`);
+var log        = require(`${SERVER_ROOT}/server/log`);
+var util       = require(`${SERVER_ROOT}/util`);
 
 init();
 

@@ -2,9 +2,14 @@
  * Endpoint routing logic.
  * @module api/routes
  */
-const path = require('path');
-const log  = require(`${SERVER_ROOT}/server/log`);
-const util = require(`${SERVER_ROOT}/util`);
+
+
+var path = require('path');
+var log  = require(`${SERVER_ROOT}/server/log`);
+var util = require(`${SERVER_ROOT}/util`);
+
+module.exports.init      = init;
+module.exports.endpoints = [];
 
 /**
  * Initialise routing.
@@ -28,7 +33,6 @@ const util = require(`${SERVER_ROOT}/util`);
 function init() {
     log.trace(module, init);
     const dir = `${SERVER_ROOT}/api/routes`;
-    var endpoints = [];
     // Find all Javascript files in dir.
     util.walk(dir, (filePath) => {
         filePath = path.posix.normalize(filePath.replace(/\\/g, '/'));
@@ -37,9 +41,10 @@ function init() {
             // Try to load the module
             var epModule = require(filePath);
             // Check for REL, METHOD and CALLBACK.
-            if (util.isNullOrUndefined(epModule.REL)
-             || util.isNullOrUndefined(epModule.METHOD)
-             || util.isNullOrUndefined(epModule.CALLBACK)) {
+            if (util.isNullOrUndefined(epModule.REL)    ||
+                util.isNullOrUndefined(epModule.METHOD) ||
+                util.isNullOrUndefined(epModule.INPUTS) ||
+                util.isNullOrUndefined(epModule.CALLBACK)) {
                 // Not a valid module - log and skip.
                 return log.warn(`Javascript source file ${filePath} does not define an endpoint`);
             }
@@ -51,15 +56,13 @@ function init() {
             }
             // Append the endpoint to the table.
             log.info(`Adding endpoint ${epModule.REL}=${epPath}`);
-            endpoints.push({
+            module.exports.endpoints.push({
                 'rel':      epModule.REL,
                 'href':     epPath,
                 'method':   epModule.METHOD,
+                'inputs':   epModule.INPUTS,
                 'callback': epModule.CALLBACK
             });
         }
     });
-    module.exports.endpoints = endpoints;
 }
-
-module.exports.init = init;

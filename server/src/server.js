@@ -2,23 +2,25 @@
  * Server entry point.
  * @module server
  */
+
+
 require('newrelic');
 
-const path  = require('path');
-const http  = require('http');
-const https = require('https');
-const fs = require('fs');
+var path  = require('path');
+var http  = require('http');
+var https = require('https');
+var fs = require('fs');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
 
-const config     = require(`${SERVER_ROOT}/server/config.js`).defaults;
-const controller = require(`${SERVER_ROOT}/api/controller`);
-const database   = require(`${SERVER_ROOT}/database/mysql`);
-const model      = require(`${SERVER_ROOT}/api/model`);
-const routes     = require(`${SERVER_ROOT}/api/routes`);
-const log        = require(`${SERVER_ROOT}/server/log`);
-const util       = require(`${SERVER_ROOT}/util`);
+var config     = require(`${SERVER_ROOT}/server/config.js`).defaults;
+var controller = require(`${SERVER_ROOT}/api/controller`);
+var database   = require(`${SERVER_ROOT}/database/mysql`);
+var model      = require(`${SERVER_ROOT}/api/model`);
+var routes     = require(`${SERVER_ROOT}/api/routes`);
+var log        = require(`${SERVER_ROOT}/server/log`);
+var util       = require(`${SERVER_ROOT}/util`);
 
 init();
 
@@ -42,14 +44,15 @@ function startServer(error) {
     // Set up event handlers.
     process.on('exit', handleExit);
     // Start the server.
+    var server = null;
     if (util.isNullOrUndefined(config.SSL_KEY)) {
-        var server = http.createServer(controller.handleRequest);
+        server = http.createServer(controller.handleRequest);
     } else {
         var ssl = {
             key: fs.readFileSync(config.SSL_KEY),
             cert: fs.readFileSync(config.SSL_CERT),
         };
-        var server = https.createServer(ssl, controller.handleRequest);
+        server = https.createServer(ssl, controller.handleRequest);
         config.PORT = config.SSL_PORT;
     }
     server.on('error', handleError);

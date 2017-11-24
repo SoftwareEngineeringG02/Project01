@@ -2,77 +2,39 @@
  * /price endpoint handler.
  * @module api/routes/price/index
  */
-const controller = require(`${SERVER_ROOT}/api/controller`);
-const log        = require(`${SERVER_ROOT}/server/log`);
-const model      = require(`${SERVER_ROOT}/api/model`);
-const routes     = require(`${SERVER_ROOT}/api/routes`);
-const util       = require(`${SERVER_ROOT}/util`);
+
+var controller = require(`${SERVER_ROOT}/api/controller`);
+var log        = require(`${SERVER_ROOT}/server/log`);
+var model      = require(`${SERVER_ROOT}/api/model`);
+var routes     = require(`${SERVER_ROOT}/api/routes`);
+var util       = require(`${SERVER_ROOT}/util`);
 
 module.exports.REL      = 'get-price';
 
 module.exports.METHOD   = 'POST';
 
-module.exports.CALLBACK = function(request, response) {
+module.exports.INPUTS   = { 'id': 'string', 'longitude': 'number', 'latitude': 'number' };
+
+module.exports.CALLBACK = function(inputs) {
     log.debug(module.exports.REL);
-    controller.getRequestBody(request, handleBody.bind(null, request, response));
+    const { longitude, latitude } = inputs;
+    return model.getPrice(longitude, latitude)
+        .then(price => {
+            var error   = 0;
+            var message = 'Success';
+            if (util.isNullOrUndefined(price)) {
+                error = 1;
+                message = 'No Data';
+                price = 'No Data';
+            }
+            return {
+                'status': 200,
+                'body': {
+                    'error':   error,
+                    'message': message,
+                    'price':   price
+                }
+            };
+        })
+    ;
 }
-
-// Handle body data.
-function handleBody(request, response, error, body) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    const elems = {
-        id:        'string',
-        time:      'number',
-        longitude: 'number',
-        latitude:  'number'
-    };
-    util.getJsonElements(body, elems, handleJson.bind(null, request, response));
-}
-
-function handleJson(request, response, error, object) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    const { id, time, longitude, latitude } = object;
-    model.startRequest(
-        request,
-        id,
-        time,
-        getPrice.bind(null, request, response, longitude, latitude)
-    );
-}
-
-function getPrice(request, response, longitude, latitude, error, requestID) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    model.getPrice(
-        longitude,
-        latitude,
-        handlePrice.bind(null, request, response, requestID)
-    );
-}
-
-// Return price in response.
-function handlePrice(request, response, requestID, error, result) {
-    if (error) {
-        return request.emit('error', error);
-    }
-    if (util.isNullOrUndefined(result)) {
-        return request.emit('error', 'No price associated with location');
-    }
-    // Send response.
-    controller.doResponse(
-        response,
-        {
-            'error':   0,
-            'message': 'Success',
-            'price':   result.price,
-            'links':   routes.endpoints
-        },
-        200,
-        requestID
-    );
-};

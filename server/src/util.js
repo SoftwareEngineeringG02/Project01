@@ -2,15 +2,17 @@
  * Various utility functions.
  * @module util
  */
-const fs   = require('fs');
-const ip   = require('ip');
-const path = require('path');
+
+
+var fs   = require('fs');
+var ip   = require('ip');
+var path = require('path');
 
 /**
  * Return true if the object has type 'undefined' or value 'null'.
  */
 module.exports.isNullOrUndefined = function(object) {
-    return typeof object === 'undefined' || object == null;
+    return object === undefined || object === null;
 }
 
 /**
@@ -59,35 +61,6 @@ module.exports.walk = function(dir, callback) {
 }
 
 /**
- * Extract JSON objects from HTTP request body data with rudimentary type-checking.
- * @param body A buffer che HTTP request body.
- * @param elems A dictionary associating object names to their expected types, e.g. 'string',
- * 'object' or 'number.'
- * @param callback A function(error, object) which processes the resulting Javascript object.
- */
-module.exports.getJsonElements = function(body, elems, callback) {
-    // Try to parse the body as JSON.
-    try {
-        var object = JSON.parse(body);
-    } catch (error) {
-        return callback(error);
-    }
-    // Extract the elements named by 'elems'.
-    var result = {};
-    for (var name in elems) {
-        const type = elems[name];
-        if (module.exports.isNullOrUndefined(object[name])) {
-            return callback(new Error(`${name}: undefined property in request`));
-        }
-        if (typeof object[name] !== type) {
-            return callback(new Error(`${name}: expected ${type}, got ${typeof object[name]}`));
-        }
-        result[name] = object[name];
-    }
-    return callback(null, result);
-}
-
-/**
  * Get the server's local network IP address.
  */
 module.exports.getLocalAddress = function() {
@@ -100,4 +73,10 @@ module.exports.getLocalAddress = function() {
 module.exports.getTimeStamp = function() {
     var d = new Date();
     return d.toISOString().replace('T', ' ').substr(0, 19);
+}
+
+module.exports.ServerError = class ServerError extends Error {
+    constructor(message) {
+        super(message);
+    }
 }

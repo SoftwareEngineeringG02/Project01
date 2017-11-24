@@ -30,9 +30,9 @@
  * MySQL database interface.
  * @module database/mysql
  */
-const mysql = require('mysql');
-const log   = require(`${SERVER_ROOT}/server/log`);
-const util  = require(`${SERVER_ROOT}/util`);
+var mysql = require('mysql');
+var log   = require(`${SERVER_ROOT}/server/log`);
+var util  = require(`${SERVER_ROOT}/util`);
 
 module.exports.init   = init;
 module.exports.find   = find;

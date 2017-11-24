@@ -3,8 +3,8 @@
  * @module tools/json2sql
  */
 
-const fs    = require('fs');
-const mysql = require('mysql');
+var fs    = require('fs');
+var mysql = require('mysql');
 
 if (process.argv.length < 3) {
     console.error(`Usage: ${process.argv[0]} ${process.argv[1]} <JSON file>`);
