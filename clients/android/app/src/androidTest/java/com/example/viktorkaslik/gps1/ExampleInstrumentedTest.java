@@ -7,6 +7,13 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 /**
@@ -20,7 +27,10 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-
+        System.out.println("testing1 ...");
         assertEquals("com.example.viktorkaslik.gps1", appContext.getPackageName());
     }
+
+
 }
+
