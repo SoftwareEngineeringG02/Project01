@@ -2,7 +2,6 @@
  * /location/update endpoint handler.
  * @module api/routes/location/update
  */
-
 var controller = require(`${SERVER_ROOT}/api/controller`);
 var log        = require(`${SERVER_ROOT}/server/log`);
 var model      = require(`${SERVER_ROOT}/api/model`);
@@ -15,9 +14,9 @@ module.exports.METHOD = 'POST';
 
 module.exports.INPUTS = {'id': 'string', 'longitude': 'number', 'latitude': 'number'};
 
-module.exports.CALLBACK = function(inputs) {
+module.exports.CALLBACK = function({id, longitude, latitude}) {
     log.debug(module.exports.REL);
-    return model.setLocation(inputs.id, inputs.longitude, inputs.latitude)
+    return model.setLocation(id, longitude, latitude)
         .then(() => {
             return {
                 'status': 200,

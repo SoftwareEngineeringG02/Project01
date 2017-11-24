@@ -2,7 +2,6 @@
  * Server API model.
  * @module api/model
  */
-
 var https = require('https');
 
 var database = require(`${SERVER_ROOT}/database/mysql.js`);
@@ -116,7 +115,6 @@ function setLocation(client, longitude, latitude) {
  * Retrieve price for longitude and latitude.
  * @param longitude The longitude.
  * @param latitude The latitude.
- * @param callback A function to call when results are ready. Arguments are (error, results).
  */
 function getPrice(longitude, latitude) {
     log.trace(module, getPrice);
@@ -135,8 +133,8 @@ function getPrice(longitude, latitude) {
     return database.find(TPRICE, search)
         .then(map => {
             // Find the entry closest to longitude and latitude.
-            var closest = 0;
             if (map && map.length) {
+                var closest = 0;
                 var minDiff = Math.sqrt(Math.pow(longitude - map[0].longitude, 2) + Math.pow(latitude - map[0].latitude, 2));
                 for (var i = 1; i < map.length; ++i) {
                     const diff = Math.sqrt(Math.pow(longitude - map[i].longitude, 2) + Math.pow(latitude - map[i].latitude, 2));

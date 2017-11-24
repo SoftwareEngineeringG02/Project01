@@ -23,9 +23,9 @@ module.exports.CALLBACK = function({postcode, radius}) {
             return {
                 'status': 200,
                 'body': {
-                    'error':    0,
-                    'message':  'Success',
-                    'map':    map,
+                    'error':   0,
+                    'message': 'Success',
+                    'map':     map
                 }
             };
         })
