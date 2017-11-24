@@ -13,5 +13,5 @@ The system is designed with a client/server architecture.
 
 ### Backend
 
- * [REST server](./backend/server)
+ * [REST server](./server)
  * [Land value data preprocessor](./backend/data-processing)
