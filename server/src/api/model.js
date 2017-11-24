@@ -147,7 +147,7 @@ function getPrice(longitude, latitude) {
                 }
                 return map[closest].price;
             } else {
-                return -1;
+                return Promise.reject(-1);
             }
         })
     ;
