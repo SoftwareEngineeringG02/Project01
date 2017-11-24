@@ -965,18 +965,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 showOnMap();
             }
         }
-
         @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
+        public void onStatusChanged(String s, int i, Bundle bundle) {}
         @Override
-        public void onProviderEnabled(String s) {
-
-        }
+        public void onProviderEnabled(String s) {}
         @Override
-        public void onProviderDisabled(String s) {
-
-        }
+        public void onProviderDisabled(String s) {}
     };
+
+    public double getLon() {
+        return lon;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public LocationListener getLocationListener() {
+        return locationListener;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
 }
