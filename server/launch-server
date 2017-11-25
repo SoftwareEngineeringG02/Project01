@@ -9,7 +9,7 @@ set -e
 server_dir=$(pwd)/$(dirname "$0")
 server_main="${server_dir}/src/server.js"
 server_log="${server_dir}/server.log"
-server_conf="/etc/advse/server.conf"
+server_conf="/etc/advse/server_ssl.conf"
 
 function is_windows {
     case $(uname -s) in
