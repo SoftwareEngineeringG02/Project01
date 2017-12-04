@@ -1,6 +1,6 @@
 /* Create database. */
-CREATE DATABASE IF NOT EXISTS serverdb;
-USE serverdb;
+CREATE DATABASE IF NOT EXISTS postcodesdb;
+USE postcodesdb;
 
 /* Drop any existing tables. */
 DROP TABLE IF EXISTS address;
