@@ -30,18 +30,13 @@
  * Server API controller.
  * @module api/controller
  */
+
 var log    = require(`${SERVER_ROOT}/server/log`);
 var model  = require(`${SERVER_ROOT}/api/model`);
 var routes = require(`${SERVER_ROOT}/api/routes`);
 var util   = require(`${SERVER_ROOT}/util`);
 
-/**
- * Initialise the controller.
- * @param config The configuration.
- */
-module.exports.init = function(config, callback) {
-    routes.init(config, () => { model.init(config, callback); });
-}
+module.exports.handleRequest = handleRequest;
 
 /**
  * Handle an HTTP request.
@@ -52,85 +47,151 @@ module.exports.init = function(config, callback) {
  */
 function handleRequest(request, response) {
     log.trace(module, handleRequest);
-    request.on('error', (error) => {
-        badRequest(request, response, error);
-    });
-    const { method, url, headers } = request;
-    // Log user info.
-    const address = request.connection.remoteAddress;
-    const agent   = headers['user-agent'];
-    log.info(`Request &lt;address=${address}, request=${method} ${url}, user-agent=${agent}>`);
-    // Call the handler for the endpoint if it exists.
-    for (var i = 0; i &lt; routes.endpoints.length; ++i) {
-        const endpoint = routes.endpoints[i];
-        if (endpoint.href === url &amp;&amp; method === endpoint.method) {
-            try {
-                return endpoint.callback.call(endpoint, request, response);
-            } catch (error) {
-                // If an exception occurs, log it, return an error to the client, and kill the
-                // connection.
-                log.error(error.toString());
-                badRequest(request, response, error.toString());
-                request.connection.destroy();
-            }
-        }
+    // Set error handler.
+    request.on('error', badRequest.bind(null, request, response, 400));
+    // Find endpoint.
+    const { method, url } = request;
+    const endpoint = getRequestHandler(method, url);
+    if (util.isNullOrUndefined(endpoint)) {
+        return badRequest(request, response);
     }
-    // If we get here, there was no handler defined for the endpoint and method.
+    // Call endpoint handler.
+    if (method == 'GET') {
+        return endpoint.callback.call(null)
+            .then(({status, body}) => endRequest(null, response, status, body))
+    } else if (method == 'POST') {
+        return handlePost(request, response, endpoint)
+    }
+    // No handler for requested endpoint.
     return badRequest(request, response);
 }
 
-module.exports.handleRequest = handleRequest;
-
-// Handle invalid requests e.g. bad endpoint, wrong method, or missing/invalid data.
-function badRequest(request, response, message) {
-    log.trace(module, badRequest);
-    if (util.isNullOrUndefined(message)) {
-        const { method, url } = request;
-        message = `Bad request: ${method} ${url}`;
-    }
-    log.warn(message);
-    return doResponse(response, {
-        'error':   1,
-        'message': message,
-        'links':   routes.endpoints
-    });
-}
-
-module.exports.badRequest = badRequest;
-
-// Extract the body data from a request.
-// Throws:
-// * TypeError if 'callback' is not a function
-// * Error if there is a problem with the request
-function getRequestBody(request, callback) {
-    log.trace(module, getRequestBody);
-    if (typeof callback !== 'function') {
-        throw new TypeError('Expected callback function');
-    }
-    var body = '';
-    request.on('data', (data) => {
-        body += data;
-        // Check for buffer overrun attack. Throws exception if data too large.
-        if (body.length > 1e6) {
-            body = '';
-            throw new util.ServerError('Request body too large');
+function getRequestHandler(method, url) {
+    for (var i = 0; i &lt; routes.endpoints.length; ++i) {
+        const endpoint = routes.endpoints[i];
+        if (method === endpoint.method &amp;&amp; endpoint.href === url) {
+            return endpoint;
         }
-    });
-    request.on('end', function() {
-        callback(body);
-    });
+    }
+    return null;
 }
 
-module.exports.getRequestBody = getRequestBody;
+function handlePost(request, response, endpoint) {
+    var inputs    = null;
+    var requestID = null;
+    return getRequestBody(request)
+        .then(body   => getJsonElements(body, endpoint.inputs))
+        .then(object => {
+            inputs = object;
+            return startRequest(request, inputs.id);
+        })
+        .then(reqID => {
+            requestID = reqID;
+            return endpoint.callback.call(null, inputs);
+        })
+        .then(({status, body}) => {
+            return endRequest(requestID, response, status, body);
+        })
+        .catch(error => {
+            badRequest(request, response, error, requestID);
+        })
+    ;
+}
 
-// Write JSON data to the response.
-function doResponse(response, json) {
-    log.trace(module, doResponse);
+function startRequest(request, client) {
+    log.trace(module, startRequest);
+    return model.startRequest(request, client);
+}
+
+function endRequest(requestID, response, status, body) {
+    log.trace(module, endRequest);
+    response.statusCode = status;
     response.setHeader('Content-Type', 'application/json');
-    response.end(JSON.stringify(json));
+    // FIXME workaround for client regex which assumes the links don't have an `inputs` field.
+    body.links = [];
+    for (var i = 0; i &lt; routes.endpoints.length; ++i) {
+        body.links.push({
+            'rel':    routes.endpoints[i].rel,
+            'href':   routes.endpoints[i].href,
+            'method': routes.endpoints[i].method
+        });
+    }
+    response.end(JSON.stringify(body));
+    if (!(util.isNullOrUndefined(requestID))) {
+        return model.endRequest(requestID, response.statusCode);
+    }
 }
 
-module.exports.doResponse = doResponse;
+function badRequest(request, response, error, requestID) {
+    // Create response body.
+    var body = { 'error': 1 };
+    if (util.isNullOrUndefined(error)) {
+        body.message = `Bad request: ${request.method} ${request.url}`;
+    } else if (error instanceof Error &amp;&amp; !(error instanceof util.ServerError)) {
+        body.message = 'Internal server error';
+    } else {
+        body.message = error.message;
+    }
+    // Send response.
+    endRequest(requestID, response, 400, body);
+    // Crash if the error was an exception generated by V8, but don't crash on self-generated
+    // exceptions (util.ServerError).
+    if (error instanceof Error &amp;&amp; !(error instanceof util.ServerError)) {
+        log.error(error.message);
+        log.error(error.stack);
+        process.exit(1);
+    }
+}
+
+/**
+ * Get the body data from a request.
+ * @param request The request.
+ * @param response The response.
+ */
+function getRequestBody(request) {
+    return new Promise((resolve, reject) => {
+        var body = '';
+        request.on('data', data => {
+            body += data;
+            // Check for buffer overrun attack. Return error if data too large.
+            if (body.length > 1e6) {
+                body = '';
+                reject(new util.ServerError('Request body too large'));
+            }
+        });
+        request.on('end', () => { resolve(body) });
+    });
+}
+
+/**
+ * Extract JSON objects from HTTP request body data with rudimentary type-checking.
+ * @param body A buffer che HTTP request body.
+ * @param elems A dictionary associating object names to their expected types, e.g. 'string',
+ * 'object' or 'number.'
+ */
+function getJsonElements(body, elems) {
+    return new Promise((resolve, reject) => {
+        // Try to parse the body as JSON.
+        try {
+            var object = JSON.parse(body);
+        } catch (error) {
+            return reject(error);
+        }
+        // Extract the elements named by 'elems'.
+        var result = {};
+        for (var name in elems) {
+            const type = elems[name];
+            if (util.isNullOrUndefined(object[name])) {
+                reject(new util.ServerError(`${name}: undefined property`));
+            }
+            if (typeof object[name] !== type) {
+                reject(new util.ServerError(`${name}: expected ${type}, got ${typeof object[name]}`));
+            }
+            result[name] = object[name];
+        }
+        resolve(result);
+    });
+}
 </code></pre>
         </article>
     </section>
@@ -141,13 +202,13 @@ module.exports.doResponse = doResponse;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_postcode.html">api/routes/postcode</a></li><li><a href="module-api_routes_postcode_map.html">api/routes/postcode/map</a></li><li><a href="module-api_routes_postcode_reverse.html">api/routes/postcode/reverse</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-api_routes_price_map.html">api/routes/price/map</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 17:43:46 GMT+0000 (GMT Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Dec 02 2017 13:32:56 GMT+0000 (GMT Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

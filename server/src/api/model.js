@@ -164,7 +164,8 @@ function getPriceMap(longitude, latitude, radius) {
     const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
     const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
                        and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
-    return database.find(TPRICE, search);
+    const columns = ['postcode','longitude','latitude','price'];
+    return database.find(TPRICE, search, column=columns);
 }
 
 // Compute the minimum and maximum longitude and latitude of points within a radius of a given point
@@ -274,13 +275,9 @@ function handleOnlineReversePostcode(resolve, reject, postcode, response) {
 /**
  * Get a price map from a post code.
  */
-function getPostcodeMap(postcode, radius) {
+function getPostcodeMap(postcode) {
     log.trace(module, getPriceMap);
-    return reversePostcode(postcode)
-        .then(({ longitude, latitude }) => {
-            return getPriceMap(longitude, latitude, radius);
-        })
-    ;
+    return database.find(TPRICE, equal('postcode', postcode), column=['postcode','longitude','latitude','price']);
 }
 
 function equal(lhs, rhs) { return { lhs, op: '=',   rhs }; }

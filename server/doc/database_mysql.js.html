@@ -30,20 +30,24 @@
  * MySQL database interface.
  * @module database/mysql
  */
+
+
 var mysql = require('mysql');
 var log   = require(`${SERVER_ROOT}/server/log`);
 var util  = require(`${SERVER_ROOT}/util`);
 
-module.exports.init   = init;
-module.exports.find   = find;
-module.exports.insert = insert;
+module.exports.init         = init;
+module.exports.find         = find;
+module.exports.insert       = insert;
+module.exports.insertIgnore = insertIgnore;
+module.exports.update       = update;
 
 var connection = null;
 
 /**
  * Initialise the database.
- * @param config
- * @param callback
+ * @param config The configuration.
+ * @param callback A function(error) to call when complete.
  */
 function init(config, callback) {
     log.trace(module, init);
@@ -60,7 +64,7 @@ function init(config, callback) {
         if (!(util.isNullOrUndefined(connection))) {
             connection.end((error) => {
                 if (error) {
-                    throw error;
+                    return callback(error);
                 }
             });
         }
@@ -68,11 +72,10 @@ function init(config, callback) {
     // Connect, handle error if any, otherwise call callback.
     connection.connect((error) => {
         if (error) {
-            log.error('Database error: ' + error.toString());
-            process.exit(1);
+            return callback(error);
         }
         log.info('Connected to MySQL database');
-        callback();
+        callback(null);
     });
 }
 
@@ -82,39 +85,108 @@ function init(config, callback) {
  * @param search A Javascript object containing the keys: lhs (column name), op (comparison
  * operator) and rhs (comparison value). If operator is "and" or "or", "lhs" and "rhs" are
  * nested objects.
- * @param callback The function to call when results are ready.
  * @param [orderBy] An optional column to sort by.
  * @param [descending] Whether to sort in descending (true) or ascending (false, null, undefined)
  * order (default: ascending).
+ * @param [column] Whether to select just one or a few columns, or all of them (*). Default: *
  */
-function find(table, search, callback, orderBy, descending) {
+function find(table, search, orderBy, descending, column='*') {
     log.trace(module, find);
-    if (util.isNullOrUndefined(connection)) {
-        return log.error('Bug: Database used but not initialised');
-    }
-    var sql = makeSelect(table, search);
-    // Escape DB inputs.
-    if (!(util.isNullOrUndefined(orderBy))) {
-        // Append sorting.
-        const safeOrderBy = mysql.escapeId(orderBy);
-        sql += ` ORDER BY ${safeOrderBy}`;
-        if (descending) {
-            sql += ' DESC';
+    return new Promise((resolve, reject) => {
+        // Escape DB inputs.
+        const safeColumn = column == '*' ? column : mysql.escapeId(column);
+        const safeTable  = mysql.escapeId(table);
+        var   sql        = makeSelect(safeTable, search, safeColumn=safeColumn);
+        if (!(util.isNullOrUndefined(orderBy))) {
+            // Append sorting.
+            const safeOrderBy = mysql.escapeId(orderBy);
+            sql += ` ORDER BY ${safeOrderBy}`;
+            if (descending === true) {
+                sql += ' DESC';
+            } else {
+                sql += ' ASC';
+            }
         }
-    }
-    // Perform query.
-    const query = connection.query(sql, callback);
-    log.debug(query.sql);
+        // Perform query.
+        const query = connection.query(sql, dbCallback.bind(null, resolve, reject));
+        log.debug(query.sql);
+    });
 }
 
-function makeSelect(table, search, inner) {
-    const safeTable = mysql.escapeId(table);
+/**
+ * Insert a row into a table.
+ * @param table The table to insert into.
+ * @param row The row to insert.
+ */
+function insert(table, row) {
+    return new Promise((resolve, reject) => {
+        const safeTable = mysql.escapeId(table);
+        const query     = connection.query(
+            `INSERT INTO ${safeTable} SET ?`,
+            [row],
+            dbCallback.bind(null, resolve, reject)
+        );
+        log.debug(query.sql);
+    });
+}
+
+/**
+ * Insert a row into a table. Ignore error if the row already exists.
+ * @param table The table to insert into.
+ * @param row The row to insert.
+ */
+function insertIgnore(table, row) {
+    return new Promise((resolve, reject) => {
+        const safeTable = mysql.escapeId(table);
+        const query = connection.query(
+            `INSERT IGNORE INTO ${safeTable} SET ?`,
+            [row],
+            dbCallback.bind(null, resolve, reject)
+        );
+        log.debug(query.sql);
+    });
+}
+
+/**
+ * Update a row.
+ * @param table The table to update into.
+ * @param search The search key to find the row. @see find
+ * @param columns The columns to update.
+ */
+function update(table, search, columns) {
+    return new Promise((resolve, reject) => {
+        if (util.isNullOrUndefined(connection)) {
+            throw new ReferenceError('Bug: Database used but not initialised');
+        }
+        const safeTable = mysql.escapeId(table);
+        const where = makeSelect(safeTable, search, true);
+        const query = connection.query(
+            `UPDATE ${safeTable} SET ? where ${where}`,
+            [columns],
+            dbCallback.bind(null, resolve, reject)
+        );
+        log.debug(query.sql);
+    });
+}
+
+// Pass error/result along to real callback. Used to prevent database error messages finding their
+// way into responses and giving attackers detailed info about the server's state.
+function dbCallback(resolve, reject, error, result) {
+    if (error) {
+        return reject(error);
+    } else {
+        return resolve(result);
+    }
+}
+
+// Generate a SQL select statement. NB: makeSelect expects 'safeTable' to be escaped!
+function makeSelect(safeTable, search, inner=false, safeColumn='*') {
     const { lhs, op, rhs } = search;
     var where = '';
     if (op == 'and' || op == 'or') {
         // Join nested expressions.
-        const lhsExpr = makeSelect(table, lhs, true);
-        const rhsExpr = makeSelect(table, rhs, true);
+        const lhsExpr = makeSelect(safeTable, lhs, true);
+        const rhsExpr = makeSelect(safeTable, rhs, true);
         where = `${lhsExpr} ${op} ${rhsExpr}`;
     } else {
         // Generate simple expression.
@@ -126,19 +198,8 @@ function makeSelect(table, search, inner) {
     if (inner) {
         return where;
     } else {
-        return `SELECT * FROM ${safeTable} WHERE ${where}`
+        return `SELECT ${safeColumn} FROM ${safeTable} WHERE ${where}`;
     }
-}
-
-/**
- * Insert a row into a table.
- */
-function insert(table, row, callback) {
-    if (util.isNullOrUndefined(connection)) {
-        return log.error('Bug: Database used but not initialised');
-    }
-    const query = connection.query('INSERT INTO ? SET ?', [table, row], callback);
-    log.debug(query.sql);
 }
 </code></pre>
         </article>
@@ -150,13 +211,13 @@ function insert(table, row, callback) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_postcode.html">api/routes/postcode</a></li><li><a href="module-api_routes_postcode_map.html">api/routes/postcode/map</a></li><li><a href="module-api_routes_postcode_reverse.html">api/routes/postcode/reverse</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-api_routes_price_map.html">api/routes/price/map</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 17:43:46 GMT+0000 (GMT Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Dec 02 2017 13:32:56 GMT+0000 (GMT Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

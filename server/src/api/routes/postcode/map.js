@@ -14,11 +14,11 @@ module.exports.REL    = 'get-postcode-map';
 
 module.exports.METHOD = 'POST';
 
-module.exports.INPUTS = { id: 'string', 'postcode': 'string', 'radius': 'number' };
+module.exports.INPUTS = { id: 'string', 'postcode': 'string' };
 
-module.exports.CALLBACK = function({postcode, radius}) {
+module.exports.CALLBACK = function({postcode}) {
     log.debug(module.exports.REL);
-    return model.getPostcodeMap(postcode, radius)
+    return model.getPostcodeMap(postcode)
         .then(map => {
             return {
                 'status': 200,

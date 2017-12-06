@@ -136,13 +136,14 @@
 
         
             
-<h4 class="name" id=".LogLevel"><span class="type-signature">(static) </span>LogLevel<span class="type-signature"></span></h4>
+<h4 class="name" id="~LogLevel"><span class="type-signature">(inner, constant) </span>LogLevel<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
     Log level.
+Note: If you change something here remember to change formatMessage.
 </div>
 
 
@@ -180,7 +181,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line10">line 10</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -208,7 +209,7 @@
     
 
     
-    <h4 class="name" id=".debug"><span class="type-signature">(static) </span>debug<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~debug"><span class="type-signature">(inner) </span>debug<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
     
 
     
@@ -323,7 +324,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line58">line 58</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -357,7 +358,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
 
     
-    <h4 class="name" id=".error"><span class="type-signature">(static) </span>error<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~error"><span class="type-signature">(inner) </span>error<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
     
 
     
@@ -472,7 +473,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line97">line 97</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line100">line 100</a>
     </li></ul></dd>
     
 
@@ -506,7 +507,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
 
     
-    <h4 class="name" id=".info"><span class="type-signature">(static) </span>info<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~info"><span class="type-signature">(inner) </span>info<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
     
 
     
@@ -621,7 +622,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line77">line 77</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -655,7 +656,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
 
     
-    <h4 class="name" id=".print"><span class="type-signature">(static) </span>print<span class="signature">(level, msg, args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~print"><span class="type-signature">(inner) </span>print<span class="signature">(level, msg, args)</span><span class="type-signature"></span></h4>
     
 
     
@@ -788,7 +789,7 @@ level: @see LogLevel @see setLogLevel</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line42">line 42</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -822,7 +823,7 @@ level: @see LogLevel @see setLogLevel</td>
     
 
     
-    <h4 class="name" id=".setLogLevel"><span class="type-signature">(static) </span>setLogLevel<span class="signature">(level)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~setLogLevel"><span class="type-signature">(inner) </span>setLogLevel<span class="signature">(level)</span><span class="type-signature"></span></h4>
     
 
     
@@ -919,7 +920,7 @@ be suppressed.</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line29">line 29</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -963,7 +964,7 @@ be suppressed.</td>
     
 
     
-    <h4 class="name" id=".trace"><span class="type-signature">(static) </span>trace<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~trace"><span class="type-signature">(inner) </span>trace<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1016,7 +1017,7 @@ Does nothing if this is below the server's current minimum log-level: @see LogLe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line67">line 67</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line70">line 70</a>
     </li></ul></dd>
     
 
@@ -1057,7 +1058,7 @@ Does nothing if this is below the server's current minimum log-level: @see LogLe
     
 
     
-    <h4 class="name" id=".warn"><span class="type-signature">(static) </span>warn<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~warn"><span class="type-signature">(inner) </span>warn<span class="signature">(msg, args)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1172,7 +1173,7 @@ current minimum log-level: @see LogLevel @see setLogLevel
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line87">line 87</a>
+        <a href="server_log.js.html">server/log.js</a>, <a href="server_log.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -1216,13 +1217,13 @@ current minimum log-level: @see LogLevel @see setLogLevel
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_controller.html">api/controller</a></li><li><a href="module-api_model.html">api/model</a></li><li><a href="module-api_routes.html">api/routes</a></li><li><a href="module-api_routes_index.html">api/routes/index</a></li><li><a href="module-api_routes_location_index.html">api/routes/location/index</a></li><li><a href="module-api_routes_location_list.html">api/routes/location/list</a></li><li><a href="module-api_routes_location_update.html">api/routes/location/update</a></li><li><a href="module-api_routes_postcode.html">api/routes/postcode</a></li><li><a href="module-api_routes_postcode_map.html">api/routes/postcode/map</a></li><li><a href="module-api_routes_postcode_reverse.html">api/routes/postcode/reverse</a></li><li><a href="module-api_routes_price_index.html">api/routes/price/index</a></li><li><a href="module-api_routes_price_map.html">api/routes/price/map</a></li><li><a href="module-database_mysql.html">database/mysql</a></li><li><a href="module-server.html">server</a></li><li><a href="module-server_config.html">server/config</a></li><li><a href="module-server_log.html">server/log</a></li><li><a href="module-util.html">util</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 17:43:47 GMT+0000 (GMT Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Dec 02 2017 13:32:56 GMT+0000 (GMT Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

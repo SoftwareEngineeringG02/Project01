@@ -68,7 +68,7 @@ function find(table, search, orderBy, descending, column='*') {
         // Escape DB inputs.
         const safeColumn = column == '*' ? column : mysql.escapeId(column);
         const safeTable  = mysql.escapeId(table);
-        var   sql        = makeSelect(safeTable, search);
+        var   sql        = makeSelect(safeTable, search, safeColumn=safeColumn);
         if (!(util.isNullOrUndefined(orderBy))) {
             // Append sorting.
             const safeOrderBy = mysql.escapeId(orderBy);
