@@ -19,13 +19,15 @@ module.exports.INPUTS = { id: 'string', 'postcode': 'string' };
 module.exports.CALLBACK = function({postcode}) {
     log.debug(module.exports.REL);
     return model.getPostcodeMap(postcode)
-        .then(map => {
+        .then(({map, min, max}) => {
             return {
                 'status': 200,
                 'body': {
                     'error':   0,
                     'message': 'Success',
-                    'map':     map
+                    'map':     map,
+                    'min':     min,
+                    'max':     max
                 }
             };
         })

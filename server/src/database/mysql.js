@@ -66,9 +66,9 @@ function find(table, search, orderBy, descending, column='*') {
     log.trace(module, find);
     return new Promise((resolve, reject) => {
         // Escape DB inputs.
-        const safeColumn = column == '*' ? column : mysql.escapeId(column);
+        const safeColumn = column == '*' ? column : column;//mysql.escapeId(column);
         const safeTable  = mysql.escapeId(table);
-        var   sql        = makeSelect(safeTable, search, safeColumn=safeColumn);
+        var   sql        = makeSelect(safeTable, search, safeColumn, false);
         if (!(util.isNullOrUndefined(orderBy))) {
             // Append sorting.
             const safeOrderBy = mysql.escapeId(orderBy);
@@ -131,7 +131,7 @@ function update(table, search, columns) {
             throw new ReferenceError('Bug: Database used but not initialised');
         }
         const safeTable = mysql.escapeId(table);
-        const where = makeSelect(safeTable, search, true);
+        const where = makeSelect(safeTable, search, null, true);
         const query = connection.query(
             `UPDATE ${safeTable} SET ? where ${where}`,
             [columns],
@@ -152,24 +152,31 @@ function dbCallback(resolve, reject, error, result) {
 }
 
 // Generate a SQL select statement. NB: makeSelect expects 'safeTable' to be escaped!
-function makeSelect(safeTable, search, inner=false, safeColumn='*') {
-    const { lhs, op, rhs } = search;
+function makeSelect(safeTable, search, safeColumn='*', inner=false) {
     var where = '';
-    if (op == 'and' || op == 'or') {
-        // Join nested expressions.
-        const lhsExpr = makeSelect(safeTable, lhs, true);
-        const rhsExpr = makeSelect(safeTable, rhs, true);
-        where = `${lhsExpr} ${op} ${rhsExpr}`;
-    } else {
-        // Generate simple expression.
-        const safeLHS = mysql.escapeId(lhs);
-        const safeRHS = mysql.escape(rhs);
-        where = `${safeLHS} ${op} ${safeRHS}`;
+    if (!(util.isNullOrUndefined(search))) {
+        const { lhs, op, rhs } = search;
+        if (op == 'and' || op == 'or') {
+            // Join nested expressions.
+            const lhsExpr = makeSelect(safeTable, lhs, safeColumn, true);
+            const rhsExpr = makeSelect(safeTable, rhs, safeColumn, true);
+            where = `${lhsExpr} ${op} ${rhsExpr}`;
+        } else {
+            // Generate simple expression.
+            const safeLHS = mysql.escapeId(lhs);
+            const safeRHS = mysql.escape(rhs);
+            where = `${safeLHS} ${op} ${safeRHS}`;
+        }
     }
-    // Return the query with 'SELECT...FROM' prefix unless this is a nested expression.
     if (inner) {
+        // Return the "WHERE" condition only.
         return where;
     } else {
-        return `SELECT ${safeColumn} FROM ${safeTable} WHERE ${where}`;
+        // Return the query with 'SELECT...FROM' prefix.
+        var sql = `SELECT ${safeColumn} FROM ${safeTable}`;
+        if (where.length > 0) {
+            sql += ` WHERE ${where}`
+        }
+        return sql;
     }
 }
