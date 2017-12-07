@@ -43,25 +43,39 @@ function startServer(error) {
     }
     // Set up event handlers.
     process.on('exit', handleExit);
-    // Start the server.
-    var server = null;
-    if (util.isNullOrUndefined(config.SSL_KEY)) {
-        server = http.createServer(controller.handleRequest);
-    } else {
-        var ssl = {
-            key: fs.readFileSync(config.SSL_KEY),
-            cert: fs.readFileSync(config.SSL_CERT),
-        };
-        server = https.createServer(ssl, controller.handleRequest);
-        config.PORT = config.SSL_PORT;
+    // Listen for HTTP connections.
+    if (config.USE_HTTP) {
+        startHTTP();
     }
+    // Listen for HTTPS connections.
+    if (config.USE_HTTPS && !(util.isNullOrUndefined(config.SSL_KEY))) {
+        startHTTPS();
+    }
+}
+
+function startHTTP() {
+    log.trace(module, startHTTP);
+    const server = http.createServer(controller.handleRequest);
     server.on('error', handleError);
-    server.listen(config.PORT, (error) => {
-        if (error) {
-            handleError(error);
-        }
-        return log.info(`Listening on ${config.ADDRESS}:${config.PORT}`);
-    });
+    server.listen(config.PORT, serverListener.bind(null, config.PORT));
+}
+
+function startHTTPS() {
+    log.trace(module, startHTTPS);
+    var ssl = {
+        key:  fs.readFileSync(config.SSL_KEY),
+        cert: fs.readFileSync(config.SSL_CERT)
+    };
+    const server = https.createServer(ssl, controller.handleRequest);
+    server.on('error', handleError);
+    server.listen(config.SSL_PORT, serverListener.bind(null, config.SSL_PORT));
+}
+
+function serverListener(port, error) {
+    if (error) {
+        return handleError(error);
+    }
+    log.info(`Listening on ${config.ADDRESS}:${port}`);
 }
 
 // Called on 'exit' event.
@@ -74,7 +88,7 @@ function handleExit() {
 function handleError(error) {
     if (error) {
         log.trace(module, handleError);
-        log.error(`Fatal: ${error}`);
+        log.error(`Fatal: ${error.message}`);
         process.exit(1);
     }
 }

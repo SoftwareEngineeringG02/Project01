@@ -66,9 +66,9 @@ function find(table, search, orderBy, descending, column='*') {
     log.trace(module, find);
     return new Promise((resolve, reject) => {
         // Escape DB inputs.
-        const safeColumn = column == '*' ? column : mysql.escapeId(column);
+        const safeColumn = column == '*' ? column : column;//mysql.escapeId(column);
         const safeTable  = mysql.escapeId(table);
-        var   sql        = makeSelect(safeTable, search);
+        var   sql        = makeSelect(safeTable, search, safeColumn);
         if (!(util.isNullOrUndefined(orderBy))) {
             // Append sorting.
             const safeOrderBy = mysql.escapeId(orderBy);
@@ -131,9 +131,9 @@ function update(table, search, columns) {
             throw new ReferenceError('Bug: Database used but not initialised');
         }
         const safeTable = mysql.escapeId(table);
-        const where = makeSelect(safeTable, search, true);
-        const query = connection.query(
-            `UPDATE ${safeTable} SET ? where ${where}`,
+        const where     = makeWhere(search);
+        const query     = connection.query(
+            `UPDATE ${safeTable} SET ? WHERE ${where}`,
             [columns],
             dbCallback.bind(null, resolve, reject)
         );
@@ -151,25 +151,27 @@ function dbCallback(resolve, reject, error, result) {
     }
 }
 
-// Generate a SQL select statement. NB: makeSelect expects 'safeTable' to be escaped!
-function makeSelect(safeTable, search, inner=false, safeColumn='*') {
-    const { lhs, op, rhs } = search;
-    var where = '';
+// Generate a SQL "where" condition. Condition may nest.
+function makeWhere({lhs, op, rhs}) {
+    var lhs_;
+    var rhs_;
     if (op == 'and' || op == 'or') {
         // Join nested expressions.
-        const lhsExpr = makeSelect(safeTable, lhs, true);
-        const rhsExpr = makeSelect(safeTable, rhs, true);
-        where = `${lhsExpr} ${op} ${rhsExpr}`;
+        lhs_ = makeWhere(lhs);
+        rhs_ = makeWhere(rhs);
     } else {
         // Generate simple expression.
-        const safeLHS = mysql.escapeId(lhs);
-        const safeRHS = mysql.escape(rhs);
-        where = `${safeLHS} ${op} ${safeRHS}`;
+        lhs_ = mysql.escapeId(lhs);
+        rhs_ = mysql.escape(rhs);
     }
-    // Return the query with 'SELECT...FROM' prefix unless this is a nested expression.
-    if (inner) {
-        return where;
-    } else {
-        return `SELECT ${safeColumn} FROM ${safeTable} WHERE ${where}`;
+    return `${lhs_} ${op} ${rhs_}`;
+}
+
+// Generate a SQL select statement.
+function makeSelect(safeTable, search, safeColumn='*') {
+    var select = `SELECT ${safeColumn} FROM ${safeTable}`;
+    if (search) {
+        return select + ` WHERE ${makeWhere(search)}`;
     }
+    return select;
 }
