@@ -9,7 +9,7 @@ set -e
 server_dir=$(pwd)/$(dirname "$0")
 server_main="${server_dir}/src/server.js"
 server_log="${server_dir}/server.log"
-server_conf="/etc/advse/server_ssl.conf"
+server_conf="/etc/advse/server.conf"
 
 function is_windows {
     case $(uname -s) in
@@ -37,7 +37,12 @@ function die {
 function setup_env {
     if [[ -f "${server_conf}" ]]; then
         while read LINE; do
-            export "${LINE}"
+            # Print line unless it is blank or starts with #
+            local string=$(echo "${LINE}" | sed 's/^[[:space:]]*//')
+            if [[ ${#string} -gt 0 ]] && [[ ! "${string}" =~ \#.* ]]; then
+                echo "${string}" >&2
+                export "${string}"
+            fi
         done <"${server_conf}"
     fi
 }

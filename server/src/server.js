@@ -43,29 +43,32 @@ function startServer(error) {
     }
     // Set up event handlers.
     process.on('exit', handleExit);
-    // Start server on HTTP/HTTPS.
+    // Listen for HTTP connections.
     if (config.USE_HTTP) {
         startHTTP();
     }
+    // Listen for HTTPS connections.
     if (config.USE_HTTPS && !(util.isNullOrUndefined(config.SSL_KEY))) {
         startHTTPS();
     }
 }
 
 function startHTTP() {
+    log.trace(module, startHTTP);
     const server = http.createServer(controller.handleRequest);
     server.on('error', handleError);
     server.listen(config.PORT, serverListener.bind(null, config.PORT));
 }
 
 function startHTTPS() {
+    log.trace(module, startHTTPS);
     var ssl = {
         key:  fs.readFileSync(config.SSL_KEY),
         cert: fs.readFileSync(config.SSL_CERT)
     };
     const server = https.createServer(ssl, controller.handleRequest);
     server.on('error', handleError);
-    server.listen(config.PORT, serverListener.bind(null, config.SSL_PORT));
+    server.listen(config.SSL_PORT, serverListener.bind(null, config.SSL_PORT));
 }
 
 function serverListener(port, error) {
@@ -85,7 +88,7 @@ function handleExit() {
 function handleError(error) {
     if (error) {
         log.trace(module, handleError);
-        log.error(`Fatal: ${error}`);
+        log.error(`Fatal: ${error.message}`);
         process.exit(1);
     }
 }
