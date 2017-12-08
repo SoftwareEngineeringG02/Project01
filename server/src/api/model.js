@@ -177,7 +177,9 @@ function getPriceMap(longitude, latitude, radius) {
             return getMaxPrice();
         })
         .then(max => {
-            return {map, min, max};
+            map.push(min);
+            map.push(max);
+            return map;
         })
     ;
 }
@@ -288,7 +290,9 @@ function getPostcodeMap(postcode) {
             return getMaxPrice();
         })
         .then(max => {
-            return {map, min, max};
+            map.push(min);
+            map.push(max);
+            return map;
         })
     ;
 }
@@ -298,9 +302,14 @@ function getPostcodeMap(postcode) {
  */
 function getMinPrice() {
     // Hack to generate the appropriate SQL.
-    return database.find(TPRICE, null, null, null, 'MIN(price)')
-        .then(results => {
-            return results[0][Object.keys(results[0])[0]];
+    return database.find(TPRICE, null, null, null, ['MIN(price)', 'longitude', 'latitude'])
+        .then(rows => {
+            const result = rows[0];
+            return {
+                price:     result['MIN(price)'],
+                longitude: result['longitude'],
+                latitude:  result['latitude']
+            };
         })
     ;
 }
@@ -310,9 +319,14 @@ function getMinPrice() {
  */
 function getMaxPrice() {
     // Hack to generate the appropriate SQL.
-    return database.find(TPRICE, null, null, null, 'MAX(price)')
-        .then(results => {
-            return results[0][Object.keys(results[0])[0]];
+    return database.find(TPRICE, null, null, null,  ['MAX(price)', 'longitude', 'latitude'])
+        .then(rows => {
+            const result = rows[0];
+            return {
+                price:     result['MAX(price)'],
+                longitude: result['longitude'],
+                latitude:  result['latitude']
+            };
         })
     ;
 }
