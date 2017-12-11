@@ -2,14 +2,12 @@
  * Server entry point.
  * @module server
  */
-
-
 require('newrelic');
 
 var path  = require('path');
 var http  = require('http');
 var https = require('https');
-var fs = require('fs');
+var fs    = require('fs');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
@@ -43,11 +41,11 @@ function startServer(error) {
     }
     // Set up event handlers.
     process.on('exit', handleExit);
-    // Listen for HTTP connections.
+    // Listen for HTTP connections if enabled.
     if (config.USE_HTTP) {
         startHTTP();
     }
-    // Listen for HTTPS connections.
+    // Listen for HTTPS connections if enabled.
     if (config.USE_HTTPS && !(util.isNullOrUndefined(config.SSL_KEY))) {
         startHTTPS();
     }
@@ -79,9 +77,14 @@ function serverListener(port, error) {
 }
 
 // Called on 'exit' event.
-function handleExit() {
+function handleExit(error) {
     log.trace(module, handleExit);
-    return log.info('Server exiting');
+    if (error) {
+        log.error(`Server exiting due to error: ${error.code} ${error.message}`);
+        process.exit(1);
+    }
+    log.info('Server exiting');
+    process.exit(0);
 }
 
 // Log error and exit.

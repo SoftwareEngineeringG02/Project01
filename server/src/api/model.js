@@ -262,7 +262,7 @@ function reversePostcodeOnline(postcode, callback) {
 function handleOnlineReversePostcode(resolve, reject, postcode, response) {
     var data = '';
     response.on('data', chunk => { data += chunk; });
-    response.on('end', () => {
+    response.on('end',  () => {
         const object = JSON.parse(data);
         if (object && object.result && object.result[0] && object.result[0].longitude && object.result[0].latitude) {
             // FIXME lon/lat are reversed in database.
