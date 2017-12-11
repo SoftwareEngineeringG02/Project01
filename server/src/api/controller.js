@@ -20,7 +20,7 @@ module.exports.handleRequest = handleRequest;
 function handleRequest(request, response) {
     log.trace(module, handleRequest);
     // Set error handler.
-    request.on('error', badRequest.bind(null, request, response, 400));
+    request.on('error', badRequest.bind(null, request, response));
     // Find endpoint.
     const { method, url } = request;
     const endpoint = getRequestHandler(method, url);

@@ -156,15 +156,15 @@ function getPrice(longitude, latitude) {
 function getPriceMap(longitude, latitude, radius) {
     log.trace(module, getPriceMap);
     // Compute boundaries.
-    // FIXME: longitude and latidude and reversed.
-    const EARTH_RADIUS = 6371e3; // metres.
-    const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
-    const lonMin = longitude - radRadius;
-    const lonMax = longitude + radRadius;
-    const latMin = latitude  - radRadius;
-    const latMax = latitude  + radRadius;
-    const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
-                       and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
+    // FIXME: longitude and latidude are reversed.
+    const DIST2DEG = 111000;             // Distance to degrees longitude/latitude conversion factor
+    const degrees = radius/DIST2DEG;     // Distance converted to degrees longitude/latitude.
+    const lonMin  = longitude - degrees;
+    const lonMax  = longitude + degrees;
+    const latMin  = latitude  - degrees;
+    const latMax  = latitude  + degrees;
+    const search  = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
+                        and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
     var map;
     var min;
     return database.find(TPRICE, search)
@@ -177,7 +177,9 @@ function getPriceMap(longitude, latitude, radius) {
             return getMaxPrice();
         })
         .then(max => {
-            return {map, min, max};
+            map.push(min);
+            map.push(max);
+            return map;
         })
     ;
 }
@@ -260,7 +262,7 @@ function reversePostcodeOnline(postcode, callback) {
 function handleOnlineReversePostcode(resolve, reject, postcode, response) {
     var data = '';
     response.on('data', chunk => { data += chunk; });
-    response.on('end', () => {
+    response.on('end',  () => {
         const object = JSON.parse(data);
         if (object && object.result && object.result[0] && object.result[0].longitude && object.result[0].latitude) {
             // FIXME lon/lat are reversed in database.
@@ -288,7 +290,9 @@ function getPostcodeMap(postcode) {
             return getMaxPrice();
         })
         .then(max => {
-            return {map, min, max};
+            map.push(min);
+            map.push(max);
+            return map;
         })
     ;
 }
@@ -298,9 +302,14 @@ function getPostcodeMap(postcode) {
  */
 function getMinPrice() {
     // Hack to generate the appropriate SQL.
-    return database.find(TPRICE, null, null, null, 'MIN(price)')
-        .then(results => {
-            return results[0][Object.keys(results[0])[0]];
+    return database.find(TPRICE, null, null, null, ['MIN(price)', 'longitude', 'latitude'])
+        .then(rows => {
+            const result = rows[0];
+            return {
+                price:     result['MIN(price)'],
+                longitude: result['longitude'],
+                latitude:  result['latitude']
+            };
         })
     ;
 }
@@ -310,9 +319,14 @@ function getMinPrice() {
  */
 function getMaxPrice() {
     // Hack to generate the appropriate SQL.
-    return database.find(TPRICE, null, null, null, 'MAX(price)')
-        .then(results => {
-            return results[0][Object.keys(results[0])[0]];
+    return database.find(TPRICE, null, null, null,  ['MAX(price)', 'longitude', 'latitude'])
+        .then(rows => {
+            const result = rows[0];
+            return {
+                price:     result['MAX(price)'],
+                longitude: result['longitude'],
+                latitude:  result['latitude']
+            };
         })
     ;
 }

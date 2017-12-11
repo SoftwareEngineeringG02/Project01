@@ -19,15 +19,16 @@ module.exports.INPUTS = { id: 'string', 'postcode': 'string' };
 module.exports.CALLBACK = function({postcode}) {
     log.debug(module.exports.REL);
     return model.getPostcodeMap(postcode)
-        .then(({map, min, max}) => {
+        .then(map => {
+            if (util.isNullOrUndefined(map)) {
+                return Promise.reject(new util.ServerError(`No data for postcode ${postcode}`));
+            }
             return {
                 'status': 200,
                 'body': {
                     'error':   0,
                     'message': 'Success',
-                    'map':     map,
-                    'min':     min,
-                    'max':     max
+                    'map':     map
                 }
             };
         })

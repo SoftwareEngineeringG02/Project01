@@ -24,7 +24,7 @@ module.exports.CALLBACK = function({longitude, latitude, radius}) {
     log.debug(module.exports.REL);
     // Get price map.
     return model.getPriceMap(longitude, latitude, radius)
-        .then(({map, min, max}) => { 
+        .then(map => {
             if (util.isNullOrUndefined(map)) {
                 return Promise.reject(new util.ServerError(`No data within radius ${radius} of (${longitude},${latitude})`));
             }
@@ -33,9 +33,7 @@ module.exports.CALLBACK = function({longitude, latitude, radius}) {
                 'body': {
                     'error':   0,
                     'message': 'Success',
-                    'map':     map,
-                    'min':     min,
-                    'max':     max
+                    'map':     map
                 }
             };
         })
