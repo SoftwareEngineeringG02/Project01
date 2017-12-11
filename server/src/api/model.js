@@ -156,15 +156,15 @@ function getPrice(longitude, latitude) {
 function getPriceMap(longitude, latitude, radius) {
     log.trace(module, getPriceMap);
     // Compute boundaries.
-    // FIXME: longitude and latidude and reversed.
-    const EARTH_RADIUS = 6371e3; // metres.
-    const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
-    const lonMin = longitude - radRadius;
-    const lonMax = longitude + radRadius;
-    const latMin = latitude  - radRadius;
-    const latMax = latitude  + radRadius;
-    const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
-                       and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
+    // FIXME: longitude and latidude are reversed.
+    const DIST2DEG = 111000;             // Distance to degrees longitude/latitude conversion factor
+    const degrees = radius/DIST2DEG;     // Distance converted to degrees longitude/latitude.
+    const lonMin  = longitude - degrees;
+    const lonMax  = longitude + degrees;
+    const latMin  = latitude  - degrees;
+    const latMax  = latitude  + degrees;
+    const search  = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
+                        and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
     var map;
     var min;
     return database.find(TPRICE, search)

@@ -80,7 +80,7 @@ function serverListener(port, error) {
 function handleExit(error) {
     log.trace(module, handleExit);
     if (error) {
-        log.error(`Server exiting due to error: ${error.code} ${error.message}`);
+        log.error(`Server exiting due to error: ${error}`);
         process.exit(1);
     }
     log.info('Server exiting');
