@@ -31,8 +31,9 @@ function handleRequest(request, response) {
     // Call endpoint handler.
     if (method == 'GET') {
         return model.startRequest(request, null)
-            .then(endpoint.callback.call(null))
+            .then(requestID => endpoint.callback.call(null))
             .then(({status, body}) => endRequest(null, response, status, body))
+        ;
     } else if (method == 'POST') {
         return handlePost(request, response, endpoint)
     }
@@ -63,12 +64,8 @@ function handlePost(request, response, endpoint) {
             requestID = reqID;
             return endpoint.callback.call(null, inputs);
         })
-        .then(({status, body}) => {
-            return endRequest(requestID, response, status, body);
-        })
-        .catch(error => {
-            badRequest(request, response, error, requestID);
-        })
+        .then(({status, body}) => endRequest(requestID, response, status, body))
+        .catch(error           => badRequest(request, response, error, requestID))
     ;
 }
 
