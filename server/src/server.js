@@ -60,11 +60,15 @@ function startHTTP() {
 
 function startHTTPS() {
     log.trace(module, startHTTPS);
-    var ssl = {
-        key:  fs.readFileSync(config.SSL_KEY),
-        cert: fs.readFileSync(config.SSL_CERT)
-    };
-    const server = https.createServer(ssl, controller.handleRequest);
+    const key = fs.readFileSync(config.SSL_KEY);
+    if (util.isNullOrUndefined(key) || key.length == 0) {
+        return handleError({message: `Could not read SSL key ${config.SSL_KEY}`});
+    }
+    const cert = fs.readFileSync(config.SSL_CERT);
+    if (util.isNullOrUndefined(cert) || cert.length == 0) {
+        return handleError({message: `Could not read SSL certificate ${config.SSL_CERT}`});
+    }
+    const server = https.createServer({key, cert}, controller.handleRequest);
     server.on('error', handleError);
     server.listen(config.SSL_PORT, serverListener.bind(null, config.SSL_PORT));
 }
@@ -81,16 +85,15 @@ function handleExit(error) {
     log.trace(module, handleExit);
     if (error) {
         log.error(`Server exiting due to error: ${error}`);
-        process.exit(1);
+    } else {
+        log.info('Server exiting');
     }
-    log.info('Server exiting');
-    process.exit(0);
 }
 
 // Log error and exit.
 function handleError(error) {
+    log.trace(module, handleError);
     if (error) {
-        log.trace(module, handleError);
         log.error(`Fatal: ${error.message}`);
         process.exit(1);
     }
