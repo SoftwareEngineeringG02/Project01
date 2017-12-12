@@ -40,7 +40,7 @@ function startRequest(request, client) {
     const service = request.socket.encrypted ? 'HTTPS' : 'HTTP';
     log.info(`[${service}] Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
     if (util.isNullOrUndefined(client)) {
-        return;
+        return Promise.resolve(-1);
     }
     const all = Promise.all([
         database.insertIgnore(TCLIENT, {'id': client}),
