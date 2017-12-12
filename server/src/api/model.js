@@ -225,7 +225,7 @@ function handleOnlinePostcode(resolve, reject, response) {
         if (object && object.result && object.result[0] && object.result[0].postcode) {
             return resolve(object.result[0].postcode);
         }
-        return reject(new util.ServerError('Could not find postcode'));
+        return reject(new util.RequestError('Could not find postcode'));
     });
 }
 
@@ -270,7 +270,7 @@ function handleOnlineReversePostcode(resolve, reject, postcode, response) {
             const { longitude, latitude } = object.result[0];
             return resolve({longitude: latitude, latitude: longitude});
         }
-        return reject(new util.ServerError('Could not find postcode'));
+        return reject(new util.RequestError('Could not find postcode'));
     });
 }
 

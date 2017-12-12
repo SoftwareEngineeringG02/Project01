@@ -21,7 +21,7 @@ module.exports.CALLBACK = function({postcode}) {
     return model.getPostcodeMap(postcode)
         .then(map => {
             if (util.isNullOrUndefined(map)) {
-                return Promise.reject(new util.ServerError(`No data for postcode ${postcode}`));
+                return Promise.reject(new util.RequestError(`No data for postcode ${postcode}`));
             }
             return {
                 'status': 200,
