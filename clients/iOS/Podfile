@@ -1,0 +1,17 @@
+
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'ASEMaps' do
+pod 'GoogleMaps'
+pod 'GooglePlaces'
+end
+
+target 'ASEMapsTests' do
+    pod 'GoogleMaps'
+    pod 'GooglePlaces'
+end
+
+target 'ASEMapsUITests' do
+    pod 'GoogleMaps'
+    pod 'GooglePlaces'
+end
