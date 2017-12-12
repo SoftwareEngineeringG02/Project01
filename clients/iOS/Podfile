@@ -1,6 +1,0 @@
-
-source 'http://github.com/CocoaPods/Specs.git'
-target 'ASEMaps' do
-pod 'GoogleMaps'
-pod 'GooglePlaces'
-end

@@ -256,9 +256,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
-
-
     /**
      * Gets the location and writes it to label
      */

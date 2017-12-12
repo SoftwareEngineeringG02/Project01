@@ -44,38 +44,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/viktorkaslik/gps1/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="953" column="0" lean-forward="false" selection-start-line="953" selection-start-column="0" selection-end-line="953" selection-end-column="0" />
+            <state relative-caret-position="360">
+              <caret line="602" column="57" lean-forward="true" selection-start-line="602" selection-start-column="57" selection-end-line="602" selection-end-column="57" />
               <folding>
                 <element signature="class#4346:4967" expanded="false" />
                 <element signature="docComment;method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
                 <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
-                <element signature="docComment;method#getLoc#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#getLoc#0;class#MainActivity#0" expanded="false" />
-                <element signature="docComment;method#onMapReady#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onMapReady#0;class#MainActivity#0" expanded="false" />
-                <element signature="docComment;method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-                <element signature="docComment;method#post#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#post#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#UploadFilesTask#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#getContentResolver#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#Stack#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#tempGetMap#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#doInBackground#0;class#GetMapData#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#doInBackground#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onPostExecute#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#36487#36488#0" expanded="true" />
-                <element signature="e#36513#36514#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -86,16 +65,18 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
               <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
-              <folding />
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EspressoTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EspressoTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/EspressoTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="177" column="9" lean-forward="true" selection-start-line="177" selection-start-column="9" selection-end-line="177" selection-end-column="9" />
+            <state relative-caret-position="980">
+              <caret line="177" column="9" lean-forward="false" selection-start-line="177" selection-start-column="9" selection-end-line="177" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -138,6 +119,8 @@
       <find>heatMap</find>
       <find>post</find>
       <find>setR</find>
+      <find>list</find>
+      <find>heatmaplist</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -1911,7 +1894,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -1926,8 +1908,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -1974,6 +1954,9 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2060,8 +2043,7 @@
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
       </Profilers>
       <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523236934" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1512664160466" />
       </method>
     </configuration>
     <configuration default="false" name="ExampleUnitTest" type="AndroidJUnit" factoryName="Android JUnit" temporary="true" nameIsGenerated="true">
@@ -2133,10 +2115,7 @@
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
       </Profilers>
-      <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523236935" />
-      </method>
+      <method />
     </configuration>
     <configuration default="false" name="listGoesOverTheFold()" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
       <module name="app" />
@@ -2181,10 +2160,7 @@
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
       </Profilers>
-      <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523236935" />
-      </method>
+      <method />
     </configuration>
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
@@ -2255,8 +2231,7 @@
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
       <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523236935" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1512664160467" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -2303,8 +2278,7 @@
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
       </Profilers>
       <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523236935" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1512664160467" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2465,8 +2439,7 @@
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
       <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511523236936" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1512664160469" />
       </method>
     </configuration>
     <list size="5">
@@ -2570,11 +2543,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.49427754" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18502203" sideWeight="0.481402" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14449213" sideWeight="0.50855744" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -2602,6 +2573,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18502203" sideWeight="0.481402" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2674,27 +2646,6 @@
             <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
             <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
             <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#UploadFilesTask#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getContentResolver#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#Stack#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#tempGetMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetMapData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPostExecute#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36487#36488#0" expanded="true" />
-            <element signature="e#36513#36514#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2737,27 +2688,6 @@
             <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
             <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
             <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#UploadFilesTask#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getContentResolver#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#Stack#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#tempGetMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetMapData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPostExecute#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36487#36488#0" expanded="true" />
-            <element signature="e#36513#36514#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2797,27 +2727,6 @@
             <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
             <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
             <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#UploadFilesTask#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getContentResolver#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#Stack#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#tempGetMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetMapData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPostExecute#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36487#36488#0" expanded="true" />
-            <element signature="e#36513#36514#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2850,27 +2759,6 @@
             <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
             <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
             <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#UploadFilesTask#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getContentResolver#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#Stack#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#tempGetMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetMapData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPostExecute#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36487#36488#0" expanded="true" />
-            <element signature="e#36513#36514#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3086,50 +2974,31 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/viktorkaslik/gps1/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="953" column="0" lean-forward="false" selection-start-line="953" selection-start-column="0" selection-end-line="953" selection-end-column="0" />
           <folding>
-            <element signature="class#4346:4967" expanded="false" />
-            <element signature="docComment;method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getLoc#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onMapReady#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#addWeightedHeatMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="docComment;method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#post#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#UploadFilesTask#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getContentResolver#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#Stack#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#tempGetMap#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetMapData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPostExecute#0;class#GetPostcodeData#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#doInBackground#0;class#GetPriceData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPostcodeFromLonLat#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#36487#36488#0" expanded="true" />
-            <element signature="e#36513#36514#0" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/androidTest/java/com/example/viktorkaslik/gps1/EspressoTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="177" column="9" lean-forward="true" selection-start-line="177" selection-start-column="9" selection-end-line="177" selection-end-column="9" />
+        <state relative-caret-position="980">
+          <caret line="177" column="9" lean-forward="false" selection-start-line="177" selection-start-column="9" selection-end-line="177" selection-end-column="9" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/viktorkaslik/gps1/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="602" column="57" lean-forward="true" selection-start-line="602" selection-start-column="57" selection-end-line="602" selection-end-column="57" />
+          <folding>
+            <element signature="class#4346:4967" expanded="false" />
+            <element signature="docComment;method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#populatePopUpMenu#0;class#MainActivity#0" expanded="false" />
+            <element signature="docComment;method#showOnMap#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
