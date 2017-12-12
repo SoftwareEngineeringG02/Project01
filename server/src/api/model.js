@@ -39,6 +39,9 @@ function startRequest(request, client) {
     const agent   = headers['user-agent'];
     const service = request.socket.encrypted ? 'HTTPS' : 'HTTP';
     log.info(`[${service}] Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
+    if (util.isNullOrUndefined(client)) {
+        return;
+    }
     const all = Promise.all([
         database.insertIgnore(TCLIENT, {'id': client}),
         database.insert(TADDRESS, { 'client': client, 'address': address, 'agent': agent }),

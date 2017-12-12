@@ -30,7 +30,8 @@ function handleRequest(request, response) {
     }
     // Call endpoint handler.
     if (method == 'GET') {
-        return endpoint.callback.call(null)
+        return model.startRequest(request, null)
+            .then(endpoint.callback.call(null))
             .then(({status, body}) => endRequest(null, response, status, body))
     } else if (method == 'POST') {
         return handlePost(request, response, endpoint)
@@ -52,7 +53,6 @@ function getRequestHandler(method, url) {
 function handlePost(request, response, endpoint) {
     var inputs    = null;
     var requestID = null;
-    const isHTTPS = request.socket.encrypted ? true : false;
     return getRequestBody(request)
         .then(body   => getJsonElements(body, endpoint.inputs))
         .then(object => {
