@@ -26,7 +26,7 @@ module.exports.CALLBACK = function({longitude, latitude, radius}) {
     return model.getPriceMap(longitude, latitude, radius)
         .then(map => {
             if (util.isNullOrUndefined(map)) {
-                return Promise.reject(new util.ServerError(`No data within radius ${radius} of (${longitude},${latitude})`));
+                return Promise.reject(new util.RequestError(`No data within radius ${radius} of (${longitude},${latitude})`));
             }
             return {
                 'status': 200,

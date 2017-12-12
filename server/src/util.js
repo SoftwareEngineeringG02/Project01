@@ -75,7 +75,7 @@ module.exports.getTimeStamp = function() {
     return d.toISOString().replace('T', ' ').substr(0, 19);
 }
 
-module.exports.ServerError = class ServerError extends Error {
+module.exports.RequestError = class RequestError extends Error {
     constructor(message) {
         super(message);
     }

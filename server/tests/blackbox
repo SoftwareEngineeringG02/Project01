@@ -107,6 +107,9 @@ test_get "/location" "error" "number" "1"
 # GET /invalid should fail.
 test_get "/invalid" "error" "number" "1"
 
+# POST with invalid JSON should fail.
+test_post "/price" "{\"id\": \"${id}\", \"\"}" "error" "number" "1"
+
 # POST /location/update should succeed.
 test_post "/location/update" "{\"id\": \"${id}\", \"longitude\": ${longitude}, \"latitude\": ${latitude} }" "error" "number" "0"
 

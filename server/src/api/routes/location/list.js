@@ -20,7 +20,7 @@ module.exports.CALLBACK = function(inputs) {
     return model.listLocation(inputs.id)
         .then(results => {
             if (util.isNullOrUndefined(results)) {
-                return Promise.reject(new util.ServerError('No location data associated with client'));
+                return Promise.reject(new util.RequestError('No location data associated with client'));
             }
             return {
                 'status': 200,
