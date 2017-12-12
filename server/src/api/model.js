@@ -37,7 +37,8 @@ function startRequest(request, client) {
     const { method, url, headers } = request;
     const address = request.connection.remoteAddress;
     const agent   = headers['user-agent'];
-    log.info(`Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
+    const service = request.socket.encrypted ? 'HTTPS' : 'HTTP';
+    log.info(`[${service}] Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
     const all = Promise.all([
         database.insertIgnore(TCLIENT, {'id': client}),
         database.insert(TADDRESS, { 'client': client, 'address': address, 'agent': agent }),
