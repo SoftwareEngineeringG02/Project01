@@ -2,14 +2,12 @@
  * Server entry point.
  * @module server
  */
-
-
 require('newrelic');
 
 var path  = require('path');
 var http  = require('http');
 var https = require('https');
-var fs = require('fs');
+var fs    = require('fs');
 
 // Set SERVER_ROOT global to server root directory. Must be a POSIX-style path on all platforms.
 global.SERVER_ROOT = path.resolve(__dirname).replace(/\\/g, '/');
@@ -43,38 +41,60 @@ function startServer(error) {
     }
     // Set up event handlers.
     process.on('exit', handleExit);
-    // Start the server.
-    var server = null;
-    if (util.isNullOrUndefined(config.SSL_KEY)) {
-        server = http.createServer(controller.handleRequest);
-    } else {
-        var ssl = {
-            key: fs.readFileSync(config.SSL_KEY),
-            cert: fs.readFileSync(config.SSL_CERT),
-        };
-        server = https.createServer(ssl, controller.handleRequest);
-        config.PORT = config.SSL_PORT;
+    // Listen for HTTP connections if enabled.
+    if (config.USE_HTTP) {
+        startHTTP();
     }
+    // Listen for HTTPS connections if enabled.
+    if (config.USE_HTTPS && !(util.isNullOrUndefined(config.SSL_KEY))) {
+        startHTTPS();
+    }
+}
+
+function startHTTP() {
+    log.trace(module, startHTTP);
+    const server = http.createServer(controller.handleRequest);
     server.on('error', handleError);
-    server.listen(config.PORT, (error) => {
-        if (error) {
-            handleError(error);
-        }
-        return log.info(`Listening on ${config.ADDRESS}:${config.PORT}`);
-    });
+    server.listen(config.PORT, serverListener.bind(null, config.PORT));
+}
+
+function startHTTPS() {
+    log.trace(module, startHTTPS);
+    const key = fs.readFileSync(config.SSL_KEY);
+    if (util.isNullOrUndefined(key) || key.length == 0) {
+        return handleError({message: `Could not read SSL key ${config.SSL_KEY}`});
+    }
+    const cert = fs.readFileSync(config.SSL_CERT);
+    if (util.isNullOrUndefined(cert) || cert.length == 0) {
+        return handleError({message: `Could not read SSL certificate ${config.SSL_CERT}`});
+    }
+    const server = https.createServer({key, cert}, controller.handleRequest);
+    server.on('error', handleError);
+    server.listen(config.SSL_PORT, serverListener.bind(null, config.SSL_PORT));
+}
+
+function serverListener(port, error) {
+    if (error) {
+        return handleError(error);
+    }
+    log.info(`Listening on ${config.ADDRESS}:${port}`);
 }
 
 // Called on 'exit' event.
-function handleExit() {
+function handleExit(error) {
     log.trace(module, handleExit);
-    return log.info('Server exiting');
+    if (error) {
+        log.error(`Server exiting due to error: ${error}`);
+    } else {
+        log.info('Server exiting');
+    }
 }
 
 // Log error and exit.
 function handleError(error) {
+    log.trace(module, handleError);
     if (error) {
-        log.trace(module, handleError);
-        log.error(`Fatal: ${error}`);
+        log.error(`Fatal: ${error.message}`);
         process.exit(1);
     }
 }

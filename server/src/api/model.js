@@ -37,7 +37,11 @@ function startRequest(request, client) {
     const { method, url, headers } = request;
     const address = request.connection.remoteAddress;
     const agent   = headers['user-agent'];
-    log.info(`Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
+    const service = request.socket.encrypted ? 'HTTPS' : 'HTTP';
+    log.info(`[${service}] Request <address=${address}, request=${method} ${url}, user-agent=${agent}>`);
+    if (util.isNullOrUndefined(client)) {
+        return Promise.resolve(0);
+    }
     const all = Promise.all([
         database.insertIgnore(TCLIENT, {'id': client}),
         database.insert(TADDRESS, { 'client': client, 'address': address, 'agent': agent }),
@@ -120,9 +124,7 @@ function getPrice(longitude, latitude) {
     log.trace(module, getPrice);
     // Longitudes and latitudes in the DB are precise to 13 decimal places. 10^-12 of a degree is
     // about 6.5 nm, which means the server won't return anything unless the user stands in a very
-    // specific spot. To fix this, we allow a tolerance of 10^-6 degrees, which is about 11 m. We
-    // then log how many results this returns (for debugging) and return the first (and hopefully
-    // only) result.
+    // specific spot. To fix this, we allow a tolerance of 10^-6 degrees, which is about 10 m.
     const R10M   = 10e-6;
     const lonMin = longitude - R10M;
     const lonMax = longitude + R10M;
@@ -158,28 +160,32 @@ function getPrice(longitude, latitude) {
 function getPriceMap(longitude, latitude, radius) {
     log.trace(module, getPriceMap);
     // Compute boundaries.
-    // FIXME: longitude and latidude and reversed.
-    const EARTH_RADIUS = 6371e3; // metres.
-    const radRadius    = radius/EARTH_RADIUS; // Convert distance to radians.
-    const { lonMin, lonMax, latMin, latMax } = lonLatBounds(longitude, latitude, radRadius);
-    const search = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
-                       and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
-    return database.find(TPRICE, search);
-}
-
-// Compute the minimum and maximum longitude and latitude of points within a radius of a given point
-// Based on http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
-function lonLatBounds(longitude, latitude, radius) {
-    // Compute Δlongitude.
-    const latT = Math.asin(Math.sin(latitude)/Math.cos(radius));
-    const dlon = Math.acos((Math.cos(radius) - Math.sin(latT)*Math.sin(latitude))/(Math.cos(latT)/Math.cos(latitude)));
-    // Return results.
-    return {
-        lonMin: longitude - radius,
-        lonMax: longitude + radius,
-        latMin: latitude  - dlon,
-        latMax: latitude  + dlon
-    };
+    // FIXME: longitude and latidude are reversed.
+    const DIST2DEG = 111000;             // Distance to degrees longitude/latitude conversion factor
+    const degrees = radius/DIST2DEG;     // Distance converted to degrees longitude/latitude.
+    const lonMin  = longitude - degrees;
+    const lonMax  = longitude + degrees;
+    const latMin  = latitude  - degrees;
+    const latMax  = latitude  + degrees;
+    const search  = and(and(gteq('longitude', lonMin), lteq('longitude', lonMax)),
+                        and(gteq('latitude',  latMin), lteq('latitude',  latMax)));
+    var map;
+    var min;
+    return database.find(TPRICE, search)
+        .then(map_ => {
+            map = map_;
+            return getMinPrice();
+        })
+        .then(min_ => {
+            min = min_;
+            return getMaxPrice();
+        })
+        .then(max => {
+            map.push(min);
+            map.push(max);
+            return map;
+        })
+    ;
 }
 
 
@@ -222,7 +228,7 @@ function handleOnlinePostcode(resolve, reject, response) {
         if (object && object.result && object.result[0] && object.result[0].postcode) {
             return resolve(object.result[0].postcode);
         }
-        return reject(new util.ServerError('Could not find postcode'));
+        return reject(new util.RequestError('Could not find postcode'));
     });
 }
 
@@ -260,25 +266,71 @@ function reversePostcodeOnline(postcode, callback) {
 function handleOnlineReversePostcode(resolve, reject, postcode, response) {
     var data = '';
     response.on('data', chunk => { data += chunk; });
-    response.on('end', () => {
+    response.on('end',  () => {
         const object = JSON.parse(data);
         if (object && object.result && object.result[0] && object.result[0].longitude && object.result[0].latitude) {
             // FIXME lon/lat are reversed in database.
             const { longitude, latitude } = object.result[0];
             return resolve({longitude: latitude, latitude: longitude});
         }
-        return reject(new util.ServerError('Could not find postcode'));
+        return reject(new util.RequestError('Could not find postcode'));
     });
 }
 
 /**
  * Get a price map from a post code.
  */
-function getPostcodeMap(postcode, radius) {
+function getPostcodeMap(postcode) {
     log.trace(module, getPriceMap);
-    return reversePostcode(postcode)
-        .then(({ longitude, latitude }) => {
-            return getPriceMap(longitude, latitude, radius);
+    var map;
+    var min;
+    return database.find(TPRICE, equal('postcode', postcode))
+        .then(map_ => {
+            map = map_;
+            return getMinPrice();
+        })
+        .then(min_ => {
+            min = min_;
+            return getMaxPrice();
+        })
+        .then(max => {
+            map.push(min);
+            map.push(max);
+            return map;
+        })
+    ;
+}
+
+/**
+ * Get the lowest price in the DB.
+ */
+function getMinPrice() {
+    // Hack to generate the appropriate SQL.
+    return database.find(TPRICE, null, null, null, ['MIN(price)', 'longitude', 'latitude'])
+        .then(rows => {
+            const result = rows[0];
+            return {
+                price:     result['MIN(price)'],
+                longitude: result['longitude'],
+                latitude:  result['latitude']
+            };
+        })
+    ;
+}
+
+/**
+ * Get the highest price in the DB.
+ */
+function getMaxPrice() {
+    // Hack to generate the appropriate SQL.
+    return database.find(TPRICE, null, null, null,  ['MAX(price)', 'longitude', 'latitude'])
+        .then(rows => {
+            const result = rows[0];
+            return {
+                price:     result['MAX(price)'],
+                longitude: result['longitude'],
+                latitude:  result['latitude']
+            };
         })
     ;
 }

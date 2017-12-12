@@ -37,7 +37,12 @@ function die {
 function setup_env {
     if [[ -f "${server_conf}" ]]; then
         while read LINE; do
-            export "${LINE}"
+            # Print line unless it is blank or starts with #
+            local string=$(echo "${LINE}" | sed 's/^[[:space:]]*//')
+            if [[ ${#string} -gt 0 ]] && [[ ! "${string}" =~ \#.* ]]; then
+                echo "${string}" >&2
+                export "${string}"
+            fi
         done <"${server_conf}"
     fi
 }
