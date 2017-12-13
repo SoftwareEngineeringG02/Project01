@@ -77,7 +77,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
         
-        imageView.image = UIImage(named: "icon2.png")
+        imageView.image = UIImage(named: "icon3.png")
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
         imageView.isUserInteractionEnabled = true
         imageView.addGestureRecognizer(tapGestureRecognizer)
@@ -101,11 +101,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
         radius = 2
     }
     
-    /*
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    */
+ 
     
     /*
      - This fucntion updates the camera (i.e. the view) on the map based on the searched location. It shows the current location if users tap the current location button, otherwise shows the location of the searched postcode.
@@ -134,7 +134,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
             let camera = GMSCameraPosition.camera(withLatitude: CurLat,
                                                   longitude: CurLon, zoom: 15.0)
             mapView = GMSMapView.map(withFrame: self.view.bounds, camera: camera)
-            mapView.isMyLocationEnabled = true
+            mapView.isMyLocationEnabled = false
             
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2D(latitude: CurLat, longitude: CurLon)
@@ -308,6 +308,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
             PriceLabel.layer.opacity = 1.0
             PriceLabel.textColor = UIColor.black
             PriceLabel.text = "No data found..."
+            //Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(self.dismissAlert), userInfo: nil, repeats: false)
             self.view.addSubview(PriceLabel)
         }
     }
@@ -328,6 +329,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
         if LatLonLabel != nil{
             LatLonLabel.text = ""
             LatLonLabel.layer.opacity = 0.0
+        }
+        if PriceLabel != nil {
+            PriceLabel.text = ""
+            PriceLabel.layer.opacity = 0.0
         }
     }
     

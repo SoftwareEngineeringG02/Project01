@@ -90,6 +90,9 @@
 		164B61BD1FB0ACD500383390 /* ASEMapsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164B61BC1FB0ACD500383390 /* ASEMapsUITests.swift */; };
 		16A66E101FE0888C001AE673 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 164B61A01FB0ACD400383390 /* Main.storyboard */; };
 		16A66E111FE0888D001AE673 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 164B61A01FB0ACD400383390 /* Main.storyboard */; };
+		16B0B0E41FE0D15600822B18 /* icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 16B0B0E31FE0D15600822B18 /* icon3.png */; };
+		16B0B0E51FE0D15600822B18 /* icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 16B0B0E31FE0D15600822B18 /* icon3.png */; };
+		16B0B0E61FE0D15600822B18 /* icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = 16B0B0E31FE0D15600822B18 /* icon3.png */; };
 		810B56A90A0FADF6B22CB11E /* libPods-ASEMapsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD3A35E865FBB22E4881E9E /* libPods-ASEMapsTests.a */; };
 		8F7EF4FDCB63DEB5F29FE8A7 /* libPods-ASEMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 514F30E938458A34925E8764 /* libPods-ASEMaps.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		ADDB8277E966CD67495CD47A /* libPods-ASEMapsUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19AD2939F8D92C2081BAFD5F /* libPods-ASEMapsUITests.a */; };
@@ -194,6 +197,7 @@
 		164B61B81FB0ACD500383390 /* ASEMapsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ASEMapsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		164B61BC1FB0ACD500383390 /* ASEMapsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASEMapsUITests.swift; sourceTree = "<group>"; };
 		164B61BE1FB0ACD500383390 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		16B0B0E31FE0D15600822B18 /* icon3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon3.png; sourceTree = "<group>"; };
 		181A6F933D99DB4D50965A6A /* Pods-ASEMapsTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ASEMapsTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ASEMapsTests/Pods-ASEMapsTests.debug.xcconfig"; sourceTree = "<group>"; };
 		19AD2939F8D92C2081BAFD5F /* libPods-ASEMapsUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ASEMapsUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F27C835B4D8997A6A4E6E68 /* Pods-ASEMapsTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ASEMapsTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ASEMapsTests/Pods-ASEMapsTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -367,6 +371,7 @@
 				162371841FD964E500227187 /* Header.h */,
 				162370971FD9648D00227187 /* GoogleAPIs */,
 				1635CAC91FD5AA6A00B5C77F /* Podfile */,
+				16B0B0E31FE0D15600822B18 /* icon3.png */,
 				1643DE4F1FC5CB3D00592A6B /* icon2.png */,
 				164B619B1FB0ACD300383390 /* ASEMaps */,
 				164B61B01FB0ACD400383390 /* ASEMapsTests */,
@@ -559,6 +564,7 @@
 			files = (
 				1635CACA1FD5AA6A00B5C77F /* Podfile in Resources */,
 				164B61A71FB0ACD400383390 /* LaunchScreen.storyboard in Resources */,
+				16B0B0E41FE0D15600822B18 /* icon3.png in Resources */,
 				1643DE501FC5CB3D00592A6B /* icon2.png in Resources */,
 				164B61A41FB0ACD400383390 /* Assets.xcassets in Resources */,
 				164B61A21FB0ACD400383390 /* Main.storyboard in Resources */,
@@ -569,6 +575,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16B0B0E51FE0D15600822B18 /* icon3.png in Resources */,
 				16A66E101FE0888C001AE673 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -577,6 +584,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16B0B0E61FE0D15600822B18 /* icon3.png in Resources */,
 				16A66E111FE0888D001AE673 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
