@@ -115,6 +115,26 @@ class ASEMapsTests: XCTestCase {
         XCTAssertEqual(maps.getLatLonLabel().text, "", "DismissAlert test pass!")
     }
     
+    func testGetTime(){
+        maps = ViewController()
+        let seconds = NSDate().timeIntervalSince1970
+        let time =  seconds * 1000;
+        maps.setTime(millie: time)
+        XCTAssertEqual(time, maps.getTime())
+    }
+    
+    /*
+    func testSliderValueChanged(){
+        maps = ViewController()
+        maps.sliderView.setValue(8.0, animated: true)
+        maps.setRadius(newRadius: 8)
+        let testRadius = 5.0
+        maps.sliderView.setValue(6.0, animated: true)
+        XCTAssertEqual(maps.sliderView.value, Float(testRadius))
+    }
+    */
+    
+    /*
     func testListSizePostcode(){
         maps = ViewController()
         maps2 = ViewController()
@@ -178,4 +198,5 @@ class ASEMapsTests: XCTestCase {
         
         XCTAssertNotEqual(size1, size2)
     }
+     */
 }

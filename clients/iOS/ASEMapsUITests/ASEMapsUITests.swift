@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import ASEMaps
 
 class ASEMapsUITests: XCTestCase {
         
@@ -28,9 +29,88 @@ class ASEMapsUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testCurrentLocationButton() {
+        let app = XCUIApplication()
+        let enterThePostcodeElement = app.otherElements.containing(.textField, identifier:"Enter the postcode...").element
+        enterThePostcodeElement/*@START_MENU_TOKEN@*/.swipeRight()/*[[".swipeDown()",".swipeRight()"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        
+        let image = app.otherElements.containing(.textField, identifier:"Enter the postcode...").children(matching: .image).element
+        image.tap()
+        enterThePostcodeElement.swipeUp()
+        image.tap()
+        enterThePostcodeElement.swipeDown()
+        image.tap()
+        
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
     
+    func testCurrentLocationButton2() {
+        
+        let app = XCUIApplication()
+        let enterThePostcodeElement = app.otherElements.containing(.textField, identifier:"Enter the postcode...").element
+        enterThePostcodeElement/*@START_MENU_TOKEN@*/.swipeRight()/*[[".swipeDown()",".swipeRight()"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        
+        let icon2PngImage = app.images["icon2.png"]
+        icon2PngImage.tap()
+        enterThePostcodeElement.tap()
+        enterThePostcodeElement.swipeUp()
+        icon2PngImage.tap()
+        enterThePostcodeElement.swipeDown()
+        icon2PngImage.tap()
+        enterThePostcodeElement.tap()
+    }
+    
+    func testSlider() {
+        
+        let app = XCUIApplication()
+        let enterThePostcodeElement = app.otherElements.containing(.textField, identifier:"Enter the postcode...").element
+        enterThePostcodeElement/*@START_MENU_TOKEN@*/.swipeRight()/*[[".swipeUp()",".swipeRight()"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        app.sliders["0%"].swipeRight()
+        app.sliders["54%"].swipeLeft()
+        
+        let enterThePostcodeTextField = app.textFields["Enter the postcode..."]
+        enterThePostcodeTextField.tap()
+        enterThePostcodeTextField.typeText("bn23ph")
+        app.typeText("\r")
+        enterThePostcodeElement.tap()
+        app.sliders["48%"].swipeLeft()
+        enterThePostcodeElement.tap()
+        
+    }
+    
+    func testTextField() {
+        
+        let app = XCUIApplication()
+        let enterThePostcodeElement = app.otherElements.containing(.textField, identifier:"Enter the postcode...").element
+        enterThePostcodeElement.tap()
+        
+        let enterThePostcodeTextField = app.textFields["Enter the postcode..."]
+        enterThePostcodeTextField.tap()
+        enterThePostcodeTextField.typeText("bn23ph")
+        app.typeText("\r")
+        enterThePostcodeElement.tap()
+        enterThePostcodeTextField.tap()
+        enterThePostcodeTextField.tap()
+    }
+    
+    func testTextField2() {
+        
+        let app = XCUIApplication()
+        let enterThePostcodeElement = app.otherElements.containing(.textField, identifier:"Enter the postcode...").element
+        enterThePostcodeElement/*@START_MENU_TOKEN@*/.swipeRight()/*[[".swipeDown()",".swipeRight()"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        
+        let icon2PngImage = app.images["icon2.png"]
+        icon2PngImage.tap()
+        enterThePostcodeElement.tap()
+        
+        let enterThePostcodeTextField = app.textFields["Enter the postcode..."]
+        enterThePostcodeTextField.tap()
+        enterThePostcodeTextField.typeText("bn11hg")
+        app.typeText("\r")
+        enterThePostcodeElement.tap()
+        icon2PngImage.tap()
+        enterThePostcodeElement.tap()
+        
+    }
 }

@@ -88,6 +88,8 @@
 		164B61A71FB0ACD400383390 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 164B61A51FB0ACD400383390 /* LaunchScreen.storyboard */; };
 		164B61B21FB0ACD500383390 /* ASEMapsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164B61B11FB0ACD500383390 /* ASEMapsTests.swift */; };
 		164B61BD1FB0ACD500383390 /* ASEMapsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164B61BC1FB0ACD500383390 /* ASEMapsUITests.swift */; };
+		16A66E101FE0888C001AE673 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 164B61A01FB0ACD400383390 /* Main.storyboard */; };
+		16A66E111FE0888D001AE673 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 164B61A01FB0ACD400383390 /* Main.storyboard */; };
 		810B56A90A0FADF6B22CB11E /* libPods-ASEMapsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD3A35E865FBB22E4881E9E /* libPods-ASEMapsTests.a */; };
 		8F7EF4FDCB63DEB5F29FE8A7 /* libPods-ASEMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 514F30E938458A34925E8764 /* libPods-ASEMaps.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		ADDB8277E966CD67495CD47A /* libPods-ASEMapsUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19AD2939F8D92C2081BAFD5F /* libPods-ASEMapsUITests.a */; };
@@ -567,6 +569,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16A66E101FE0888C001AE673 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,6 +577,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16A66E111FE0888D001AE673 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

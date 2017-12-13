@@ -101,11 +101,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
         radius = 2
     }
     
-    
+    /*
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
- 
+    */
+    
     /*
      - This fucntion updates the camera (i.e. the view) on the map based on the searched location. It shows the current location if users tap the current location button, otherwise shows the location of the searched postcode.
      */
@@ -353,6 +354,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UITextFieldDe
     func getRadius() -> Int {return radius}
     func getLatLonLabel() -> UILabel {return LatLonLabel}
     func getPriceLabel() -> UILabel {return PriceLabel}
+    func getTime() -> Double {return timeMilliee}
     
     /*
      - Setter functions
