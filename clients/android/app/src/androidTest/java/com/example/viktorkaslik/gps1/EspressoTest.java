@@ -3,39 +3,22 @@ package com.example.viktorkaslik.gps1;
 
 //import org.junit.Test;
 
-import android.app.Activity;
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.support.test.espresso.Espresso;
-import android.util.Log;
 
-import com.google.android.gms.maps.model.Marker;
+import com.example.viktorkaslik.gps1.MainActivity;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
-import java.util.logging.Logger;
-
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 //import android.test.ActivityInstrumentationTestCase2;
 
 /**
