@@ -9,7 +9,7 @@ The system is designed with a client/server architecture.
 ### Clients
 
  * [Android app](./clients/android)
- * [iOS app (Development)](./clients/iOS)
+ * [iOS app](./clients/iOS)
 
 ### Backend
 
