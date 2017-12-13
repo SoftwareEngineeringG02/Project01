@@ -42,6 +42,7 @@ import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     postcode = address.getText().toString(); //get entered postcode
                     //TODO: REGEX checker to check that the postcode is valid
                     //display the postcode in a toast bubble
-                    Toast toast = Toast.makeText(getApplicationContext(), "To be completed \n" + postcode, Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),  postcode, Toast.LENGTH_LONG);
                     toast.show();
 
                     //TODO: get lonlat from address, disable autoLocate, pass to showOnMap()
@@ -255,6 +256,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     }
+
+
+
 
     /**
      * Gets the location and writes it to label
@@ -373,7 +377,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 URL url;
                 url = new URL("http://35.176.239.74:80/location/update");
-//                URL url = new URL("http://35.177.43.204:80/location/update");
                 System.out.println("Try data sending success 2");
                 // Send POST data request
 
@@ -476,7 +479,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-//    public List<WeightedLatLng> tempGetMap() {
     public void tempGetMap() {
         // http://35.176.239.74:80/price
         // {"longitude":lon, "latitude":,lat}
@@ -534,7 +536,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //              {"longitude":50.866, "latitude":0.115, "radius":1000, "id":"99a3d03f8c51435a", "time":1511260592907}
                 URL url;
                 url = new URL("http://35.176.239.74:80/price/map");
-//                URL url = new URL("http://35.177.43.204:80/location/update");
                 System.out.println("Try data sending success 2");
                 // Send POST data request
 
@@ -578,37 +579,49 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             System.out.println("data: " + data);
             System.out.print("Response: " + text);
             text = text.replace("{\"error\":0,\"message\":\"Success\",\"map\":[","");
-            text = text.replace("],\"links\":[{\"rel\":\"index\",\"href\":\"/\",\"method\":\"GET\"","*");
-            int spaceIndex = text.indexOf("*");
-            if (spaceIndex != -1)
-            {
-                text = text.substring(0, spaceIndex);
-            }
-            text = text.replace("\"","");
+
+            text = removeLinks(text);
             return text;
         }
 
 
         protected void onPostExecute(String result) {
             heatMapList = new ArrayList<WeightedLatLng>();
+            System.out.println("PriceMap: " + result);
             String[] results = result.split("[}],[{]");
             if(results.length > 1) {
                 for (int i = 0; i < results.length; i++) {
                     //heatMapList.add()
                     String[] furtherDetail = results[i].split(",");
-                    String price = furtherDetail[1];
-                    price = price.replace("price:", "");
-                    String latitude = furtherDetail[11];
-                    latitude = latitude.replace("latitude:", "");
-                    String longitude = furtherDetail[12];
-                    longitude = longitude.replace("longitude:", "");
-                    longitude = longitude.replace("}", "");
+                    if (furtherDetail.length > 3) {
+                        String price = furtherDetail[1];
+                        price = price.replace("price:", "");
+                        String latitude = furtherDetail[11];
+                        latitude = latitude.replace("latitude:", "");
+                        String longitude = furtherDetail[12];
+                        longitude = longitude.replace("longitude:", "");
+                        longitude = longitude.replace("}", "");
 
-                    heatMapList.add(new WeightedLatLng(new LatLng(Double.parseDouble(longitude), Double.parseDouble(latitude)), Integer.parseInt(price)));
+                        heatMapList.add(new WeightedLatLng(new LatLng(Double.parseDouble(longitude), Double.parseDouble(latitude)), Integer.parseInt(price)));
+
+                    }
                 }
                 addWeightedHeatMap(heatMapList);
             }
         }
+    }
+
+
+    public String removeLinks(String text){
+        text = text.replace("],\"links\":","*");
+        text = text.replace(",\"links\":","*");
+        int spaceIndex = text.indexOf("*");
+        if (spaceIndex != -1)
+        {
+            text = text.substring(0, spaceIndex);
+        }
+        text = text.replace("\"","");
+        return text;
     }
 
     public void getPostcode(String pobox){
@@ -628,10 +641,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             try {
                 jsonObject.put("id", imei);
                 jsonObject.put("postcode", urls[0]);
-//                jsonObject.put("longitude", lon1);
-//                jsonObject.put("latitude", lat1);
                 jsonObject.put("time", dateTime);
-//                jsonObject.put("radius",radius);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -668,6 +678,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     System.out.println("Try data sending success 2.4");
                     wr.flush();
                     System.out.println("Try data sending success 3");
+                    System.out.println("data: " + data);
+
                 }while(!cache.isEmpty());
 
 
@@ -698,14 +710,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             System.out.print("Response: " + text);
 
             text = text.replace("{\"error\":0,\"message\":\"Success\",\"","");
-            text = text.replace(",\"links\":[{\"rel\":\"index\",\"href\":\"/\",\"method\":" +
-                    "\"GET\"},{\"rel\":\"get-location\",\"href\":\"/location\",\"method\":\"POST\"}" +
-                    ",{\"rel\":\"list-location\",\"href\":\"/location/list\",\"method\":\"POST\"}," +
-                    "{\"rel\":\"set-location\",\"href\":\"/location/update\",\"method\":\"POST\"}," +
-                    "{\"rel\":\"get-postcode\",\"href\":\"/postcode\",\"method\":\"POST\"},{\"rel\":" +
-                    "\"reverse-postcode\",\"href\":\"/postcode/reverse\",\"method\":\"POST\"}," +
-                    "{\"rel\":\"get-price\",\"href\":\"/price\",\"method\":\"POST\"},{\"rel\":\"get-price-map\"" +
-                    ",\"href\":\"/price/map\",\"method\":\"POST\"}]}","");
+            text= removeLinks(text);
             return text;
         }
 
@@ -713,15 +718,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         protected void onPostExecute(String result) {
             System.out.println("result: " +result);
             String[] results = result.split(",");
-            results[0] = results[0].replace("longitude\":","");
-            System.out.println(results[0]);
+            results[0] = results[0].replace("longitude:","");
+            System.out.println("lon--: "+results[0]);
             lon = Double.parseDouble(results[0]);
-            results[1] = results[1].replace("\"latitude\":","");
+            results[1] = results[1].replace("latitude:","");
             System.out.println(results[1]);
             lat = Double.parseDouble(results[1]);
             showOnMap();
             tempGetMap();
-            //System.out.println(result);
         }
     }
 
@@ -745,11 +749,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", imei);
-//                jsonObject.put("postcode", urls[0]);
                 jsonObject.put("longitude", lon1);
                 jsonObject.put("latitude", lat1);
                 jsonObject.put("time", dateTime);
-//                jsonObject.put("radius",radius);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -809,15 +811,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             System.out.print("Response: " + text);
 
             text = text.replace("{\"error\":0,\"message\":\"Success\",\"price\":","");
-            text = text.replace(",\"links\":[{\"rel\":\"index\",\"href\":\"/\",\"method\":\"GET\"}," +
-                    "{\"rel\":\"get-location\",\"href\":\"/location\",\"method\":\"POST\"},{\"rel\":\"" +
-                    "list-location\",\"href\":\"/location/list\",\"method\":\"POST\"},{\"rel\":\"set-location\"" +
-                    ",\"href\":\"/location/update\",\"method\":\"POST\"},{\"rel\":\"get-postcode\",\"href\":\"/postcode\"" +
-                    ",\"method\":\"POST\"},{\"rel\":\"reverse-postcode\",\"href\":\"/postcode/reverse\",\"method\":\"POST\"" +
-                    "},{\"rel\":\"get-price\",\"href\":\"/price\",\"method\":\"POST\"},{\"rel\":\"get-price-map\",\"href\":\"" +
-                    "/price/map\",\"method\":\"POST\"}]}","");
+            text= removeLinks(text);
 
-            text = text.replace("{\"error\":1,\"message\":\"Bad request: POST /price\""," No Data");
+            boolean isFound = text.indexOf("{error:1,message:Bad request") == -1?  false : true; //true
+            System.out.println(isFound);
+            if(isFound)
+                text = "No Data";
 
             return text;
         }
@@ -833,7 +832,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             tempS = tempS.replace("\n","");
             priceView.setText(tempS);//£3700.00"); //set priceview to hold postcode and price
             priceView.setVisibility(View.VISIBLE); // show priceview
-            //System.out.println(result);
         }
     }
 
@@ -928,10 +926,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             System.out.println("data: " + data);
             System.out.print("Response: " + text);
-            text = text.replace("{\"error\":0,\"message\":\"Success\",\"postcode\":\"","");
-            text = text.replace("\",\"links\":[{\"rel\":\"index\",\"href\":\"/\",\"method\":\"GET\"},{\"rel\":\"get-location\",\"href\":\"/location\",\"method\":\"POST\"},{\"rel\":\"list-location\",\"href\":\"/location/list\",\"method\":\"POST\"},{\"rel\":\"set-location\",\"href\":\"/location/update\",\"method\":\"POST\"},{\"rel\":\"get-postcode\",\"href\":\"/postcode\",\"method\":\"POST\"},{\"rel\":\"reverse-postcode\",\"href\":\"/postcode/reverse\",\"method\":\"POST\"},{\"rel\":\"get-price\",\"href\":\"/price\",\"method\":\"POST\"},{\"rel\":\"get-price-map\",\"href\":\"/price/map\",\"method\":\"POST\"}]}","");
 
-            text = text.replace("{\"error\":1,\"message\":\"Could not find postcode","No Data");
+            text = text.replace("{\"error\":0,\"message\":\"Success\",\"postcode\":\"","");
+            text= removeLinks(text);
+
             return text;
         }
 
@@ -955,34 +953,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(autoLocate) {
                 setLon(location.getLongitude());
                 setLat(location.getLatitude());
-                //lon = location.getLongitude();
-                //lat = location.getLatitude();
                 getPostcodeFromLonLat();
                 tempGetMap();
                 showOnMap();
             }
         }
+
         @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {}
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
         @Override
-        public void onProviderEnabled(String s) {}
+        public void onProviderEnabled(String s) {
+
+        }
         @Override
-        public void onProviderDisabled(String s) {}
+        public void onProviderDisabled(String s) {
+
+        }
     };
-
-    public double getLon() {
-        return lon;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public LocationListener getLocationListener() {
-        return locationListener;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
-    }
 }

@@ -1,14 +1,12 @@
 package com.example.viktorkaslik.gps1;
 
 
-import android.test.suitebuilder.annotation.LargeTest;
-//import org.junit.Test;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+//import org.junit.Test;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
